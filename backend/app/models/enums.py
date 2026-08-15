@@ -1,0 +1,210 @@
+"""
+YatraSaathi — Enum definitions.
+
+All enums mirror the DATA_MODEL.md specification.
+Python-native enums are used so SQLAlchemy can create
+PostgreSQL ENUM types via Alembic.
+"""
+import enum
+
+
+class UserRole(str, enum.Enum):
+    TRAVELLER = "TRAVELLER"
+    AUDITOR = "AUDITOR"
+    AUTHORITY = "AUTHORITY"
+    ADMIN = "ADMIN"
+
+
+class RouteStyle(str, enum.Enum):
+    MOST_ACCESSIBLE = "MOST_ACCESSIBLE"
+    LEAST_WALKING = "LEAST_WALKING"
+    FASTEST_ACCESSIBLE = "FASTEST_ACCESSIBLE"
+    BALANCED = "BALANCED"
+
+
+class PlaceCategory(str, enum.Enum):
+    MUSEUM = "MUSEUM"
+    PARK = "PARK"
+    MONUMENT = "MONUMENT"
+    TEMPLE = "TEMPLE"
+    ATTRACTION = "ATTRACTION"
+    RESTAURANT = "RESTAURANT"
+    CAFE = "CAFE"
+    HOTEL = "HOTEL"
+    TRANSPORT = "TRANSPORT"
+    SHOP = "SHOP"
+    HOSPITAL = "HOSPITAL"
+    OTHER = "OTHER"
+
+
+class AccessibilityFeature(str, enum.Enum):
+    STEP_FREE_ENTRANCE = "STEP_FREE_ENTRANCE"
+    ACCESSIBLE_TOILET = "ACCESSIBLE_TOILET"
+    ELEVATOR = "ELEVATOR"
+    ACCESSIBLE_PARKING = "ACCESSIBLE_PARKING"
+    TACTILE_GUIDANCE = "TACTILE_GUIDANCE"
+    HEARING_ASSISTANCE = "HEARING_ASSISTANCE"
+    VISUAL_ASSISTANCE = "VISUAL_ASSISTANCE"
+    REST_AREA = "REST_AREA"
+    WHEELCHAIR_AVAILABLE = "WHEELCHAIR_AVAILABLE"
+    ACCESSIBLE_ROUTE = "ACCESSIBLE_ROUTE"
+    LOW_WALKING_ACCESS = "LOW_WALKING_ACCESS"
+    OTHER = "OTHER"
+
+
+class AccessibilityStatus(str, enum.Enum):
+    AVAILABLE = "AVAILABLE"
+    UNAVAILABLE = "UNAVAILABLE"
+    UNKNOWN = "UNKNOWN"
+    TEMPORARILY_UNAVAILABLE = "TEMPORARILY_UNAVAILABLE"
+
+
+class FacilityType(str, enum.Enum):
+    ENTRANCE = "ENTRANCE"
+    TOILET = "TOILET"
+    ELEVATOR = "ELEVATOR"
+    RAMP = "RAMP"
+    PARKING = "PARKING"
+    REST_AREA = "REST_AREA"
+    ASSISTANCE_DESK = "ASSISTANCE_DESK"
+    TACTILE_PATH = "TACTILE_PATH"
+    HEARING_SYSTEM = "HEARING_SYSTEM"
+    OTHER = "OTHER"
+
+
+class BarrierType(str, enum.Enum):
+    BROKEN_ELEVATOR = "BROKEN_ELEVATOR"
+    BLOCKED_RAMP = "BLOCKED_RAMP"
+    BLOCKED_PATH = "BLOCKED_PATH"
+    CLOSED_ENTRANCE = "CLOSED_ENTRANCE"
+    CONSTRUCTION = "CONSTRUCTION"
+    PARKING_BLOCKED = "PARKING_BLOCKED"
+    TOILET_UNAVAILABLE = "TOILET_UNAVAILABLE"
+    ASSISTANCE_UNAVAILABLE = "ASSISTANCE_UNAVAILABLE"
+    OTHER = "OTHER"
+
+
+class BarrierSeverity(str, enum.Enum):
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
+class BarrierStatus(str, enum.Enum):
+    SUBMITTED = "SUBMITTED"
+    PENDING_REVIEW = "PENDING_REVIEW"
+    VERIFIED = "VERIFIED"
+    ACTIVE = "ACTIVE"
+    RESOLVED = "RESOLVED"
+    EXPIRED = "EXPIRED"
+    REJECTED = "REJECTED"
+    DISPUTED = "DISPUTED"
+
+
+class ReportType(str, enum.Enum):
+    BARRIER = "BARRIER"
+    ACCESSIBILITY_UPDATE = "ACCESSIBILITY_UPDATE"
+    FACILITY_CHANGE = "FACILITY_CHANGE"
+    ASSISTANCE_ISSUE = "ASSISTANCE_ISSUE"
+    OTHER = "OTHER"
+
+
+class ReportStatus(str, enum.Enum):
+    SUBMITTED = "SUBMITTED"
+    PENDING_REVIEW = "PENDING_REVIEW"
+    VERIFIED = "VERIFIED"
+    REJECTED = "REJECTED"
+    RESOLVED = "RESOLVED"
+    EXPIRED = "EXPIRED"
+
+
+class VerificationAction(str, enum.Enum):
+    VERIFY = "VERIFY"
+    REJECT = "REJECT"
+    DISPUTE = "DISPUTE"
+    RESOLVE = "RESOLVE"
+    EXPIRE = "EXPIRE"
+
+
+class AssistanceType(str, enum.Enum):
+    INFORMATION_DESK = "INFORMATION_DESK"
+    MEDICAL_ASSISTANCE = "MEDICAL_ASSISTANCE"
+    EMERGENCY_ASSISTANCE = "EMERGENCY_ASSISTANCE"
+    WHEELCHAIR_SUPPORT = "WHEELCHAIR_SUPPORT"
+    HEARING_SUPPORT = "HEARING_SUPPORT"
+    GUIDE_SUPPORT = "GUIDE_SUPPORT"
+    ACCESSIBLE_TOILET = "ACCESSIBLE_TOILET"
+    ACCESSIBLE_PARKING = "ACCESSIBLE_PARKING"
+    TRANSPORT_ASSISTANCE = "TRANSPORT_ASSISTANCE"
+    OTHER = "OTHER"
+
+
+class AvailabilityStatus(str, enum.Enum):
+    AVAILABLE = "AVAILABLE"
+    UNAVAILABLE = "UNAVAILABLE"
+    LIMITED = "LIMITED"
+    UNKNOWN = "UNKNOWN"
+
+
+class SourceType(str, enum.Enum):
+    OFFICIAL = "OFFICIAL"
+    AUTHORITY = "AUTHORITY"
+    AUDITOR = "AUDITOR"
+    COMMUNITY = "COMMUNITY"
+    USER_REPORTED = "USER_REPORTED"
+    AI_ASSISTED = "AI_ASSISTED"
+    OPEN_DATA = "OPEN_DATA"
+    EXTERNAL_API = "EXTERNAL_API"
+    DEMO = "DEMO"
+    UNKNOWN = "UNKNOWN"
+
+
+class ConfidenceLevel(str, enum.Enum):
+    LOW = "LOW"
+    MEDIUM = "MEDIUM"
+    HIGH = "HIGH"
+    UNKNOWN = "UNKNOWN"
+
+
+class RecordStatus(str, enum.Enum):
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    EXPIRED = "EXPIRED"
+    PENDING = "PENDING"
+    ARCHIVED = "ARCHIVED"
+
+
+class TrustLevel(str, enum.Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    UNKNOWN = "UNKNOWN"
+
+
+class AccessibilityLevel(str, enum.Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    UNKNOWN = "UNKNOWN"
+
+
+class ItineraryStatus(str, enum.Enum):
+    DRAFT = "DRAFT"
+    ACTIVE = "ACTIVE"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+
+
+class ItinerarySource(str, enum.Enum):
+    USER_CREATED = "USER_CREATED"
+    AI_GENERATED = "AI_GENERATED"
+    HYBRID = "HYBRID"
+
+
+class CrowdLevel(str, enum.Enum):
+    LOW = "LOW"
+    MODERATE = "MODERATE"
+    HIGH = "HIGH"
+    VERY_HIGH = "VERY_HIGH"
+    UNKNOWN = "UNKNOWN"

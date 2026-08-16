@@ -8,6 +8,7 @@ All models must be imported here so that Alembic can detect them.
 # Base and mixins
 from app.models.base import Base, UUIDMixin, TimestampMixin, utcnow  # noqa: F401
 
+
 # Enums
 from app.models.enums import (  # noqa: F401
     UserRole,

@@ -644,7 +644,11 @@ async def seed_data():
                 observed_at=now_utc - timedelta(hours=12),
                 reported_at=now_utc - timedelta(hours=10),
                 verified_at=now_utc - timedelta(hours=8) if idx < 6 else None,
-                expires_at=now_utc + timedelta(days=2) if idx % 2 == 0 else None, # Some temporary barriers expire
+                expires_at=(
+                    now_utc - timedelta(days=1) if idx == 0
+                    else now_utc + timedelta(days=2) if idx % 2 == 0
+                    else None
+                ),
             )
             session.add(barrier)
             barriers.append(barrier)

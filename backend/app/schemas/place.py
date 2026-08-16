@@ -4,7 +4,7 @@ YatraSaathi — Place, Facility, AssistancePoint, and AccessibilityRecord schema
 from typing import Any, Optional
 from uuid import UUID
 from datetime import datetime
-from pydantic import BaseModel, Field, field_validator, model_serializer
+from pydantic import BaseModel, Field, field_validator, model_serializer, ConfigDict
 
 from app.models.enums import (
     PlaceCategory,
@@ -73,8 +73,7 @@ class AccessibilityRecordResponse(AccessibilityRecordBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -107,8 +106,7 @@ class FacilityResponse(FacilityBase):
     def validate_location(cls, v):
         return parse_postgis_location(v)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -144,8 +142,7 @@ class AssistancePointResponse(AssistancePointBase):
             raise ValueError("Invalid spatial location coordinate.")
         return parsed
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -188,8 +185,7 @@ class PlaceResponse(PlaceBase):
             raise ValueError("Invalid spatial location coordinate.")
         return parsed
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------

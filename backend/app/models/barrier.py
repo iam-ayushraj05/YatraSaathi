@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional, TYPE_CHECKING
 from decimal import Decimal
 
+# pyrefly: ignore [missing-import]
 from geoalchemy2 import Geography
 from sqlalchemy import (
     BigInteger,

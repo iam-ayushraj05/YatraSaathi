@@ -1,0 +1,133 @@
+=== POSTGIS VERSION ===
+PostGIS Version: 3.5 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
+
+=== GEOGRAPHY COLUMNS (SRID Verification) ===
+Table: places | Column: location | SRID: 4326 | Type: Point
+Table: weather_snapshots | Column: location | SRID: 4326 | Type: Point
+Table: assistance_points | Column: location | SRID: 4326 | Type: Point
+Table: facilities | Column: location | SRID: 4326 | Type: Point
+Table: reports | Column: location | SRID: 4326 | Type: Point
+Table: barriers | Column: location | SRID: 4326 | Type: Point
+Table: route_requests | Column: origin | SRID: 4326 | Type: Point
+Table: route_requests | Column: destination | SRID: 4326 | Type: Point
+
+=== GEOMETRY COLUMNS (SRID Verification) ===
+Table: county | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: state | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: place | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: cousub | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: edges | Column: the_geom | SRID: 4269 | Type: MULTILINESTRING
+Table: addrfeat | Column: the_geom | SRID: 4269 | Type: LINESTRING
+Table: faces | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: zcta5 | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: tabblock20 | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: tract | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: tabblock | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: bg | Column: the_geom | SRID: 4269 | Type: MULTIPOLYGON
+Table: routes | Column: geometry | SRID: 4326 | Type: LINESTRING
+Table: route_segments | Column: geometry | SRID: 4326 | Type: LINESTRING
+
+=== DATABASE TABLES ===
+Table: accessibility_profiles
+Table: accessibility_records
+Table: alembic_version
+Table: assistance_points
+Table: audit_logs
+Table: barriers
+Table: crowd_observations
+Table: evidence
+Table: evidence_observations
+Table: facilities
+Table: geography_columns
+Table: geometry_columns
+Table: itineraries
+Table: itinerary_stops
+Table: places
+Table: reports
+Table: route_constraints
+Table: route_requests
+Table: route_segments
+Table: routes
+Table: spatial_ref_sys
+Table: users
+Table: verifications
+Table: weather_snapshots
+
+=== SPATIAL AND DOMAIN INDEXES ===
+Table: accessibility_profiles | Index: accessibility_profiles_pkey | Definition: CREATE UNIQUE INDEX accessibility_profiles_pkey ON public.accessibility_profiles USING btree (id)
+Table: accessibility_profiles | Index: accessibility_profiles_user_id_key | Definition: CREATE UNIQUE INDEX accessibility_profiles_user_id_key ON public.accessibility_profiles USING btree (user_id)
+Table: accessibility_records | Index: accessibility_records_pkey | Definition: CREATE UNIQUE INDEX accessibility_records_pkey ON public.accessibility_records USING btree (id)
+Table: accessibility_records | Index: idx_accessibility_expires | Definition: CREATE INDEX idx_accessibility_expires ON public.accessibility_records USING btree (expires_at)
+Table: accessibility_records | Index: idx_accessibility_feature | Definition: CREATE INDEX idx_accessibility_feature ON public.accessibility_records USING btree (feature)
+Table: accessibility_records | Index: idx_accessibility_place | Definition: CREATE INDEX idx_accessibility_place ON public.accessibility_records USING btree (place_id)
+Table: accessibility_records | Index: idx_accessibility_status | Definition: CREATE INDEX idx_accessibility_status ON public.accessibility_records USING btree (status)
+Table: alembic_version | Index: alembic_version_pkc | Definition: CREATE UNIQUE INDEX alembic_version_pkc ON public.alembic_version USING btree (version_num)
+Table: assistance_points | Index: assistance_points_pkey | Definition: CREATE UNIQUE INDEX assistance_points_pkey ON public.assistance_points USING btree (id)
+Table: assistance_points | Index: idx_assistance_points_location | Definition: CREATE INDEX idx_assistance_points_location ON public.assistance_points USING gist (location)
+Table: assistance_points | Index: idx_assistance_points_place | Definition: CREATE INDEX idx_assistance_points_place ON public.assistance_points USING btree (place_id)
+Table: assistance_points | Index: idx_assistance_points_type | Definition: CREATE INDEX idx_assistance_points_type ON public.assistance_points USING btree (assistance_type)
+Table: audit_logs | Index: audit_logs_pkey | Definition: CREATE UNIQUE INDEX audit_logs_pkey ON public.audit_logs USING btree (id)
+Table: audit_logs | Index: idx_audit_action | Definition: CREATE INDEX idx_audit_action ON public.audit_logs USING btree (action)
+Table: audit_logs | Index: idx_audit_actor | Definition: CREATE INDEX idx_audit_actor ON public.audit_logs USING btree (actor_user_id)
+Table: audit_logs | Index: idx_audit_created | Definition: CREATE INDEX idx_audit_created ON public.audit_logs USING btree (created_at)
+Table: audit_logs | Index: idx_audit_entity | Definition: CREATE INDEX idx_audit_entity ON public.audit_logs USING btree (entity_type, entity_id)
+Table: barriers | Index: barriers_pkey | Definition: CREATE UNIQUE INDEX barriers_pkey ON public.barriers USING btree (id)
+Table: barriers | Index: idx_barriers_expires | Definition: CREATE INDEX idx_barriers_expires ON public.barriers USING btree (expires_at)
+Table: barriers | Index: idx_barriers_location | Definition: CREATE INDEX idx_barriers_location ON public.barriers USING gist (location)
+Table: barriers | Index: idx_barriers_place | Definition: CREATE INDEX idx_barriers_place ON public.barriers USING btree (place_id)
+Table: barriers | Index: idx_barriers_reported_by | Definition: CREATE INDEX idx_barriers_reported_by ON public.barriers USING btree (reported_by)
+Table: barriers | Index: idx_barriers_status | Definition: CREATE INDEX idx_barriers_status ON public.barriers USING btree (status)
+Table: crowd_observations | Index: crowd_observations_pkey | Definition: CREATE UNIQUE INDEX crowd_observations_pkey ON public.crowd_observations USING btree (id)
+Table: crowd_observations | Index: idx_crowd_expires | Definition: CREATE INDEX idx_crowd_expires ON public.crowd_observations USING btree (expires_at)
+Table: crowd_observations | Index: idx_crowd_observed | Definition: CREATE INDEX idx_crowd_observed ON public.crowd_observations USING btree (observed_at)
+Table: crowd_observations | Index: idx_crowd_place | Definition: CREATE INDEX idx_crowd_place ON public.crowd_observations USING btree (place_id)
+Table: evidence | Index: evidence_pkey | Definition: CREATE UNIQUE INDEX evidence_pkey ON public.evidence USING btree (id)
+Table: evidence | Index: idx_evidence_barrier | Definition: CREATE INDEX idx_evidence_barrier ON public.evidence USING btree (barrier_id)
+Table: evidence | Index: idx_evidence_report | Definition: CREATE INDEX idx_evidence_report ON public.evidence USING btree (report_id)
+Table: evidence | Index: idx_evidence_uploader | Definition: CREATE INDEX idx_evidence_uploader ON public.evidence USING btree (uploaded_by)
+Table: evidence_observations | Index: evidence_observations_pkey | Definition: CREATE UNIQUE INDEX evidence_observations_pkey ON public.evidence_observations USING btree (id)
+Table: evidence_observations | Index: idx_evidence_obs_evidence | Definition: CREATE INDEX idx_evidence_obs_evidence ON public.evidence_observations USING btree (evidence_id)
+Table: facilities | Index: facilities_pkey | Definition: CREATE UNIQUE INDEX facilities_pkey ON public.facilities USING btree (id)
+Table: facilities | Index: idx_facilities_location | Definition: CREATE INDEX idx_facilities_location ON public.facilities USING gist (location)
+Table: facilities | Index: idx_facilities_place | Definition: CREATE INDEX idx_facilities_place ON public.facilities USING btree (place_id)
+Table: facilities | Index: idx_facilities_type | Definition: CREATE INDEX idx_facilities_type ON public.facilities USING btree (facility_type)
+Table: itineraries | Index: idx_itineraries_status | Definition: CREATE INDEX idx_itineraries_status ON public.itineraries USING btree (status)
+Table: itineraries | Index: idx_itineraries_user | Definition: CREATE INDEX idx_itineraries_user ON public.itineraries USING btree (user_id)
+Table: itineraries | Index: itineraries_pkey | Definition: CREATE UNIQUE INDEX itineraries_pkey ON public.itineraries USING btree (id)
+Table: itinerary_stops | Index: idx_itinerary_stops_itinerary | Definition: CREATE INDEX idx_itinerary_stops_itinerary ON public.itinerary_stops USING btree (itinerary_id)
+Table: itinerary_stops | Index: idx_itinerary_stops_place | Definition: CREATE INDEX idx_itinerary_stops_place ON public.itinerary_stops USING btree (place_id)
+Table: itinerary_stops | Index: itinerary_stops_pkey | Definition: CREATE UNIQUE INDEX itinerary_stops_pkey ON public.itinerary_stops USING btree (id)
+Table: places | Index: idx_places_category | Definition: CREATE INDEX idx_places_category ON public.places USING btree (category)
+Table: places | Index: idx_places_location | Definition: CREATE INDEX idx_places_location ON public.places USING gist (location)
+Table: places | Index: idx_places_status | Definition: CREATE INDEX idx_places_status ON public.places USING btree (status)
+Table: places | Index: places_pkey | Definition: CREATE UNIQUE INDEX places_pkey ON public.places USING btree (id)
+Table: reports | Index: idx_reports_location | Definition: CREATE INDEX idx_reports_location ON public.reports USING gist (location)
+Table: reports | Index: idx_reports_place | Definition: CREATE INDEX idx_reports_place ON public.reports USING btree (place_id)
+Table: reports | Index: idx_reports_status | Definition: CREATE INDEX idx_reports_status ON public.reports USING btree (status)
+Table: reports | Index: idx_reports_type | Definition: CREATE INDEX idx_reports_type ON public.reports USING btree (report_type)
+Table: reports | Index: idx_reports_user | Definition: CREATE INDEX idx_reports_user ON public.reports USING btree (user_id)
+Table: reports | Index: reports_pkey | Definition: CREATE UNIQUE INDEX reports_pkey ON public.reports USING btree (id)
+Table: route_constraints | Index: idx_route_constraints_request | Definition: CREATE INDEX idx_route_constraints_request ON public.route_constraints USING btree (route_request_id)
+Table: route_constraints | Index: route_constraints_pkey | Definition: CREATE UNIQUE INDEX route_constraints_pkey ON public.route_constraints USING btree (id)
+Table: route_requests | Index: idx_route_requests_at | Definition: CREATE INDEX idx_route_requests_at ON public.route_requests USING btree (requested_at)
+Table: route_requests | Index: idx_route_requests_destination | Definition: CREATE INDEX idx_route_requests_destination ON public.route_requests USING gist (destination)
+Table: route_requests | Index: idx_route_requests_origin | Definition: CREATE INDEX idx_route_requests_origin ON public.route_requests USING gist (origin)
+Table: route_requests | Index: idx_route_requests_user | Definition: CREATE INDEX idx_route_requests_user ON public.route_requests USING btree (user_id)
+Table: route_requests | Index: route_requests_pkey | Definition: CREATE UNIQUE INDEX route_requests_pkey ON public.route_requests USING btree (id)
+Table: route_segments | Index: idx_route_segments_geometry | Definition: CREATE INDEX idx_route_segments_geometry ON public.route_segments USING gist (geometry)
+Table: route_segments | Index: idx_route_segments_route | Definition: CREATE INDEX idx_route_segments_route ON public.route_segments USING btree (route_id)
+Table: route_segments | Index: route_segments_pkey | Definition: CREATE UNIQUE INDEX route_segments_pkey ON public.route_segments USING btree (id)
+Table: routes | Index: idx_routes_geometry | Definition: CREATE INDEX idx_routes_geometry ON public.routes USING gist (geometry)
+Table: routes | Index: idx_routes_request | Definition: CREATE INDEX idx_routes_request ON public.routes USING btree (route_request_id)
+Table: routes | Index: idx_routes_score | Definition: CREATE INDEX idx_routes_score ON public.routes USING btree (accessibility_score)
+Table: routes | Index: routes_pkey | Definition: CREATE UNIQUE INDEX routes_pkey ON public.routes USING btree (id)
+Table: users | Index: users_email_key | Definition: CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)
+Table: users | Index: users_pkey | Definition: CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
+Table: verifications | Index: idx_verifications_barrier | Definition: CREATE INDEX idx_verifications_barrier ON public.verifications USING btree (barrier_id)
+Table: verifications | Index: idx_verifications_report | Definition: CREATE INDEX idx_verifications_report ON public.verifications USING btree (report_id)
+Table: verifications | Index: idx_verifications_verifier | Definition: CREATE INDEX idx_verifications_verifier ON public.verifications USING btree (verified_by)
+Table: verifications | Index: verifications_pkey | Definition: CREATE UNIQUE INDEX verifications_pkey ON public.verifications USING btree (id)
+Table: weather_snapshots | Index: idx_weather_expires | Definition: CREATE INDEX idx_weather_expires ON public.weather_snapshots USING btree (expires_at)
+Table: weather_snapshots | Index: idx_weather_location | Definition: CREATE INDEX idx_weather_location ON public.weather_snapshots USING gist (location)
+Table: weather_snapshots | Index: idx_weather_observed_at | Definition: CREATE INDEX idx_weather_observed_at ON public.weather_snapshots USING btree (observed_at)
+Table: weather_snapshots | Index: weather_snapshots_pkey | Definition: CREATE UNIQUE INDEX weather_snapshots_pkey ON public.weather_snapshots USING btree (id)

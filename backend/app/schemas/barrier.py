@@ -5,7 +5,7 @@ from typing import Optional, Any
 from uuid import UUID
 from datetime import datetime
 from decimal import Decimal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 from app.models.enums import (
     ReportType,
@@ -49,8 +49,7 @@ class ReportResponse(ReportBase):
     def validate_location(cls, v):
         return parse_postgis_location(v)
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -96,8 +95,7 @@ class BarrierResponse(BarrierBase):
             raise ValueError("Invalid spatial location coordinate.")
         return parsed
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -122,8 +120,7 @@ class EvidenceResponse(EvidenceBase):
     ai_confidence: Optional[Decimal] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EvidenceObservationBase(BaseModel):
@@ -138,8 +135,7 @@ class EvidenceObservationResponse(EvidenceObservationBase):
     evidence_id: UUID
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ---------------------------------------------------------------------------
@@ -174,5 +170,4 @@ class VerificationResponse(VerificationBase):
     new_status: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

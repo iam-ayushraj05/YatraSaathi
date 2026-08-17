@@ -259,5 +259,65 @@ export const api = {
     async getCrowds(placeId: string): Promise<CrowdObservation> {
       return apiFetch<CrowdObservation>(`/context/crowds?place_id=${placeId}`);
     }
+  },
+
+  // Copilot
+  copilot: {
+    async chat(req: {
+      message: string;
+      current_location?: { lat: number; lng: number };
+      destination?: { lat: number; lng: number };
+      profile_id?: string;
+      conversation_history?: Array<{ role: string; content: string }>;
+    }): Promise<{
+      response: string;
+      relevant_places?: any[];
+      relevant_accessibility?: any;
+      warnings?: string[];
+      route_info?: any;
+    }> {
+      return apiFetch<any>('/copilot/chat', {
+        method: 'POST',
+        body: JSON.stringify(req),
+      });
+    },
+
+    async getVoiceToken(roomName?: string, participantName?: string): Promise<{
+      server_url: string;
+      room_name: string;
+      token: string;
+      provider: string;
+    }> {
+      const query = new URLSearchParams();
+      if (roomName) query.append('room_name', roomName);
+      if (participantName) query.append('participant_name', participantName);
+      return apiFetch<any>(`/copilot/voice-token?${query.toString()}`);
+    },
+
+    async processVoice(req: {
+      transcript?: string;
+      current_location?: { lat: number; lng: number };
+      voice_gender?: string;
+      voice_id?: string;
+      conversation_history?: Array<{ role: string; content: string }>;
+    }): Promise<{
+
+
+      transcript: string;
+      response: string;
+      audio?: any;
+      relevant_places?: any[];
+      route_info?: any;
+      warnings?: string[];
+      is_end_call?: boolean;
+    }> {
+
+      return apiFetch<any>('/copilot/voice-process', {
+        method: 'POST',
+        body: JSON.stringify(req),
+      });
+    }
   }
 };
+
+

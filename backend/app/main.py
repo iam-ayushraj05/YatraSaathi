@@ -18,6 +18,7 @@ from app.api.v1.itineraries import router as itineraries_router
 from app.api.v1.context import router as context_router
 from app.api.v1.barriers import router as barriers_router
 from app.api.v1.internal import router as internal_router
+from app.api.v1.copilot import router as copilot_router
 
 app = FastAPI(
     title="YatraSaathi API",
@@ -166,3 +167,4 @@ app.include_router(itineraries_router, prefix=api_v1_prefix)
 app.include_router(context_router, prefix=api_v1_prefix)
 app.include_router(barriers_router, prefix=api_v1_prefix)
 app.include_router(internal_router, prefix=api_v1_prefix)
+app.include_router(copilot_router, prefix=api_v1_prefix)

@@ -200,13 +200,17 @@ export interface Itinerary {
 }
 
 export interface WeatherSnapshot {
-  temp: number;
-  humidity: number;
+  temp?: number;
+  temperature_c?: number;
+  humidity?: number;
   condition: string;
-  wind_speed: number;
+  wind_speed?: number;
+  wind_speed_kph?: number;
   aqi?: number;
-  recorded_at: string;
+  recorded_at?: string;
+  observed_at?: string;
 }
+
 
 export interface CrowdObservation {
   place_id: string;

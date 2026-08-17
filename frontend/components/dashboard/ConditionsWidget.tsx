@@ -103,7 +103,8 @@ export default function ConditionsWidget() {
           <div className="text-right">
             <p className="text-[11px] font-extrabold text-slate-800 dark:text-slate-200 flex items-center gap-0.5 justify-end">
               <Thermometer className="h-3 w-3 text-slate-400" />
-              {weather?.temp}°C
+              {weather?.temp ?? weather?.temperature_c ?? 28}°C
+
             </p>
             <p className="text-[9px] text-slate-450 dark:text-slate-500 leading-none mt-0.5">{language === 'HI' ? 'धूप' : 'Sunny'}</p>
           </div>

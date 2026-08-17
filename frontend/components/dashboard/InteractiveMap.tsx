@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { 
   Plus, 
   Minus, 
@@ -81,6 +82,129 @@ export default function InteractiveMap({
   const { language } = useApp();
   const [zoom, setZoom] = useState(1);
   const [hoveredItem, setHoveredItem] = useState<{ name: string; type: string; details?: string } | null>(null);
+  const [useVectorMap, setUseVectorMap] = useState<boolean>(false);
+  const [leafletLoaded, setLeafletLoaded] = useState<boolean>(false);
+  const mapRef = React.useRef<HTMLDivElement>(null);
+  const leafletInstanceRef = React.useRef<any>(null);
+
+  // Dynamically load Leaflet for real map tile rendering
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    if ((window as any).L) {
+      setLeafletLoaded(true);
+      return;
+    }
+
+    const cssLink = document.createElement('link');
+    cssLink.rel = 'stylesheet';
+    cssLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(cssLink);
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.async = true;
+    script.onload = () => {
+      setLeafletLoaded(true);
+    };
+    script.onerror = () => {
+      setUseVectorMap(true);
+    };
+    document.head.appendChild(script);
+  }, []);
+
+  // Initialize and update Leaflet map when available
+  useEffect(() => {
+    if (!leafletLoaded || useVectorMap || !mapRef.current || !(window as any).L) return;
+
+    const L = (window as any).L;
+    if (leafletInstanceRef.current) {
+      leafletInstanceRef.current.remove();
+      leafletInstanceRef.current = null;
+    }
+
+    const centerLat = origin?.lat || 28.6129;
+    const centerLng = origin?.lng || 77.2295;
+
+    const map = L.map(mapRef.current, {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([centerLat, centerLng], 13);
+
+    leafletInstanceRef.current = map;
+
+    // Use OpenStreetMap standard tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Draw route polyline
+    if (routeGeometry && routeGeometry.length > 0) {
+      const latLngs = routeGeometry.map(p => [p.lat, p.lng]);
+      L.polyline(latLngs, { color: '#7c3aed', weight: 5, opacity: 0.85, dashArray: '8, 6' }).addTo(map);
+      map.fitBounds(L.latLngBounds(latLngs), { padding: [30, 30] });
+    }
+
+    // Origin marker
+    if (origin) {
+      L.circleMarker([origin.lat, origin.lng], {
+        radius: 8,
+        color: '#059669',
+        fillColor: '#10b981',
+        fillOpacity: 0.9
+      }).bindTooltip('Origin').addTo(map);
+    }
+
+    // Destination marker
+    if (destination) {
+      L.circleMarker([destination.lat, destination.lng], {
+        radius: 8,
+        color: '#dc2626',
+        fillColor: '#ef4444',
+        fillOpacity: 0.9
+      }).bindTooltip('Destination').addTo(map);
+    }
+
+    // Places
+    places.forEach(p => {
+      const color = p.accessible === 'HIGH' ? '#10b981' : p.accessible === 'MEDIUM' ? '#f59e0b' : '#ef4444';
+      L.circleMarker([p.lat, p.lng], {
+        radius: 6,
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.8
+      }).bindTooltip(`<b>${p.name}</b><br/>Accessibility: ${p.accessible}`)
+        .on('click', () => onPlaceSelect?.(p.id))
+        .addTo(map);
+    });
+
+    // Barriers
+    barriers.forEach(b => {
+      L.circleMarker([b.lat, b.lng], {
+        radius: 7,
+        color: '#e11d48',
+        fillColor: '#fda4af',
+        fillOpacity: 0.9
+      }).bindTooltip(`⚠️ <b>Barrier</b>: ${b.title} (${b.severity})`).addTo(map);
+    });
+
+    // Assistance
+    assistancePoints.forEach(ap => {
+      L.circleMarker([ap.lat, ap.lng], {
+        radius: 6,
+        color: '#2563eb',
+        fillColor: '#93c5fd',
+        fillOpacity: 0.9
+      }).bindTooltip(`♿ <b>Assistance</b>: ${ap.name}`).addTo(map);
+    });
+
+    return () => {
+      if (leafletInstanceRef.current) {
+        leafletInstanceRef.current.remove();
+        leafletInstanceRef.current = null;
+      }
+    };
+  }, [leafletLoaded, useVectorMap, origin, destination, routeGeometry, places, barriers, assistancePoints]);
 
   const getCoords = (lat: number, lng: number) => {
     const x = ((lng - LNG_MIN) / (LNG_MAX - LNG_MIN)) * 100;
@@ -88,11 +212,25 @@ export default function InteractiveMap({
     return { x, y };
   };
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.25, 0.75));
+  const handleZoomIn = () => {
+    if (leafletInstanceRef.current) {
+      leafletInstanceRef.current.zoomIn();
+    } else {
+      setZoom(prev => Math.min(prev + 0.25, 2.5));
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (leafletInstanceRef.current) {
+      leafletInstanceRef.current.zoomOut();
+    } else {
+      setZoom(prev => Math.max(prev - 0.25, 0.75));
+    }
+  };
 
   return (
     <div className="relative flex flex-col h-[420px] w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm transition-colors">
+
       {/* Map Title */}
       <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1 shadow-sm">
         <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{language === 'HI' ? 'इंडिया गेट' : 'India Gate'}</span>
@@ -100,8 +238,8 @@ export default function InteractiveMap({
         <span className="text-[10px] font-bold text-violet-600 dark:text-violet-400">{language === 'HI' ? 'लोटस टेम्पल' : 'Lotus Temple'}</span>
       </div>
 
-      {/* Zoom Controls */}
-      <div className="absolute top-3 right-3 z-10 flex flex-col gap-1">
+      {/* Zoom Controls & Map View Toggle */}
+      <div className="absolute top-3 right-3 z-10 flex flex-col gap-1 items-end">
         <div className="flex flex-col rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md overflow-hidden">
           <button 
             onClick={handleZoomIn}
@@ -119,6 +257,13 @@ export default function InteractiveMap({
             <Minus className="h-3.5 w-3.5" />
           </button>
         </div>
+
+        <button
+          onClick={() => setUseVectorMap(prev => !prev)}
+          className="bg-white/95 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 text-[9px] font-bold text-slate-700 dark:text-slate-200 px-2 py-1 rounded-md shadow-sm hover:bg-violet-50 dark:hover:bg-violet-950/40 transition-colors"
+        >
+          {useVectorMap ? '🗺️ OSM Tiles' : '🎨 Vector View'}
+        </button>
       </div>
 
       {/* Floating Info Tooltip */}
@@ -138,12 +283,19 @@ export default function InteractiveMap({
         </div>
       )}
 
-      {/* Map Canvas */}
-      <div className="flex-1 w-full relative overflow-auto scrollbar-none" style={{ touchAction: 'none' }}>
-        <div 
-          className="w-full h-full min-w-[400px] min-h-[300px] transition-transform duration-200 ease-out origin-center"
-          style={{ transform: `scale(${zoom})` }}
-        >
+      {/* Real Leaflet Map View */}
+      {!useVectorMap && leafletLoaded && (
+        <div ref={mapRef} className="flex-1 w-full h-full z-0" />
+      )}
+
+      {/* Fallback Vector SVG Map Canvas */}
+      {(useVectorMap || !leafletLoaded) && (
+        <div className="flex-1 w-full relative overflow-auto scrollbar-none" style={{ touchAction: 'none' }}>
+          <div 
+            className="w-full h-full min-w-[400px] min-h-[300px] transition-transform duration-200 ease-out origin-center"
+            style={{ transform: `scale(${zoom})` }}
+          >
+
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             {/* Background waterways */}
             <path d="M 0,25 Q 30,30 50,45 T 100,55" fill="none" stroke="#e0e7ff" strokeWidth="2" opacity="0.6" />
@@ -263,8 +415,10 @@ export default function InteractiveMap({
           })}
         </div>
       </div>
+      )}
 
       {/* Map Legend */}
+
       <div className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0b0a0f] px-3 py-2 flex flex-wrap gap-3 items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 z-10 transition-colors">
         <div className="flex flex-wrap gap-x-3 gap-y-1">
           <div className="flex items-center gap-1">

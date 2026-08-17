@@ -40,6 +40,8 @@ class Settings(BaseSettings):
     livekit_api_secret: Optional[str] = None
     deepgram_api_key: Optional[str] = None
     murf_api_key: Optional[str] = None
+    murf_voice_id: str = "en-US-natalie"  # Premium female voice default
+
 
     # ── Demo mode ─────────────────────────────────────────────────────────
     demo_mode: bool = True              # enables demo provider fallbacks

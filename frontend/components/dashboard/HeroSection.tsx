@@ -2,99 +2,193 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
-
-const HERO_BG = 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1400&q=80';
-
-const DEST_CARDS = [
-  {
-    key: 'india',
-    landmark_key: 'taj_mahal',
-    image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=300&h=220&q=80',
-  },
-  {
-    key: 'france',
-    landmark_key: 'eiffel_tower',
-    image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=300&h=220&q=80',
-  },
-  {
-    key: 'turkey',
-    landmark_key: 'cappadocia',
-    image: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=300&h=220&q=80',
-  }
-];
+import { ArrowRight, Star, Compass, Accessibility } from 'lucide-react';
 
 export default function HeroSection() {
-  const { t } = useApp();
-
   return (
-    <section className="relative w-full rounded-2xl overflow-hidden text-white" style={{ minHeight: '280px', maxHeight: '320px' }}>
-      {/* Background image */}
-      <img 
-        src={HERO_BG} 
-        alt="Travel landscape" 
-        className="absolute inset-0 w-full h-full object-cover"
+    <section className="relative w-full rounded-[40px] overflow-hidden text-white shadow-2xl bg-[#120a22] min-h-[500px] flex items-center">
+      {/* Background Image: Panoramic mountains, blue lake, and lone hiker in red jacket */}
+      <div 
+        className="absolute inset-0 bg-cover bg-[center_top]"
+        style={{ 
+          backgroundImage: `url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=95')` 
+        }}
       />
-      {/* Deep purple gradient overlay — strong on left, fading right */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1a0533]/95 via-[#2e1065]/85 to-violet-700/40" />
+      {/* Dark violet gradient across left half for crisp text legibility */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#170a2c]/95 via-[#230e42]/80 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0e061c]/80 via-transparent to-transparent" />
 
-      <div className="relative z-10 flex items-center justify-between h-full px-6 md:px-8 py-6 gap-4" style={{ minHeight: '280px' }}>
-        {/* Left text block */}
-        <div className="max-w-sm space-y-3 shrink-0">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-pink-500/25 border border-pink-400/20 px-3 py-1 text-[9px] font-extrabold uppercase tracking-widest text-pink-200">
-            <Sparkles className="h-3 w-3 animate-pulse" />
-            {t('explore_world')}
-          </span>
+      <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between w-full px-8 md:px-14 py-12 md:py-16 gap-10">
+        
+        {/* Left Column Content */}
+        <div className="max-w-xl space-y-6 shrink-0 text-left">
+          
+          {/* Top Pill Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 text-[10.5px] font-black uppercase tracking-widest text-[#4ade80] shadow-sm">
+            <Compass className="w-3.5 h-3.5 text-[#4ade80]" />
+            <span>HODOPHILE&apos;S ACCESSIBLE JOURNEY</span>
+          </div>
 
-          <h1 className="text-[28px] md:text-[32px] font-black tracking-tight leading-[1.1] uppercase">
+          {/* Large Bold Headline */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[68px] font-black tracking-tight leading-[0.98] uppercase text-white font-sans">
             EXPLORE<br />
-            BEAUTIFUL WORLD<br />
+            BEAUTIFUL<br />
+            WORLD<br />
             WITH US
           </h1>
 
-          <p className="text-[11px] text-purple-200/90 font-medium leading-relaxed max-w-xs">
-            {t('hero_desc')}
+          {/* Subtitle Quote */}
+          <p className="text-xs md:text-[13px] text-white/90 font-medium leading-relaxed max-w-md">
+            &ldquo;Let us take the hassle out of travel planning, so you can focus on the adventure ahead.&rdquo;
           </p>
 
-          <Link 
-            href="/explore"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-[11px] font-bold text-violet-700 hover:bg-violet-50 transition-all shadow-md active:scale-[0.98]"
-          >
-            <span>{t('discover_now')}</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        {/* Right destination cards — float across the hero */}
-        <div className="hidden md:flex items-stretch gap-3 h-[200px]">
-          {DEST_CARDS.map((dest) => (
-            <div 
-              key={dest.key}
-              className="w-[140px] rounded-xl overflow-hidden relative border border-white/20 shadow-lg flex flex-col justify-end p-3 group cursor-pointer hover:scale-[1.03] transition-transform duration-200"
-            >
-              <img 
-                src={dest.image} 
-                alt={t(dest.key)} 
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
-              <div className="relative z-10 text-[10px] leading-tight">
-                <span className="font-extrabold text-pink-300 uppercase block tracking-wider">{t(dest.key)}</span>
-                <span className="font-bold text-white block mt-0.5 truncate">{t(dest.landmark_key)}</span>
-              </div>
+          {/* Reviews & Social Proof */}
+          <div className="flex flex-wrap items-center gap-3.5 pt-1">
+            <div className="flex -space-x-2.5 overflow-hidden">
+              <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#2e1254] object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
+              <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#2e1254] object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
+              <img className="inline-block h-8 w-8 rounded-full ring-2 ring-[#2e1254] object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Traveler" />
             </div>
-          ))}
+            
+            {/* 5 Gold Stars */}
+            <div className="flex text-amber-400 gap-1">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 fill-amber-400 stroke-amber-400" />
+              ))}
+            </div>
 
-          {/* Explore More card */}
-          <Link 
-            href="/explore"
-            className="w-[100px] rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/25 flex flex-col items-center justify-center text-center transition-all duration-200 text-white shadow-lg"
-          >
-            <span className="text-[11px] font-extrabold tracking-wide">{t('explore_more')}</span>
-            <ArrowRight className="h-4 w-4 mt-1" />
-          </Link>
+            {/* Rating pill */}
+            <div className="rounded-full bg-black/40 backdrop-blur-md border border-white/15 px-3 py-1 text-white text-[11px] font-black tracking-wide">
+              4.9/5 • 50k+ Trips
+            </div>
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex items-center gap-4 pt-2">
+            {/* Discover Now Button */}
+            <Link 
+              href="/explore"
+              className="inline-flex items-center gap-2.5 rounded-full bg-[#1e0d3d]/90 hover:bg-[#2d145c] border border-violet-500/30 px-7 py-3.5 text-xs font-black text-white transition-all shadow-xl shadow-purple-950/60 active:scale-[0.98]"
+            >
+              <span>Discover Now</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            {/* Plan Route Button */}
+            <Link 
+              href="/plan-route"
+              className="inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/25 px-7 py-3.5 text-xs font-black text-white transition-all backdrop-blur-md active:scale-[0.98]"
+            >
+              <Compass className="h-4 w-4" />
+              <span>Plan Route</span>
+            </Link>
+          </div>
         </div>
+
+        {/* Right Destination Preview Cards */}
+        <div className="flex items-center gap-5 shrink-0 justify-center lg:justify-end overflow-hidden max-w-full">
+          
+          {/* Card 1: Taj Mahal */}
+          <div className="relative w-[180px] sm:w-[200px] h-[320px] rounded-[30px] overflow-hidden shadow-2xl border border-white/20 group cursor-pointer shrink-0 transition-transform duration-300 hover:-translate-y-1 flex flex-col justify-between p-4">
+            <img 
+              src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=500&h=650&q=85" 
+              alt="Taj Mahal" 
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+            
+            {/* Top Badges */}
+            <div className="relative z-10 flex items-center justify-between gap-1">
+              <span className="flex items-center gap-1 bg-[#06b6d4]/90 backdrop-blur-md text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-sm">
+                <Accessibility className="w-2.5 h-2.5" />
+                <span>92</span>
+              </span>
+              <span className="bg-[#6366f1] text-white text-[8px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider shadow-sm">
+                ADVENTURER&apos;S CHOICE
+              </span>
+            </div>
+
+            {/* Bottom Details */}
+            <div className="relative z-10 text-left space-y-2">
+              <div>
+                <span className="text-[9.5px] font-black text-[#10b981] uppercase tracking-wider block">
+                  INDIA
+                </span>
+                <span className="text-lg font-black text-white block mt-0.5 leading-tight">
+                  Taj Mahal
+                </span>
+              </div>
+              
+              {/* View Accessibility button */}
+              <button 
+                type="button"
+                className="w-full py-1.5 px-3 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white text-[10px] font-black transition-colors text-center"
+              >
+                View Accessibility
+              </button>
+            </div>
+          </div>
+
+          {/* Card 2: Eiffel Tower */}
+          <div className="relative w-[180px] sm:w-[200px] h-[320px] rounded-[30px] overflow-hidden shadow-2xl border border-white/20 group cursor-pointer shrink-0 transition-transform duration-300 hover:-translate-y-1 flex flex-col justify-between p-4">
+            <img 
+              src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=500&h=650&q=85" 
+              alt="Eiffel Tower" 
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+            
+            {/* Top Badges */}
+            <div className="relative z-10 flex items-center justify-between gap-1">
+              <span className="bg-white/30 backdrop-blur-md text-white text-[8.5px] font-black px-2.5 py-1 rounded-full shadow-sm">
+                Elevato
+              </span>
+              <span className="bg-[#6366f1] text-white text-[8px] font-black uppercase px-2.5 py-1 rounded-full tracking-wider shadow-sm">
+                HODOPHILE&apos;S PICK
+              </span>
+            </div>
+
+            {/* Bottom Details */}
+            <div className="relative z-10 text-left">
+              <span className="text-[9.5px] font-black text-slate-300 uppercase tracking-wider block">
+                FRANCE
+              </span>
+              <span className="text-lg font-black text-white block mt-0.5 leading-tight">
+                Eiffel Tower
+              </span>
+            </div>
+          </div>
+
+          {/* Card 3: Turkey / Cappadocia (Right Edge) */}
+          <div className="relative w-[140px] sm:w-[160px] h-[320px] rounded-[30px] overflow-hidden shadow-2xl border border-white/20 group cursor-pointer shrink-0 opacity-85 transition-transform duration-300 hover:-translate-y-1 flex flex-col justify-between p-4">
+            <img 
+              src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=500&h=650&q=85" 
+              alt="Cappadocia" 
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent" />
+            
+            {/* Top Badges */}
+            <div className="relative z-10 flex items-center gap-1">
+              <span className="bg-white/30 backdrop-blur-md text-white text-[8.5px] font-black px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                <Compass className="w-2.5 h-2.5" />
+                <span>Guide</span>
+              </span>
+            </div>
+
+            {/* Bottom Details */}
+            <div className="relative z-10 text-left">
+              <span className="text-[9.5px] font-black text-slate-300 uppercase tracking-wider block">
+                TURKEY
+              </span>
+              <span className="text-lg font-black text-white block mt-0.5 leading-tight truncate">
+                Capp
+              </span>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </section>
   );

@@ -1,99 +1,124 @@
 'use client';
 
 import React from 'react';
-import { Calendar, Award, Coffee } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
+import Link from 'next/link';
 
 const DEALS = [
   {
     title: 'White House Tour',
-    location: 'Washington D.C., USA',
-    duration: '7 Days',
-    style: 'Luxury',
-    food: 'Breakfast',
-    image: 'https://images.unsplash.com/photo-1580129990041-c858514ebd73?auto=format&fit=crop&w=400&q=80',
+    badge: 'Trending',
+    flight: 'Flight',
+    hotel: 'Luxury',
+    access: 'Step-Free',
+    image: 'https://images.unsplash.com/photo-1617581629397-a72507c3de9e?auto=format&fit=crop&w=800&q=80',
   },
   {
     title: 'Egypt Pyramids',
-    location: 'Cairo, Egypt',
-    duration: '7 Days',
-    style: 'Luxury',
-    food: 'Breakfast',
-    image: 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=400&q=80',
+    badge: "Adventurer's Choice",
+    flight: 'Flight',
+    hotel: 'Luxury',
+    access: 'Accessible Path',
+    image: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=800&q=80',
   },
   {
-    title: 'Taj Mahal Heritage',
-    location: 'Agra, India',
-    duration: '7 Days',
-    style: 'Luxury',
-    food: 'Breakfast',
-    image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=400&q=80',
+    title: 'Heritage Exploration',
+    badge: 'Popular',
+    flight: 'Flight',
+    hotel: 'Luxury',
+    access: 'Wheelchair',
+    image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
   },
   {
     title: 'Faisal Mosque',
-    location: 'Islamabad, Pakistan',
-    duration: '7 Days',
-    style: 'Luxury',
-    food: 'Breakfast',
-    image: 'https://images.unsplash.com/photo-1627839567990-256ef26e594d?auto=format&fit=crop&w=400&q=80',
+    badge: 'Architectural',
+    flight: 'Flight',
+    hotel: 'Luxury',
+    access: 'Ramp Access',
+    image: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=800&q=80',
   }
 ];
 
 export default function HotDeals() {
-  const { t } = useApp();
-
   return (
-    <section className="space-y-4 pt-2">
-      <div className="text-center space-y-1">
-        <h2 className="text-lg font-black tracking-wider text-violet-700 dark:text-violet-400 uppercase">{t('hot_deals')}</h2>
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
-          {t('hot_deals_desc')}
-        </p>
+    <div className="w-full space-y-6 pt-4">
+      {/* Secondary Sections Divider */}
+      <div className="text-center relative py-4">
+        <div aria-hidden="true" className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-[#cbc3d9]/30 dark:border-slate-800"></div>
+        </div>
+        <div className="relative flex justify-center">
+          <div className="bg-[#f8f9ff] dark:bg-[#0c0e17] px-8">
+            <h3 className="text-2xl md:text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:to-[#4ffbe6] uppercase tracking-[0.15em]">
+              HOT DEALS
+            </h3>
+            <p className="text-sm md:text-base text-[#494456] dark:text-slate-400 font-medium mt-1">
+              Pile up your savings with our verified accessible hot deals.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Hot Deals Grid */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {DEALS.map((deal, idx) => (
           <div 
             key={idx}
-            className="h-[220px] rounded-2xl overflow-hidden relative border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-end p-4 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group cursor-pointer"
+            className="relative h-[340px] rounded-[2rem] overflow-hidden group shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer border border-white/40 dark:border-slate-800 bg-slate-950 flex flex-col justify-between p-5"
           >
+            {/* Background Image - Clean and Crisp */}
             <img 
-              src={deal.image} 
               alt={deal.title} 
-              className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" 
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-108" 
+              src={deal.image}
+              loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
+            
+            {/* Subtle Gradient Overlays (preserves clear center view of the photo) */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 opacity-75 group-hover:opacity-90 transition-opacity"></div>
 
-            <div className="relative z-10 space-y-2 text-white">
+            {/* Top Bar: Badges & Features */}
+            <div className="relative z-10 flex items-center justify-between gap-2 w-full">
+              {/* Feature Pill Button */}
+              <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-bold flex items-center gap-1.5 shadow-sm">
+                <span className="material-symbols-outlined text-[13px] text-[#4ffbe6]">flight</span>
+                <span>Flight</span>
+                <span className="text-white/40">•</span>
+                <span className="material-symbols-outlined text-[13px] text-[#cfbdff]">hotel</span>
+                <span>Luxury</span>
+              </div>
+
+              {/* Badge */}
+              {deal.badge && (
+                <div className="bg-gradient-to-r from-[#2a0b5c] to-[#6d23f9] text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md shadow-md border border-white/20">
+                  {deal.badge}
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Content: Title, Accessibility Tag, & Popup Discover Button */}
+            <div className="relative z-10 space-y-2.5">
               <div>
-                <h4 className="font-extrabold text-sm">{deal.title}</h4>
+                <div className="inline-flex items-center gap-1 bg-emerald-500/30 backdrop-blur-md text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-400/30 mb-1.5">
+                  <span className="material-symbols-outlined text-[12px]">accessible</span>
+                  <span>{deal.access}</span>
+                </div>
+                <h4 className="text-xl md:text-2xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                  {deal.title}
+                </h4>
               </div>
 
-              <div className="flex flex-wrap gap-1.5 text-[8px] font-bold">
-                <span className="bg-white/15 px-2 py-0.5 rounded flex items-center gap-1">
-                  <Calendar className="h-2.5 w-2.5" />
-                  {deal.duration}
-                </span>
-                <span className="bg-white/15 px-2 py-0.5 rounded flex items-center gap-1">
-                  <Award className="h-2.5 w-2.5 text-pink-300" />
-                  {deal.style}
-                </span>
-                <span className="bg-white/15 px-2 py-0.5 rounded flex items-center gap-1">
-                  <Coffee className="h-2.5 w-2.5 text-amber-300" />
-                  {deal.food}
-                </span>
-              </div>
-
-              <button 
-                type="button"
-                className="w-full py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-[10px] font-extrabold transition-colors"
+              {/* Discover Now Pop-up Button */}
+              <Link 
+                href="/explore"
+                className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] hover:opacity-95 text-white py-2.5 rounded-xl text-xs font-black transition-all transform translate-y-2 opacity-90 group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-[1.02] shadow-lg no-underline cursor-pointer"
               >
-                {t('discover_deal')}
-              </button>
+                <span>Discover Now</span>
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </Link>
             </div>
           </div>
         ))}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

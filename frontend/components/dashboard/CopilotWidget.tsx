@@ -24,8 +24,8 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
 
   const getInitialGreeting = useCallback(() => {
     return isHindi
-      ? 'नमस्ते! मैं आपका YatraSaathi AI Travel Copilot हूँ। मैं सुलभ मार्गों (step-free routes), स्थानों और बाधा रिपोर्टों में आपकी मदद कर सकता हूँ। आज मैं आपकी कैसे सहायता कर सकता हूँ?'
-      : "Hi! I'm your YatraSaathi AI Travel Copilot. I can help you find step-free routes, accessible places, check barriers, and plan your journey. How can I help you today?";
+      ? 'नमस्ते! मैं आपका YatraMitra AI सहायता साथी हूँ। मैं सुलभ मार्गों (step-free routes), स्थानों और बाधा रिपोर्टों में आपकी मदद कर सकता हूँ। आज मैं आपकी कैसे सहायता कर सकता हूँ?'
+      : "Hi! I'm your YatraMitra AI travel assistant. I can help you find step-free routes, accessible places, check barriers, and plan your journey. How can I help you today?";
   }, [isHindi]);
 
   const [messages, setMessages] = useState<CopilotMessageData[]>([
@@ -261,10 +261,10 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-black text-slate-900 dark:text-white">
-                {t('copilot')}
+                YatraMitra
               </h2>
-              <span className="rounded-full bg-violet-100 dark:bg-violet-950/50 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-violet-700 dark:text-violet-300">
-                AI Copilot
+              <span className="rounded-full bg-purple-100 dark:bg-purple-950/50 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                YatraMitra AI
               </span>
             </div>
 

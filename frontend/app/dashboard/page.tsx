@@ -2,10 +2,20 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HotDeals from '@/components/dashboard/HotDeals';
 import TopDestinations from '@/components/dashboard/TopDestinations';
+
+const InteractiveMap = dynamic(() => import('@/components/dashboard/InteractiveMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[500px] w-full bg-slate-100 dark:bg-slate-800 animate-pulse rounded-[2rem] flex items-center justify-center text-slate-400 font-bold">
+      Loading Real Leaflet Map...
+    </div>
+  )
+});
 
 export default function Dashboard() {
   // Search Tabs State
@@ -270,144 +280,86 @@ export default function Dashboard() {
       <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 lg:px-12 py-10 space-y-16">
         {/* Hero Section */}
         <section 
-          className="relative rounded-[2.5rem] overflow-hidden bg-cover bg-center text-white p-10 lg:p-16 flex flex-col lg:flex-row items-center justify-between shadow-2xl min-h-[560px]" 
-          style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSk8YNgUrkqzXV3TzKDej_kPbF9WHLig0XjK2flJkv-1itekCByohQV2wNDxk9L1BO8od3r3iuCycw7jnyUh84X6y8G3cs63Z6OKQIrgr7nZr6PvpC0xGmGT7YUjWCpGtpVW49JYPOZtyk9HMSemnBDuYBTj07eYpoBK8A1w2P8WVka1i3MXptuoPXCc0Pjd-eqwF5K9Epgjso5bfUNL2MHiGZhRyt5oGYU_0zlhLQSd6hGbBJrtV2kg')" }}
+          className="relative rounded-[2.5rem] overflow-hidden bg-cover bg-center text-white p-8 lg:p-12 flex flex-col lg:flex-row items-center justify-between shadow-2xl min-h-[460px] border border-white/10" 
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80')" }}
         >
-          {/* Decorative Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#1a0b2e]/90 via-[#2a0b5c]/70 to-transparent z-0"></div>
-          <div className="absolute inset-0 bg-[#4800b2]/20 mix-blend-multiply z-0"></div>
-          <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none z-0"></div>
+          {/* Dark Violet Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0d071a]/95 via-[#1d0a3d]/85 to-[#0b0518]/90 z-0"></div>
+          <div className="absolute inset-0 bg-purple-950/30 mix-blend-overlay z-0"></div>
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none z-0"></div>
 
-          <div className="relative z-10 lg:w-5/12 space-y-8 animate-fade-in-up">
-            <div className="inline-flex items-center gap-2.5 bg-white/10 px-5 py-2 rounded-full border border-white/10 backdrop-blur-xl shadow-glass hover:bg-white/20 transition-colors cursor-default">
-              <span className="material-symbols-outlined text-sm text-[#4ffbe6]">explore</span>
-              <span className="text-[11px] tracking-[0.2em] uppercase text-[#4ffbe6] font-bold">
-                Hodophile&apos;s Accessible Journey
-              </span>
-            </div>
-
-            <h2 className="text-5xl lg:text-7xl font-black leading-[1.05] tracking-tighter text-white drop-shadow-2xl">
-              EXPLORE<br />BEAUTIFUL<br />WORLD WITH US
+          {/* Left Text Content */}
+          <div className="relative z-10 lg:w-5/12 space-y-6 animate-fade-in-up">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-white drop-shadow-2xl">
+              EXPLORE<br />
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#b084ff] via-[#d0a7ff] to-[#4ffbe6]">
+                BEAUTIFUL WORLD
+              </span><br />
+              WITH US
             </h2>
 
-            <p className="text-lg text-white/90 max-w-md font-medium leading-relaxed drop-shadow-md">
+            <p className="text-sm sm:text-base text-white/80 max-w-md font-medium leading-relaxed drop-shadow-md">
               &ldquo;Let us take the hassle out of travel planning, so you can focus on the adventure ahead.&rdquo;
             </p>
 
-            <div className="flex items-center gap-5 py-2">
-              <div className="flex -space-x-3">
-                <img alt="User 1" className="w-12 h-12 rounded-full border-2 border-[#4800b2] shadow-sm hover:z-10 hover:scale-110 transition-transform object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcwb1GyIlwDWo7DvLeU1BSZ1XFTu_Do4F_wRqVBiMkE8DdjCkWdMb3mjjclluUpStb04-QHIW8_1KpnSdQlEbf1zHyfSrjSYsfQtPeufqtuw66OQu1gTRUjEQojudH2H1qP6NIF_folmByiJkYGO-tOCejMFaCfgOMSWZOy9O81DMNysyhezvfgyz-STMBrV8wfN9HXjScXEp7dkZlD7fMq-ORgnwhR7IXArOJDExUXaKrTvPVPChgaA" />
-                <img alt="User 2" className="w-12 h-12 rounded-full border-2 border-[#4800b2] shadow-sm hover:z-10 hover:scale-110 transition-transform object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjaYSQpyQ0wGUITTAU7Y8QcFuAmpBLvxcukdhxAAjvq7N3Ecwp8Y5-HcCsiOBpG2FypYwCqtWs3GhimnYn2XCe_Fz5YKsLjkBexcA7n4hsCbZ6uLc_xSQ2wPGSr4butPy1n-Q8OD2M_LQkDwnvQwHQI1y0mefbfni8SSrJc2B2lMMz4kwgAXWQ_adYw8PK3Evp6BD7wXcsn5IQK5DRAcMzscrQQtlnMkyP8S4XDIpSbeG0seQNVoOZwg" />
-                <img alt="User 3" className="w-12 h-12 rounded-full border-2 border-[#4800b2] shadow-sm hover:z-10 hover:scale-110 transition-transform object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMSGHMchZ8sgvu_9NmluhEwxNxbWPbH7f-aTAf49dE81aZejPR6WqK4wi-lJx0ycIW2gbXIR56drtosmeGdiv-I9GS4QPyy_mLdEHV6gHU-F5eJnfvQSNE5A7mwWC2Wp6hi4UQ4Q0c31scc-ICtyrkx5RxRxO7bDppA4MWJd8ECsLRRApuTPXA-4pDWylL8BLPL_kIdGZymSX3M5dER62a4XrEjNlPz11O15Szq3hsYvTkZIwt_E5CZA" />
-              </div>
-              <div className="flex items-center gap-1.5 text-[#FFD700]">
-                <span className="material-symbols-outlined fill text-xl animate-[pulse_2s_ease-in-out_infinite]">star</span>
-                <span className="material-symbols-outlined fill text-xl animate-[pulse_2s_ease-in-out_infinite_0.2s]">star</span>
-                <span className="material-symbols-outlined fill text-xl animate-[pulse_2s_ease-in-out_infinite_0.4s]">star</span>
-                <span className="material-symbols-outlined fill text-xl animate-[pulse_2s_ease-in-out_infinite_0.6s]">star</span>
-                <span className="material-symbols-outlined fill text-xl animate-[pulse_2s_ease-in-out_infinite_0.8s]">star_half</span>
-              </div>
-              <span className="text-sm text-white/90 font-bold bg-black/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/10 hover:bg-black/30 transition-colors cursor-default">
-                4.9/5 • 50k+ Trips
-              </span>
-            </div>
-
-            <div className="flex flex-wrap gap-5 pt-6">
+            <div className="pt-2">
               <button 
                 onClick={() => {
                   const el = document.getElementById('search-section');
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="shimmer-btn text-base font-bold px-10 py-4 rounded-full flex items-center gap-2 hover:scale-105 transition-all shadow-glow hover:shadow-glow-lg cursor-pointer"
+                className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-xl text-sm font-black px-8 py-3 rounded-full inline-flex items-center gap-2 transition-all hover:scale-105 shadow-lg cursor-pointer"
               >
                 Discover Now
-                <span className="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </button>
-              <Link 
-                href="/plan-route" 
-                className="bg-white/10 border border-white/20 text-white text-base font-bold px-10 py-4 rounded-full flex items-center gap-2 hover:bg-white/20 hover:scale-105 transition-all backdrop-blur-xl cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[20px]">route</span>
-                Plan Route
-              </Link>
             </div>
           </div>
 
-          {/* Featured Destinations Cards */}
-          <div className="relative z-10 lg:w-7/12 flex gap-6 mt-12 lg:mt-0 overflow-x-auto pb-8 pt-4 hide-scrollbar snap-x snap-mandatory pr-8 -mr-8 pl-4 lg:pl-12">
-            {/* Card 1: Taj Mahal */}
-            <div className="shrink-0 w-[260px] h-[380px] rounded-3xl overflow-hidden relative group snap-center cursor-pointer shadow-2xl border border-white/10 hover-card animate-fade-in-up fade-in-up-stagger">
-              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Taj Mahal at sunrise" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNU9JLCPEzIJGyCWGwk36K6XDYSmhZq8ce78ErG3CBraefo2tWoksZK3pGNHmIKReoSlBCPp4G2_KLXIBufaB1V8tf01KlbBv4aBEn13XsWPy3q3NU9n3vbkBAa977IyLvl3X_63YpPCz0BakKwoTqa5QN4zNvmGfJK3zyKpj3dM9dH3znczTbs8UTvqdZOyqi3pXzP5Gn_Rp3eWq9nY5eXBk1cC_DeFrMhitDCTVvMhueoYX2YJTEmA" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 opacity-90 group-hover:opacity-100 transition-opacity"></div>
-              {/* Sign-only Accessibility Icon */}
-              <div className="absolute top-5 left-5 w-9 h-9 bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-lg" title="Wheelchair Accessible">
-                <span className="material-symbols-outlined text-[20px] text-[#4ffbe6]">accessible</span>
-              </div>
-              <div className="absolute top-5 right-5 bg-gradient-to-r from-[#2a0b5c] to-[#6d23f9] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-xl shadow-lg border border-white/20 z-20">
-                Adventurer&apos;s Choice
-              </div>
-              <div className="absolute bottom-6 left-6 right-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <p className="text-[11px] text-[#4ffbe6] uppercase tracking-[0.2em] font-bold mb-2 drop-shadow-md">India</p>
-                <h3 className="text-3xl text-white font-black tracking-tight leading-tight mb-3">Taj Mahal</h3>
-                <Link href="/explore/taj-mahal" className="block text-center w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 py-2.5 rounded-xl text-sm font-bold backdrop-blur-xl transition-colors opacity-0 group-hover:opacity-100 duration-300 delay-100 hover:shadow-glow">
-                  View Accessibility
-                </Link>
+          {/* Right Destination Cards (3 Cards + Explore More) */}
+          <div className="relative z-10 lg:w-7/12 flex items-center justify-end gap-4 mt-8 lg:mt-0 overflow-x-auto pb-4 pt-2 hide-scrollbar w-full">
+            {/* Card 1: India - Taj Mahal */}
+            <div className="shrink-0 w-[170px] sm:w-[190px] h-[270px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-xl border border-white/20 hover:scale-105 transition-all duration-300">
+              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Taj Mahal" src="https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">India</p>
+                <h4 className="text-base font-black text-white leading-tight">Taj Mahal</h4>
               </div>
             </div>
 
-            {/* Card 2: Eiffel Tower */}
-            <div className="shrink-0 w-[260px] h-[380px] rounded-3xl overflow-hidden relative group snap-center cursor-pointer shadow-2xl border border-white/10 hover-card animate-fade-in-up fade-in-up-stagger">
-              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Eiffel Tower" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9Jz6DP4u3YZzKNZsvqlflzI4fgAEi0ZhVL7ViHscoMQvsD4dWBexdc1LsS-UguijOfSIgzluQmNt0U4F-bX-b1QDpKHIh-BW9IUxBVlvFrrITPp4roQT6JzcplppuFLm3M4kjCE7gTMHH6GzLOfe7vUgIUdsxhokb-v6HyI7h0O-Srw5M-NcGsariB2wThP_4AbhPfcGmYs2gu8BWABGAIFCsC2dfvxEkmXFxdb78k7gvISI8gnCcZw" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 opacity-90 group-hover:opacity-100 transition-opacity"></div>
-              {/* Sign-only Elevator Icon */}
-              <div className="absolute top-5 left-5 w-9 h-9 bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-lg" title="Elevator Access">
-                <span className="material-symbols-outlined text-[20px] text-[#cfbdff]">elevator</span>
-              </div>
-              <div className="absolute top-5 right-5 bg-gradient-to-r from-[#2a0b5c] to-[#6d23f9] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-xl shadow-lg border border-white/20 z-20">
-                Hodophile&apos;s Pick
-              </div>
-              <div className="absolute bottom-6 left-6 right-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <p className="text-[11px] text-[#cfbdff] uppercase tracking-[0.2em] font-bold mb-2 drop-shadow-md">France</p>
-                <h3 className="text-3xl text-white font-black tracking-tight leading-tight mb-3">Eiffel Tower</h3>
-                <Link href="/explore/eiffel-tower" className="block text-center w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 py-2.5 rounded-xl text-sm font-bold backdrop-blur-xl transition-colors opacity-0 group-hover:opacity-100 duration-300 delay-100 hover:shadow-glow">
-                  View Accessibility
-                </Link>
+            {/* Card 2: France - Eiffel Tower */}
+            <div className="shrink-0 w-[170px] sm:w-[190px] h-[270px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-xl border border-white/20 hover:scale-105 transition-all duration-300">
+              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Eiffel Tower" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">France</p>
+                <h4 className="text-base font-black text-white leading-tight">Eiffel Tower</h4>
               </div>
             </div>
 
-            {/* Card 3: Cappadocia */}
-            <div className="shrink-0 w-[260px] h-[380px] rounded-3xl overflow-hidden relative group snap-center cursor-pointer shadow-2xl border border-white/10 hover-card animate-fade-in-up fade-in-up-stagger">
-              <img 
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                alt="Hot air balloons over Cappadocia, Turkey" 
-                src="https://images.unsplash.com/photo-1570939274717-7eda2999eccf?auto=format&fit=crop&w=800&q=80" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10 opacity-90 group-hover:opacity-100 transition-opacity"></div>
-              {/* Sign-only Guided Assist Icon */}
-              <div className="absolute top-5 left-5 w-9 h-9 bg-white/20 text-white rounded-full flex items-center justify-center backdrop-blur-xl border border-white/20 shadow-lg" title="Guided Assistance">
-                <span className="material-symbols-outlined text-[20px] text-[#4ffbe6]">support_agent</span>
-              </div>
-              <div className="absolute top-5 right-5 bg-gradient-to-r from-[#2a0b5c] to-[#6d23f9] text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest backdrop-blur-xl shadow-lg border border-white/20 z-20">
-                Scenic Tour
-              </div>
-              <div className="absolute bottom-6 left-6 right-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <p className="text-[11px] text-[#4ffbe6] uppercase tracking-[0.2em] font-bold mb-2 drop-shadow-md">Turkey</p>
-                <h3 className="text-3xl text-white font-black tracking-tight leading-tight mb-3">Cappadocia</h3>
-                <Link href="/explore/cappadocia" className="block text-center w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 py-2.5 rounded-xl text-sm font-bold backdrop-blur-xl transition-colors opacity-0 group-hover:opacity-100 duration-300 delay-100 hover:shadow-glow">
-                  View Accessibility
-                </Link>
+            {/* Card 3: Turkey - Cappadocia */}
+            <div className="shrink-0 w-[170px] sm:w-[190px] h-[270px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-xl border border-white/20 hover:scale-105 transition-all duration-300">
+              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Cappadocia" src="https://images.unsplash.com/photo-1570939274717-7eda2999eccf?auto=format&fit=crop&w=800&q=80" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Turkey</p>
+                <h4 className="text-base font-black text-white leading-tight">Cappadocia</h4>
               </div>
             </div>
 
-            {/* Explore More Card */}
-            <Link href="/explore" className="shrink-0 w-[140px] h-[380px] rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl flex flex-col items-center justify-center gap-4 snap-center cursor-pointer hover:bg-white/10 transition-colors shadow-inner group hover-card animate-fade-in-up fade-in-up-stagger">
-              <div className="w-16 h-16 bg-white text-[#4800b2] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-[28px]">arrow_forward</span>
+            {/* Explore More Button */}
+            <Link 
+              href="/explore" 
+              className="shrink-0 w-[110px] h-[270px] rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-xl flex flex-col items-center justify-center gap-3 cursor-pointer transition-all hover:scale-105 group text-white text-center p-3"
+            >
+              <span className="text-xs font-bold leading-tight">Explore<br />More</span>
+              <div className="w-10 h-10 rounded-full bg-indigo-600 group-hover:bg-indigo-500 flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110">
+                <span className="material-symbols-outlined text-lg">arrow_forward</span>
               </div>
-              <span className="text-sm font-bold text-white tracking-wider">Explore More</span>
             </Link>
           </div>
         </section>
+
 
         {/* Search/Filter Banner */}
         <section id="search-section" className="bg-white/95 dark:bg-[#121420]/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/60 dark:border-slate-800 relative z-20 -mt-24 mx-2 md:mx-6 lg:mx-10 p-6 lg:p-8 animate-fade-in-up transition-colors">
@@ -1191,129 +1143,49 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Center Column: Interactive Map (md:col-span-7) */}
-              <div className="md:col-span-7 min-h-[480px] md:min-h-[520px] bg-white dark:bg-[#121420] rounded-[2.5rem] border border-[#cbc3d9]/30 dark:border-slate-800 overflow-hidden relative shadow-lg animate-fade-in-up flex flex-col justify-between">
-                {/* Map Canvas Background */}
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/clean-gray-paper.png')] opacity-40"></div>
-                <div className="absolute inset-0 bg-gradient-to-b from-[#f8f9ff]/50 dark:from-[#121420]/50 to-transparent pointer-events-none"></div>
-
-                {/* SVG Map Lines & Landmarks */}
-                <div 
-                  className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out origin-center"
-                  style={{ transform: `scale(${zoom})` }}
-                >
-                  <svg className="w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1000 1000">
-                    <path d="M100 800 L400 500 L600 550 L900 200" fill="none" stroke="#e1e2e8" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"></path>
-                    <path d="M200 200 L400 500 L500 800" fill="none" stroke="#e1e2e8" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"></path>
-                    <path d="M700 800 L600 550 L800 400" fill="none" stroke="#e1e2e8" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"></path>
-                    <path d="M300 400 L600 300 L800 400" fill="none" stroke="#e1e2e8" strokeLinecap="round" strokeLinejoin="round" strokeWidth="12"></path>
-
-                    {/* Highlighted Route */}
-                    <path className="drop-shadow-lg" d="M400 500 L600 550 L900 200" fill="none" stroke="#B026FF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="20"></path>
-                    <path d="M400 500 L600 550 L900 200" fill="none" stroke="#B026FF" strokeLinecap="round" strokeLinejoin="round" strokeWidth="32" strokeOpacity="0.25"></path>
-                  </svg>
-
-                  {/* Destination Point (End Place) */}
-                  <div className="absolute top-[20%] right-[10%] flex flex-col items-center z-10 hover:scale-105 transition-transform cursor-pointer">
-                    <div className="bg-white dark:bg-slate-900 px-3 py-1 rounded-full text-[#2e7d32] text-[10px] font-black shadow-md border border-[#a5d6a7] mb-1.5 whitespace-nowrap">
-                      {routeEnd}
-                    </div>
-                    <div className="w-8 h-8 bg-[#2e7d32] rounded-full border-4 border-white shadow-xl flex items-center justify-center ring-4 ring-[#2e7d32]/20">
-                      <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-
-                  {/* Origin Point (Start Place) */}
-                  <div className="absolute top-[50%] left-[38%] flex flex-col items-center z-10 hover:scale-105 transition-transform cursor-pointer">
-                    <div className="bg-white dark:bg-slate-900 px-3 py-1 rounded-full text-[#4800b2] dark:text-[#4ffbe6] text-[10px] font-black shadow-md border border-[#cbc3d9]/40 mb-1.5 whitespace-nowrap">
-                      {routeStart}
-                    </div>
-                    <div className="w-8 h-8 bg-[#4800b2] rounded-full border-4 border-white shadow-xl flex items-center justify-center ring-4 ring-[#4800b2]/20">
-                      <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-
-                  {/* Intermediate Waypoints */}
-                  {intermediateStops.map((stop, i) => (
-                    <div 
-                      key={stop}
-                      style={{ top: `${45 + (i * 8)}%`, left: `${52 + (i * 6)}%` }}
-                      className="absolute flex flex-col items-center z-10 hover:scale-105 transition-transform cursor-pointer"
-                    >
-                      <div className="bg-violet-600 text-white px-2.5 py-0.5 rounded-full text-[9px] font-black shadow-md mb-1 whitespace-nowrap">
-                        Stop: {stop}
-                      </div>
-                      <div className="w-6 h-6 bg-violet-600 rounded-full border-2 border-white shadow-md flex items-center justify-center text-white">
-                        <span className="material-symbols-outlined text-[12px]">place</span>
-                      </div>
-                    </div>
-                  ))}
-
-                  {/* Construction Warning Marker */}
-                  <div className="absolute top-[40%] left-[50%] flex flex-col items-center z-10 hover:scale-105 transition-transform cursor-pointer">
-                    <div className="bg-white dark:bg-slate-900 px-2.5 py-1 rounded-lg text-[#ef6c00] text-[10px] font-black shadow-md border border-[#ffcc80] mb-1">
-                      Construction
-                    </div>
-                    <div className="w-7 h-7 bg-[#ef6c00] rounded-full border-2 border-white shadow-md flex items-center justify-center text-white ring-2 ring-[#ef6c00]/20 animate-pulse">
-                      <span className="material-symbols-outlined text-[14px]">warning</span>
-                    </div>
-                  </div>
-
-                  {/* Accessibility Markers */}
-                  <div className="absolute top-[30%] left-[70%] w-9 h-9 bg-white/90 dark:bg-slate-800 backdrop-blur-md rounded-xl shadow-md flex items-center justify-center text-[#4800b2] dark:text-[#4ffbe6] border border-[#cbc3d9]/30 z-10 hover:scale-110 transition-all cursor-pointer">
-                    <span className="material-symbols-outlined text-lg">elevator</span>
-                  </div>
-                  <div className="absolute top-[60%] right-[30%] w-9 h-9 bg-white/90 dark:bg-slate-800 backdrop-blur-md rounded-xl shadow-md flex items-center justify-center text-[#2e7d32] border border-[#cbc3d9]/30 z-10 hover:scale-110 transition-all cursor-pointer">
-                    <span className="material-symbols-outlined text-lg">accessible</span>
-                  </div>
-                </div>
-
-                {/* Map UI Overlay: Zoom Buttons (Top-Right) */}
-                <div className="absolute top-4 right-4 flex flex-col gap-2 z-20">
-                  <button 
-                    onClick={() => setZoom(prev => Math.min(prev + 0.2, 2.0))}
-                    title="Zoom in"
-                    className="w-9 h-9 bg-white/95 dark:bg-slate-800 backdrop-blur-md rounded-xl shadow-md border border-[#cbc3d9]/30 flex items-center justify-center text-slate-800 dark:text-white hover:bg-violet-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base">add</span>
-                  </button>
-                  <button 
-                    onClick={() => setZoom(prev => Math.max(prev - 0.2, 0.8))}
-                    title="Zoom out"
-                    className="w-9 h-9 bg-white/95 dark:bg-slate-800 backdrop-blur-md rounded-xl shadow-md border border-[#cbc3d9]/30 flex items-center justify-center text-slate-800 dark:text-white hover:bg-violet-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base">remove</span>
-                  </button>
-                </div>
-
-                {/* Map Legend at the BOTTOM */}
-                <div className="mt-auto m-3 bg-white/95 dark:bg-[#1a1d2e]/95 backdrop-blur-xl px-4 py-3 rounded-2xl shadow-xl border border-white/80 dark:border-slate-700 flex flex-wrap items-center justify-between z-20 gap-2">
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold text-slate-800 dark:text-slate-200">
+              {/* Center Column: Real Interactive Map (md:col-span-7) */}
+              <div className="md:col-span-7 min-h-[500px] md:min-h-[560px] bg-white dark:bg-[#121420] rounded-[2rem] border border-slate-200 dark:border-slate-800 overflow-hidden relative shadow-md animate-fade-in-up flex flex-col justify-between p-2">
+                <InteractiveMap 
+                  origin={{ lat: 28.6129, lng: 77.2295 }}
+                  destination={{ lat: 28.5535, lng: 77.2588 }}
+                  routeGeometry={[
+                    { lat: 28.6129, lng: 77.2295 },
+                    { lat: 28.5933, lng: 77.2507 },
+                    { lat: 28.5535, lng: 77.2588 }
+                  ]}
+                />
+                
+                {/* Reference-Matching Map Legend Bar at the Bottom */}
+                <div className="mt-2 bg-white/95 dark:bg-[#1a1d2e]/95 backdrop-blur-xl px-5 py-2 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between z-20">
+                  <div className="flex items-center gap-4 text-xs font-bold text-slate-700 dark:text-slate-300">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-[#2e7d32] shadow-sm"></div>
+                      <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full inline-block"></span>
                       <span>High Access</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-[#ff9800] shadow-sm"></div>
+                      <span className="w-2.5 h-2.5 bg-amber-500 rounded-full inline-block"></span>
                       <span>Medium</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded-full bg-[#ef5350] border border-[#ffcdd2] shadow-sm"></div>
+                      <span className="w-2.5 h-2.5 bg-red-500 rounded-full inline-block"></span>
                       <span>Barrier</span>
                     </div>
-                    <div className="flex items-center gap-1 border-l border-[#cbc3d9]/40 dark:border-slate-700 pl-2">
-                      <span className="material-symbols-outlined text-sm text-[#00bcd4]">info</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 bg-blue-500 rounded-full inline-block"></span>
                       <span>Assistance</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => setZoom(1)}
-                    className="text-[#4800b2] dark:text-[#4ffbe6] text-[10px] font-black uppercase flex items-center gap-1 hover:underline bg-[#4800b2]/5 dark:bg-slate-800 px-3 py-1 rounded-full transition-colors cursor-pointer"
+
+                  <Link 
+                    href="/plan-route"
+                    className="text-[#6d23f9] hover:underline text-[11px] font-black uppercase tracking-wider flex items-center gap-1"
                   >
-                    <span className="material-symbols-outlined text-sm">layers</span> Interactive Map
-                  </button>
+                    <span className="material-symbols-outlined text-sm">explore</span>
+                    INTERACTIVE MAP
+                  </Link>
                 </div>
               </div>
+
             </div>
 
             {/* ACCESSIBILITY SNAPSHOT Card (Fills the blank space seamlessly!) */}

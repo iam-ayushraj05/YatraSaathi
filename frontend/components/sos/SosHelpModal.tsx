@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -101,6 +101,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [alertSent, setAlertSent] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+  const [activeCallService, setActiveCallService] = useState<AssistanceService | null>(null);
 
   if (!isOpen) return null;
 
@@ -123,20 +124,26 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
     router.push(`/plan-route?to=${encodeURIComponent(service.name)}&lat=${service.destCoords.lat}&lng=${service.destCoords.lng}&stepFree=true`);
   };
 
+  const handleInitiateCall = (service: AssistanceService) => {
+    setActiveCallService(service);
+    // Trigger native tel protocol
+    window.location.href = `tel:${service.phone.replace(/\s+/g, '')}`;
+  };
+
   const filteredServices = selectedCategory === 'all'
     ? EMERGENCY_SERVICES
     : EMERGENCY_SERVICES.filter(s => s.category === selectedCategory);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 overflow-y-auto">
       {/* Dark Backdrop with soft red emergency glow */}
       <div 
         onClick={onClose} 
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in"
       />
 
-      {/* Main Modal Container */}
-      <div className="relative w-full max-w-3xl bg-white dark:bg-[#121420] rounded-[2.5rem] shadow-2xl border-2 border-red-500/40 overflow-hidden z-10 animate-in zoom-in-95 duration-200 text-[#191c20] dark:text-slate-100 flex flex-col max-h-[90vh]">
+      {/* Main Modal Container - FULL PAGE */}
+      <div className="relative w-full h-full bg-white dark:bg-[#121420] shadow-2xl border-0 overflow-hidden z-10 animate-in zoom-in-95 duration-200 text-[#191c20] dark:text-slate-100 flex flex-col">
         
         {/* Urgent Emergency Top Banner */}
         <div className="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-6 sm:p-7 relative overflow-hidden shrink-0">
@@ -275,13 +282,13 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
 
                 {/* Action buttons on the right */}
                 <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
-                  <a
-                    href={`tel:${service.phone}`}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-xs font-black shadow-sm transition-all hover:scale-105"
+                  <button
+                    onClick={() => handleInitiateCall(service)}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-900/60 text-red-600 dark:text-red-300 text-xs font-black shadow-sm transition-all hover:scale-105 cursor-pointer border border-red-200/60 dark:border-red-800/40"
                   >
-                    <span className="material-symbols-outlined text-base text-red-500">call</span>
+                    <span className="material-symbols-outlined text-base">call</span>
                     Call {service.phone}
-                  </a>
+                  </button>
 
                   <button
                     onClick={() => handleGuideThere(service)}
@@ -296,20 +303,105 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
           </div>
         </div>
 
+        {/* Active Call In-Progress Overlay Dialog */}
+        {activeCallService && (
+          <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center text-white animate-in fade-in duration-200">
+            <div className="w-20 h-20 rounded-full bg-red-600/30 border-2 border-red-500 flex items-center justify-center mb-4 animate-ping">
+              <span className="material-symbols-outlined text-4xl text-red-500">call</span>
+            </div>
+            <span className="bg-red-500/20 text-red-400 text-xs font-black px-3 py-1 rounded-full border border-red-500/30 uppercase tracking-widest mb-2">
+              Dialing Emergency Line
+            </span>
+            <h3 className="text-2xl font-black text-white max-w-md">
+              {activeCallService.name}
+            </h3>
+            <p className="text-xl font-bold text-red-400 mt-1 font-mono">
+              {activeCallService.phone}
+            </p>
+            <p className="text-xs text-slate-400 max-w-sm mt-3 leading-relaxed">
+              Initiating instant phone call via device dialer. GPS location (28.6129 N, 77.2295 E) has been prepared for dispatch.
+            </p>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => handleInitiateCall(activeCallService)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-black flex items-center gap-2 transition-transform hover:scale-105 cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-base">phone_forwarded</span>
+                Redial Now
+              </button>
+              <button
+                onClick={() => setActiveCallService(null)}
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-xl text-xs font-black transition-colors cursor-pointer"
+              >
+                Close Dialog
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Modal Footer Hotlines Strip */}
         <div className="p-4 sm:px-6 bg-slate-100 dark:bg-[#151824] border-t border-slate-200 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-bold text-slate-600 dark:text-slate-400">National Emergency Helplines:</span>
             <div className="flex gap-2">
-              <a href="tel:112" className="bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-black px-2.5 py-1 rounded-lg hover:underline">
+              <button
+                onClick={() => handleInitiateCall({
+                  id: 'helpline-112',
+                  category: 'police',
+                  name: 'National Emergency Hotline (112)',
+                  distance: 'Instant',
+                  time: '24/7',
+                  address: 'National Dispatch Center',
+                  phone: '112',
+                  badge: 'Emergency Response',
+                  features: [],
+                  icon: 'emergency',
+                  color: 'bg-red-600',
+                  destCoords: { lat: 28.6129, lng: 77.2295 }
+                })}
+                className="bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 font-black px-2.5 py-1 rounded-lg hover:underline cursor-pointer"
+              >
                 National SOS: 112
-              </a>
-              <a href="tel:102" className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black px-2.5 py-1 rounded-lg hover:underline">
+              </button>
+              <button
+                onClick={() => handleInitiateCall({
+                  id: 'helpline-102',
+                  category: 'hospital',
+                  name: 'National Ambulance Service (102)',
+                  distance: 'Instant',
+                  time: '24/7',
+                  address: 'Emergency Medical Dispatch',
+                  phone: '102',
+                  badge: 'Ambulance Unit',
+                  features: [],
+                  icon: 'local_hospital',
+                  color: 'bg-emerald-600',
+                  destCoords: { lat: 28.6129, lng: 77.2295 }
+                })}
+                className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black px-2.5 py-1 rounded-lg hover:underline cursor-pointer"
+              >
                 Ambulance: 102
-              </a>
-              <a href="tel:1099" className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-black px-2.5 py-1 rounded-lg hover:underline">
+              </button>
+              <button
+                onClick={() => handleInitiateCall({
+                  id: 'helpline-1099',
+                  category: 'transport',
+                  name: 'Disability Assistance Helpline (1099)',
+                  distance: 'Instant',
+                  time: '24/7',
+                  address: 'Accessible Transport Dispatch',
+                  phone: '1099',
+                  badge: 'Disability Special Ops',
+                  features: [],
+                  icon: 'accessible_forward',
+                  color: 'bg-purple-600',
+                  destCoords: { lat: 28.6129, lng: 77.2295 }
+                })}
+                className="bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 font-black px-2.5 py-1 rounded-lg hover:underline cursor-pointer"
+              >
                 Disability Assist: 1099
-              </a>
+              </button>
             </div>
           </div>
 

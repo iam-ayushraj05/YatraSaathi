@@ -8,7 +8,6 @@ import {
   Send, 
   CheckCircle2
 } from 'lucide-react';
-import Sidebar from '../../components/layout/Sidebar';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import { useApp } from '../../context/AppContext';
@@ -16,7 +15,6 @@ import { api } from '../../lib/api';
 
 export default function Reports() {
   const { t, language } = useApp();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [desc, setDesc] = useState('');
   const [reportType, setReportType] = useState('BARRIER');
@@ -60,13 +58,10 @@ export default function Reports() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8F7FC] dark:bg-slate-950 transition-colors">
-      <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+    <div className="flex flex-col min-h-screen bg-[#F8F7FC] dark:bg-[#0c0e17] transition-colors">
+      <Header />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
-
-        <main className="flex-1 overflow-y-auto px-6 py-8 space-y-8">
+      <main className="flex-1 px-6 py-8 space-y-8 max-w-7xl mx-auto w-full">
           
           <div className="max-w-2xl mx-auto space-y-6">
             <div>
@@ -239,7 +234,6 @@ export default function Reports() {
         </main>
 
         <Footer />
-      </div>
     </div>
   );
 }

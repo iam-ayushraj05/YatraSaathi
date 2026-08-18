@@ -2,38 +2,35 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { Calendar, Hotel, Utensils } from 'lucide-react';
 
 const DEALS = [
   {
-    title: 'White House Tour',
-    badge: 'Trending',
-    flight: 'Flight',
+    title: 'White House',
+    days: '7 Days',
     hotel: 'Luxury',
-    access: 'Step-Free',
+    meal: 'Breakfast',
     image: 'https://images.unsplash.com/photo-1617581629397-a72507c3de9e?auto=format&fit=crop&w=800&q=80',
   },
   {
     title: 'Egypt Pyramids',
-    badge: "Adventurer's Choice",
-    flight: 'Flight',
+    days: '7 Days',
     hotel: 'Luxury',
-    access: 'Accessible Path',
+    meal: 'Breakfast',
     image: 'https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto=format&fit=crop&w=800&q=80',
   },
   {
-    title: 'Heritage Exploration',
-    badge: 'Popular',
-    flight: 'Flight',
+    title: 'Taj Mahal',
+    days: '7 Days',
     hotel: 'Luxury',
-    access: 'Wheelchair',
+    meal: 'Breakfast',
     image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
   },
   {
     title: 'Faisal Mosque',
-    badge: 'Architectural',
-    flight: 'Flight',
+    days: '7 Days',
     hotel: 'Luxury',
-    access: 'Ramp Access',
+    meal: 'Breakfast',
     image: 'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=800&q=80',
   }
 ];
@@ -41,79 +38,66 @@ const DEALS = [
 export default function HotDeals() {
   return (
     <div className="w-full space-y-6 pt-4">
-      {/* Secondary Sections Divider */}
-      <div className="text-center relative py-4">
-        <div aria-hidden="true" className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-[#cbc3d9]/30 dark:border-slate-800"></div>
-        </div>
-        <div className="relative flex justify-center">
-          <div className="bg-[#f8f9ff] dark:bg-[#0c0e17] px-8">
-            <h3 className="text-2xl md:text-3xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:to-[#4ffbe6] uppercase tracking-[0.15em]">
-              HOT DEALS
-            </h3>
-            <p className="text-sm md:text-base text-[#494456] dark:text-slate-400 font-medium mt-1">
-              Pile up your savings with our verified accessible hot deals.
-            </p>
-          </div>
-        </div>
+      {/* Title */}
+      <div className="text-center space-y-1">
+        <h3 className="text-2xl md:text-3xl font-black tracking-tight text-purple-900 dark:text-purple-300 uppercase tracking-[0.15em]">
+          HOT DEALS
+        </h3>
+        <p className="text-xs md:text-sm text-slate-500 font-medium">
+          Pile up your savings with our hot deals
+        </p>
       </div>
 
-      {/* Hot Deals Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Hot Deals Grid matching reference image */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {DEALS.map((deal, idx) => (
           <div 
             key={idx}
-            className="relative h-[340px] rounded-[2rem] overflow-hidden group shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer border border-white/40 dark:border-slate-800 bg-slate-950 flex flex-col justify-between p-5"
+            className="relative h-[290px] rounded-3xl overflow-hidden group shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer border border-slate-200/50 dark:border-slate-800 bg-slate-900 flex flex-col justify-between p-4"
           >
-            {/* Background Image - Clean and Crisp */}
+            {/* Background Image */}
             <img 
               alt={deal.title} 
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-108" 
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
               src={deal.image}
               loading="lazy"
             />
             
-            {/* Subtle Gradient Overlays (preserves clear center view of the photo) */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/85 opacity-75 group-hover:opacity-90 transition-opacity"></div>
+            {/* Dark Scrim */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/40"></div>
 
-            {/* Top Bar: Badges & Features */}
-            <div className="relative z-10 flex items-center justify-between gap-2 w-full">
-              {/* Feature Pill Button */}
-              <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20 text-white text-[10px] font-bold flex items-center gap-1.5 shadow-sm">
-                <span className="material-symbols-outlined text-[13px] text-[#4ffbe6]">flight</span>
-                <span>Flight</span>
-                <span className="text-white/40">•</span>
-                <span className="material-symbols-outlined text-[13px] text-[#cfbdff]">hotel</span>
-                <span>Luxury</span>
-              </div>
+            <div className="relative z-10"></div>
 
-              {/* Badge */}
-              {deal.badge && (
-                <div className="bg-gradient-to-r from-[#2a0b5c] to-[#6d23f9] text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md shadow-md border border-white/20">
-                  {deal.badge}
-                </div>
-              )}
-            </div>
-
-            {/* Bottom Content: Title, Accessibility Tag, & Popup Discover Button */}
-            <div className="relative z-10 space-y-2.5">
+            {/* Bottom Content Area */}
+            <div className="relative z-10 space-y-3">
               <div>
-                <div className="inline-flex items-center gap-1 bg-emerald-500/30 backdrop-blur-md text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-400/30 mb-1.5">
-                  <span className="material-symbols-outlined text-[12px]">accessible</span>
-                  <span>{deal.access}</span>
-                </div>
-                <h4 className="text-xl md:text-2xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                <h4 className="text-lg font-black text-white leading-tight">
                   {deal.title}
                 </h4>
+                
+                {/* 3 Spec Icons */}
+                <div className="flex items-center gap-3 text-[10px] font-bold text-white/90 mt-1.5">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3 text-purple-300" />
+                    {deal.days}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Hotel className="h-3 w-3 text-purple-300" />
+                    {deal.hotel}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Utensils className="h-3 w-3 text-purple-300" />
+                    {deal.meal}
+                  </span>
+                </div>
               </div>
 
-              {/* Discover Now Pop-up Button */}
+              {/* White Pill Discover Now Button */}
               <Link 
                 href="/explore"
-                className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] hover:opacity-95 text-white py-2.5 rounded-xl text-xs font-black transition-all transform translate-y-2 opacity-90 group-hover:translate-y-0 group-hover:opacity-100 group-hover:scale-[1.02] shadow-lg no-underline cursor-pointer"
+                className="flex items-center justify-center w-full bg-white hover:bg-slate-100 text-purple-900 py-2 rounded-full text-xs font-black transition-all shadow-md cursor-pointer no-underline"
               >
-                <span>Discover Now</span>
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                Discover Now
               </Link>
             </div>
           </div>

@@ -31,23 +31,28 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
     ...options.headers,
   };
 
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
-    headers,
-  });
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-  if (!response.ok) {
-    let errorDetail = 'API request failed';
-    try {
-      const errJson = await response.json();
-      errorDetail = errJson.detail || errJson.message || errorDetail;
-    } catch (_) {}
-    throw new Error(errorDetail);
+    if (!response.ok) {
+      let errorDetail = 'API request failed';
+      try {
+        const errJson = await response.json();
+        errorDetail = errJson.detail || errJson.message || errorDetail;
+      } catch (_) {}
+      throw new Error(errorDetail);
+    }
+
+    const wrapper = await response.json();
+    return (wrapper && wrapper.data !== undefined ? wrapper.data : wrapper) as T;
+  } catch (err: any) {
+    // If backend endpoint fails or network error occurs, log and handle gracefully
+    console.warn(`[API] Endpoint call ${endpoint} failed:`, err.message || err);
+    throw err;
   }
-
-  const wrapper = await response.json();
-  // Unwrap standard backend ResponseWrapper
-  return (wrapper && wrapper.data !== undefined ? wrapper.data : wrapper) as T;
 }
 
 export const api = {

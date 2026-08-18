@@ -27,13 +27,13 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
   const NAV_ITEMS = [
     { label: language === 'HI' ? 'डैशबोर्ड' : 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: language === 'HI' ? 'स्थान खोजें...' : 'Explore Pl...', href: '/explore', icon: Compass },
+    { label: language === 'HI' ? 'स्थान खोजें' : 'Explore Places', href: '/explore', icon: Compass },
     { label: language === 'HI' ? 'मार्ग योजना' : 'Plan Route', href: '/plan-route', icon: Map },
     { label: language === 'HI' ? 'यात्रा विवरण' : 'Itineraries', href: '/itineraries', icon: FileText },
-    { label: language === 'HI' ? 'रिपोर्ट' : 'Reports', href: '/reports', icon: TriangleAlert },
+    { label: language === 'HI' ? 'बाधा रिपोर्ट' : 'Report Barrier', href: '/reports', icon: TriangleAlert },
     { label: language === 'HI' ? 'समुदाय' : 'Community', href: '/community', icon: Users },
-    { label: language === 'HI' ? 'ट्रैवल कोपायलट' : 'Tra...', href: '/copilot', icon: Sparkles, badge: 'NEW' },
-    { label: language === 'HI' ? 'सुलभता...' : 'Accessibilit...', href: '/accessibility-profile', icon: Accessibility },
+    { label: language === 'HI' ? 'यात्रा मित्र AI' : 'YatraMitra', href: '/copilot', icon: Sparkles, badge: 'NEW' },
+    { label: language === 'HI' ? 'सुलभता प्रोफ़ाइल' : 'Accessibility Profile', href: '/accessibility-profile', icon: Accessibility },
   ];
 
   const isActive = (href: string) => {
@@ -108,7 +108,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                   className={`
                     flex items-center justify-between px-3 py-2 rounded-xl text-[12px] font-bold transition-all duration-150
                     ${active 
-                      ? 'bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300' 
+                      ? 'bg-purple-50 dark:bg-purple-950/40 text-[#6B21A8] dark:text-purple-300 font-extrabold' 
                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-slate-200'
                     }
                   `}

@@ -36,6 +36,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
     { label: 'Explore', href: '/explore' },
     { label: 'Plan Route', href: '/plan-route' },
     { label: 'Itineraries', href: '/itineraries' },
+    { label: 'Reports', href: '/reports' },
     { label: 'Community', href: '/community' },
   ];
 
@@ -79,13 +80,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right Controls */}
         <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-          {/* Travel Copilot Button */}
+          {/* YatraMitra AI Button */}
           <Link
             href="/copilot"
             className="flex items-center gap-1.5 bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] hover:opacity-90 text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-md hover:scale-105 transition-all shrink-0 cursor-pointer whitespace-nowrap"
           >
             <span className="material-symbols-outlined text-base">smart_toy</span>
-            <span className="hidden sm:inline">Travel Copilot</span>
+            <span className="hidden sm:inline">YatraMitra AI</span>
           </Link>
 
           {/* SOS Help Button (Triggers Comprehensive SOS Modal) */}
@@ -161,6 +162,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
                   <p className="text-xs font-bold text-[#191c20] dark:text-slate-100">Aarav Sharma</p>
                   <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.email || 'aarav@yatrasaathi.in'}</p>
                 </div>
+                <Link 
+                  href="/reports"
+                  onClick={() => setProfileOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-base">report_problem</span>
+                  Barrier Reports
+                </Link>
                 <Link 
                   href="/accessibility-profile"
                   onClick={() => setProfileOpen(false)}

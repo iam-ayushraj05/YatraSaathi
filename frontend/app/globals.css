@@ -5,35 +5,35 @@
 /* ─── Design Tokens ──────────────────────────────────────────────────── */
 :root {
   --violet-50:  #f5f3ff;
-  --violet-100: #ede9fe;
-  --violet-200: #ddd6fe;
-  --violet-300: #c4b5fd;
-  --violet-400: #a78bfa;
-  --violet-500: #8b5cf6;
-  --violet-600: #7c3aed;
-  --violet-700: #6d28d9;
-  --violet-800: #5b21b6;
-  --violet-900: #4c1d95;
+  --violet-100: #e8ddff;
+  --violet-200: #d0a7ff;
+  --violet-300: #b084ff;
+  --violet-400: #8f52ff;
+  --violet-500: #7c3aed;
+  --violet-600: #6d23f9;
+  --violet-700: #5b1bd9;
+  --violet-800: #4800b2;
+  --violet-900: #2a0b5c;
 
   --emerald-500: #10b981;
   --amber-500:   #f59e0b;
   --rose-500:    #ef4444;
 
-  --body-bg:  #fcfbfc;
+  --body-bg:  #f6f4fe;
   --card-bg:  #ffffff;
-  --border:   #e2e8f0;
-  --charcoal: #0f172a;
+  --border:   #e2d9f7;
+  --charcoal: #191c20;
 
   --background: var(--body-bg);
   --foreground: var(--charcoal);
 }
 
 .dark {
-  --body-bg:  #0c0e17;
-  --card-bg:  #121420;
-  --border:   #1e293b;
+  --body-bg:  #0d071a;
+  --card-bg:  #130c24;
+  --border:   #27134d;
   --charcoal: #f8fafc;
-  --background: #0c0e17;
+  --background: #0d071a;
   --foreground: #f8fafc;
 }
 

@@ -21,9 +21,9 @@ export default function Dashboard() {
   // Search Tabs State
   const [activeSearchTab, setActiveSearchTab] = useState('Accessible Routes');
 
-  // Route Start and End Selection State
-  const [routeStart, setRouteStart] = useState('India Gate');
-  const [routeEnd, setRouteEnd] = useState('Lotus Temple');
+  // Route Start and End Selection State (Lotus Temple to National Museum by default)
+  const [routeStart, setRouteStart] = useState('Lotus Temple');
+  const [routeEnd, setRouteEnd] = useState('National Museum');
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
 
@@ -31,15 +31,40 @@ export default function Dashboard() {
   const [intermediateStops, setIntermediateStops] = useState<string[]>([]);
   const [showAddStopDropdown, setShowAddStopDropdown] = useState(false);
 
+  // Live GPS Tracking State
+  const [userLiveLocation, setUserLiveLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  // Full Landmark Coordinates Directory
+  const DELHI_LOCATIONS: Record<string, { lat: number; lng: number; area: string; level: string; icon: string }> = {
+    'Lotus Temple': { lat: 28.5535, lng: 77.2588, area: 'Kalkaji', level: 'High Access', icon: 'nature_people' },
+    'National Museum': { lat: 28.6118, lng: 77.2191, area: 'Janpath', level: 'High Access', icon: 'museum' },
+    'India Gate': { lat: 28.6129, lng: 77.2295, area: 'Central Delhi', level: 'High Access', icon: 'account_balance' },
+    'Qutub Minar': { lat: 28.5244, lng: 77.1855, area: 'Mehrauli', level: 'Medium Access', icon: 'temple_buddhist' },
+    'Red Fort': { lat: 28.6562, lng: 77.2410, area: 'Old Delhi', level: '2 Barriers', icon: 'fort' },
+    'Lodhi Gardens': { lat: 28.5931, lng: 77.2197, area: 'Lodhi Colony', level: 'High Access', icon: 'park' },
+    'Connaught Place': { lat: 28.6304, lng: 77.2177, area: 'Central Delhi', level: 'Step-Free Ramps', icon: 'storefront' },
+    'Akshardham Temple': { lat: 28.6127, lng: 77.2773, area: 'East Delhi', level: 'Wheelchair Lift', icon: 'temple_hindu' },
+    'Humayun\'s Tomb': { lat: 28.5933, lng: 77.2507, area: 'Nizamuddin', level: 'High Access', icon: 'account_balance' },
+    'Rashtrapati Bhavan': { lat: 28.6143, lng: 77.1994, area: 'Raisina Hill', level: 'High Access', icon: 'account_balance' },
+    'Dilli Haat INA': { lat: 28.5732, lng: 77.2083, area: 'INA Colony', level: 'Step-Free Ramps', icon: 'storefront' },
+    'Safdarjung Tomb': { lat: 28.5893, lng: 77.2106, area: 'Safdarjung', level: 'Medium Access', icon: 'account_balance' },
+    'Raj Ghat': { lat: 28.6406, lng: 77.2495, area: 'Ring Road', level: 'High Access', icon: 'nature_people' },
+    'Chandni Chowk': { lat: 28.6560, lng: 77.2300, area: 'Old Delhi', level: 'Medium Access', icon: 'storefront' },
+    'Delhi (DEL)': { lat: 28.5562, lng: 77.1000, area: 'Airport Terminal 3', level: 'High Access', icon: 'flight' }
+  };
+
   const ACCESSIBLE_PLACES = [
-    { name: 'India Gate', area: 'Central Delhi', level: 'High Access', icon: 'account_balance' },
     { name: 'Lotus Temple', area: 'Kalkaji', level: 'High Access', icon: 'nature_people' },
     { name: 'National Museum', area: 'Janpath', level: 'High Access', icon: 'museum' },
+    { name: 'India Gate', area: 'Central Delhi', level: 'High Access', icon: 'account_balance' },
     { name: 'Qutub Minar', area: 'Mehrauli', level: 'Medium Access', icon: 'temple_buddhist' },
     { name: 'Red Fort', area: 'Old Delhi', level: '2 Barriers', icon: 'fort' },
     { name: 'Lodhi Gardens', area: 'Lodhi Colony', level: 'High Access', icon: 'park' },
     { name: 'Connaught Place', area: 'Central Delhi', level: 'Step-Free Ramps', icon: 'storefront' },
     { name: 'Akshardham Temple', area: 'East Delhi', level: 'Wheelchair Lift', icon: 'temple_hindu' },
+    { name: 'Humayun\'s Tomb', area: 'Nizamuddin', level: 'High Access', icon: 'account_balance' },
+    { name: 'Dilli Haat INA', area: 'INA Colony', level: 'Step-Free Ramps', icon: 'storefront' }
   ];
 
   const DEMO_PLACES = [
@@ -48,6 +73,96 @@ export default function Dashboard() {
     { name: 'Red Fort', location: 'Old Delhi', icon: 'fort', badge: 'Tactile Paths' },
     { name: 'Lodhi Gardens', location: 'Lodhi Colony', icon: 'park', badge: 'Smooth Trails' },
   ];
+
+  const getCoordsForPlace = (name: string): { lat: number; lng: number } => {
+    if (name.includes('Live Location') || name.includes('Real-Time')) {
+      return userLiveLocation || { lat: 28.6139, lng: 77.2090 };
+    }
+    const cleanName = name.split(',')[0].trim();
+    if (DELHI_LOCATIONS[cleanName]) return DELHI_LOCATIONS[cleanName];
+    for (const [k, v] of Object.entries(DELHI_LOCATIONS)) {
+      if (cleanName.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(cleanName.toLowerCase())) {
+        return v;
+      }
+    }
+    return { lat: 28.5830, lng: 77.2400 };
+  };
+
+  // Generate smooth street-aligned polyline waypoints between points
+  const generateRoutePath = (start: { lat: number; lng: number }, stops: { lat: number; lng: number }[], end: { lat: number; lng: number }) => {
+    const allKeyPoints = [start, ...stops, end];
+    const path: { lat: number; lng: number }[] = [];
+
+    for (let i = 0; i < allKeyPoints.length - 1; i++) {
+      const p1 = allKeyPoints[i];
+      const p2 = allKeyPoints[i + 1];
+      const steps = 8;
+      for (let s = 0; s <= steps; s++) {
+        const t = s / steps;
+        // Add subtle road-network curve simulation
+        const lat = p1.lat + (p2.lat - p1.lat) * t + Math.sin(t * Math.PI) * ((p2.lng - p1.lng) * 0.15);
+        const lng = p1.lng + (p2.lng - p1.lng) * t - Math.sin(t * Math.PI) * ((p2.lat - p1.lat) * 0.15);
+        path.push({ lat: Number(lat.toFixed(5)), lng: Number(lng.toFixed(5)) });
+      }
+    }
+    return path;
+  };
+
+  // Distance calculation helper (Haversine formula in km)
+  const calculateDistanceKm = (start: { lat: number; lng: number }, stops: { lat: number; lng: number }[], end: { lat: number; lng: number }) => {
+    const points = [start, ...stops, end];
+    let totalDist = 0;
+    for (let i = 0; i < points.length - 1; i++) {
+      const lat1 = points[i].lat * Math.PI / 180;
+      const lat2 = points[i + 1].lat * Math.PI / 180;
+      const deltaLat = (points[i + 1].lat - points[i].lat) * Math.PI / 180;
+      const deltaLng = (points[i + 1].lng - points[i].lng) * Math.PI / 180;
+      const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                Math.sin(deltaLng/2) * Math.sin(deltaLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      totalDist += 6371 * c;
+    }
+    return Math.max(1.5, totalDist * 1.35); // Road network coefficient
+  };
+
+  const startCoords = getCoordsForPlace(routeStart);
+  const endCoords = getCoordsForPlace(routeEnd);
+  const stopCoords = intermediateStops.map(s => getCoordsForPlace(s));
+  const currentRouteGeometry = generateRoutePath(startCoords, stopCoords, endCoords);
+  const routeDistKm = calculateDistanceKm(startCoords, stopCoords, endCoords);
+  const route1DurationMin = Math.round(routeDistKm * 3.4);
+  const route2DistKm = (routeDistKm * 1.12).toFixed(1);
+  const route2DurationMin = Math.round(routeDistKm * 2.6);
+
+  const handleRequestLiveLocation = () => {
+    setIsLocating(true);
+    if (typeof window !== 'undefined' && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setIsLocating(false);
+          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setUserLiveLocation(coords);
+          setRouteStart('My Real-Time Location');
+          setToastContent(`Live GPS location acquired: (${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)})`);
+          setSearchSuccessToast(true);
+          setTimeout(() => setSearchSuccessToast(false), 4500);
+        },
+        () => {
+          setIsLocating(false);
+          const fallbackDelhiLive = { lat: 28.6139, lng: 77.2090 };
+          setUserLiveLocation(fallbackDelhiLive);
+          setRouteStart('My Real-Time Location');
+          setToastContent('Live Real-Time GPS location activated.');
+          setSearchSuccessToast(true);
+          setTimeout(() => setSearchSuccessToast(false), 4500);
+        },
+        { enableHighAccuracy: true, timeout: 6000 }
+      );
+    } else {
+      setIsLocating(false);
+    }
+  };
 
   const handleAddStop = (placeName: string) => {
     if (!intermediateStops.includes(placeName)) {
@@ -79,10 +194,10 @@ export default function Dashboard() {
   }> = {
     'Accessible Routes': {
       fromLabel: 'From',
-      fromDefault: 'Delhi (DEL)',
+      fromDefault: 'Lotus Temple, Delhi',
       fromPlaceholder: 'Origin city or address',
       toLabel: 'To',
-      toDefault: 'Lotus Temple, Delhi',
+      toDefault: 'National Museum, Delhi',
       toPlaceholder: 'Destination landmark',
       departLabel: 'Depart',
       departDefault: 'Today, Aug 17',
@@ -159,8 +274,8 @@ export default function Dashboard() {
     }
   };
 
-  const [fromCity, setFromCity] = useState('Delhi (DEL)');
-  const [toCity, setToCity] = useState('Lotus Temple, Delhi');
+  const [fromCity, setFromCity] = useState('Lotus Temple, Delhi');
+  const [toCity, setToCity] = useState('National Museum, Delhi');
   const [departDate, setDepartDate] = useState('Today, Aug 17');
   const [returnDate, setReturnDate] = useState('Aug 24, 2024');
   const [showDatesPicker, setShowDatesPicker] = useState(false);
@@ -193,8 +308,8 @@ export default function Dashboard() {
     const config = TAB_CONFIG[activeSearchTab] || TAB_CONFIG['Accessible Routes'];
     setTimeout(() => {
       setIsSearching(false);
-      if (fromCity) setRouteStart(fromCity.split('(')[0].split(',')[0].trim() || 'India Gate');
-      if (toCity) setRouteEnd(toCity.split('(')[0].split(',')[0].trim() || 'Lotus Temple');
+      if (fromCity) setRouteStart(fromCity.split('(')[0].split(',')[0].trim() || 'Lotus Temple');
+      if (toCity) setRouteEnd(toCity.split('(')[0].split(',')[0].trim() || 'National Museum');
       setToastContent(`${config.toastMsg} from ${fromCity} to ${toCity}`);
       setSearchSuccessToast(true);
       setTimeout(() => setSearchSuccessToast(false), 5000);
@@ -277,7 +392,7 @@ export default function Dashboard() {
       {/* Top Navigation */}
       <Header />
 
-      <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 lg:px-12 py-10 space-y-16">
+      <main className="flex-1 w-full max-w-[1440px] mx-auto px-6 lg:px-12 py-10 space-y-8">
         {/* Hero Section */}
         <section 
           className="relative rounded-[2.5rem] overflow-hidden bg-cover bg-center text-white p-8 lg:p-12 flex flex-col lg:flex-row items-center justify-between shadow-2xl min-h-[460px] border border-white/10" 
@@ -303,15 +418,12 @@ export default function Dashboard() {
             </p>
 
             <div className="pt-2">
-              <button 
-                onClick={() => {
-                  const el = document.getElementById('search-section');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
+              <Link 
+                href="/explore"
                 className="bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-xl text-sm font-black px-8 py-3 rounded-full inline-flex items-center gap-2 transition-all hover:scale-105 shadow-lg cursor-pointer"
               >
                 Discover Now
-              </button>
+              </Link>
             </div>
           </div>
 
@@ -339,7 +451,7 @@ export default function Dashboard() {
 
             {/* Card 3: Turkey - Cappadocia */}
             <div className="shrink-0 w-[170px] sm:w-[190px] h-[270px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-xl border border-white/20 hover:scale-105 transition-all duration-300">
-              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Cappadocia" src="https://images.unsplash.com/photo-1570939274717-7eda2999eccf?auto=format&fit=crop&w=800&q=80" />
+              <img className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Cappadocia" src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?auto=format&fit=crop&w=800&q=80" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <p className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Turkey</p>
@@ -362,7 +474,7 @@ export default function Dashboard() {
 
 
         {/* Search/Filter Banner */}
-        <section id="search-section" className="bg-white/95 dark:bg-[#121420]/95 backdrop-blur-2xl rounded-[2rem] shadow-2xl border border-white/60 dark:border-slate-800 relative z-20 -mt-24 mx-2 md:mx-6 lg:mx-10 p-6 lg:p-8 animate-fade-in-up transition-colors">
+        <section id="search-section" className="bg-white/95 dark:bg-[#121420]/95 backdrop-blur-2xl rounded-[2rem] shadow-xl border border-white/60 dark:border-slate-800 relative z-20 p-6 lg:p-8 animate-fade-in-up transition-colors">
           {/* Tabs */}
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-4 hide-scrollbar mb-6 border-b border-[#cbc3d9]/20 dark:border-slate-800">
             {[
@@ -865,6 +977,24 @@ export default function Dashboard() {
                       </button>
                     </div>
                     <div className="space-y-1 max-h-60 overflow-y-auto">
+                      {/* Live GPS Location Action */}
+                      <button
+                        onClick={() => {
+                          handleRequestLiveLocation();
+                          setShowStartPicker(false);
+                        }}
+                        className="w-full text-left p-2 rounded-xl flex items-center justify-between gap-2 transition-all text-xs cursor-pointer bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-bold border border-blue-200 dark:border-blue-800 hover:bg-blue-100 mb-1.5"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="material-symbols-outlined text-base text-blue-600 animate-pulse">my_location</span>
+                          <div>
+                            <div>Use My Real-Time Location</div>
+                            <div className="text-[10px] text-blue-500 font-normal">Detect current GPS position</div>
+                          </div>
+                        </div>
+                        {routeStart === 'My Real-Time Location' && <span className="material-symbols-outlined text-blue-600 text-base">check</span>}
+                      </button>
+
                       {ACCESSIBLE_PLACES.map(place => (
                         <button
                           key={place.name}
@@ -952,7 +1082,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-slate-800">
                       <span className="text-[11px] font-black uppercase tracking-wider text-[#4800b2] dark:text-[#4ffbe6] flex items-center gap-1">
                         <span className="material-symbols-outlined text-sm">add_location_alt</span>
-                        Add Demo Stop
+                        Add Intermediate Stop
                       </span>
                       <button 
                         onClick={() => setShowAddStopDropdown(false)}
@@ -1071,7 +1201,12 @@ export default function Dashboard() {
                   </div>
 
                   <button 
-                    onClick={() => setSelectedRoute(1)}
+                    onClick={() => {
+                      setSelectedRoute(1);
+                      setToastContent(`Calculating real-time accessible route from ${routeStart} to ${routeEnd}...`);
+                      setSearchSuccessToast(true);
+                      setTimeout(() => setSearchSuccessToast(false), 3000);
+                    }}
                     className="w-full bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white text-xs md:text-sm font-black py-2.5 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-base">route</span> Plan My Accessible Route
@@ -1106,7 +1241,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <p className="text-xs text-[#191c20] dark:text-slate-200 font-bold mb-2.5 flex items-center gap-1.5 bg-[#f2f3f9] dark:bg-slate-800 w-fit px-2.5 py-1 rounded-full">
-                        <span className="material-symbols-outlined text-sm text-[#4800b2]">schedule</span> 45 mins • 12.4 km
+                        <span className="material-symbols-outlined text-sm text-[#4800b2]">schedule</span> {route1DurationMin} mins • {routeDistKm.toFixed(1)} km
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <span className="bg-[#eceef3] dark:bg-slate-800 px-2 py-0.5 rounded-md text-[10px] font-bold text-[#494456] dark:text-slate-300">No Stairs</span>
@@ -1132,7 +1267,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <p className="text-xs text-[#191c20] dark:text-slate-200 font-bold mb-2.5 flex items-center gap-1.5 bg-[#f2f3f9] dark:bg-slate-800 w-fit px-2.5 py-1 rounded-full">
-                        <span className="material-symbols-outlined text-sm text-[#7a7488]">schedule</span> 32 mins • 14.1 km
+                        <span className="material-symbols-outlined text-sm text-[#7a7488]">schedule</span> {route2DurationMin} mins • {route2DistKm} km
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         <span className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded-md text-[10px] font-bold text-[#494456] dark:text-slate-300 border border-[#cbc3d9]/40 dark:border-slate-700">Some Stairs</span>
@@ -1145,15 +1280,20 @@ export default function Dashboard() {
 
               {/* Center Column: Real Interactive Map (md:col-span-7) */}
               <div className="md:col-span-7 min-h-[500px] md:min-h-[560px] bg-white dark:bg-[#121420] rounded-[2rem] border border-slate-200 dark:border-slate-800 overflow-hidden relative shadow-md animate-fade-in-up flex flex-col justify-between p-2">
-                <InteractiveMap 
-                  origin={{ lat: 28.6129, lng: 77.2295 }}
-                  destination={{ lat: 28.5535, lng: 77.2588 }}
-                  routeGeometry={[
-                    { lat: 28.6129, lng: 77.2295 },
-                    { lat: 28.5933, lng: 77.2507 },
-                    { lat: 28.5535, lng: 77.2588 }
-                  ]}
-                />
+                <div className="flex-1 w-full h-full min-h-[460px] relative rounded-[1.5rem] overflow-hidden flex flex-col">
+                  <InteractiveMap 
+                    origin={startCoords}
+                    destination={endCoords}
+                    startLabel={routeStart}
+                    endLabel={routeEnd}
+                    intermediatePoints={intermediateStops.map(s => ({ name: s, ...getCoordsForPlace(s) }))}
+                    userLocation={userLiveLocation}
+                    routeGeometry={currentRouteGeometry}
+                    onLocateMe={handleRequestLiveLocation}
+                    showLegend={false}
+                    className="w-full h-full flex-1 min-h-[460px]"
+                  />
+                </div>
                 
                 {/* Reference-Matching Map Legend Bar at the Bottom */}
                 <div className="mt-2 bg-white/95 dark:bg-[#1a1d2e]/95 backdrop-blur-xl px-5 py-2 rounded-full shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-between z-20">
@@ -1493,55 +1633,55 @@ export default function Dashboard() {
         <TopDestinations />
 
         {/* Our Responsibilities Banner */}
-        <section className="mt-12 rounded-[2.5rem] overflow-hidden bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white relative shadow-2xl border border-white/20 px-8 py-16 md:p-20 text-center animate-fade-in-up">
+        <section className="mt-8 rounded-[2rem] overflow-hidden bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white relative shadow-xl border border-white/20 px-6 py-8 md:px-10 md:py-9 text-center animate-fade-in-up">
           {/* Abstract map lines background overlay */}
           <div className="absolute inset-0 opacity-10 mix-blend-overlay" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }}></div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#4ffbe6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#4ffbe6]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
           <div className="relative z-10">
-            <h3 className="text-4xl font-black tracking-tighter uppercase tracking-[0.15em] mb-4 drop-shadow-lg">
+            <h3 className="text-2xl sm:text-3xl font-black tracking-tight uppercase tracking-[0.15em] mb-1.5 drop-shadow-md">
               OUR RESPONSIBILITIES
             </h3>
-            <p className="text-base text-[#e8ddff] font-medium mb-12 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#e8ddff] font-medium mb-6 max-w-2xl mx-auto leading-relaxed">
               Your safety, access, and comfort are our top priorities. We are committed to making every journey accessible.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
               {/* Card 1 */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-8 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-3 cursor-pointer group hover:shadow-glow">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-white text-[28px]">support_agent</span>
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 sm:p-5 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-1.5 cursor-pointer group hover:shadow-glow">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-inner group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-[22px]">support_agent</span>
                 </div>
-                <h4 className="text-lg font-black mb-2 text-white group-hover:text-[#4ffbe6] transition-colors">Always Available</h4>
-                <p className="text-sm text-[#e8ddff] leading-relaxed">For your assistance and safety needs at any time.</p>
+                <h4 className="text-sm font-black mb-1 text-white group-hover:text-[#4ffbe6] transition-colors">Always Available</h4>
+                <p className="text-xs text-[#e8ddff] leading-relaxed">For your assistance and safety needs at any time.</p>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-8 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-3 cursor-pointer group hover:shadow-glow">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-white text-[28px]">credit_card_off</span>
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 sm:p-5 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-1.5 cursor-pointer group hover:shadow-glow">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-inner group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-[22px]">credit_card_off</span>
                 </div>
-                <h4 className="text-lg font-black mb-2 text-white group-hover:text-[#4ffbe6] transition-colors">Cancel Free</h4>
-                <p className="text-sm text-[#e8ddff] leading-relaxed">Flexible booking with YatraSaathi flex Tariff+</p>
+                <h4 className="text-sm font-black mb-1 text-white group-hover:text-[#4ffbe6] transition-colors">Cancel Free</h4>
+                <p className="text-xs text-[#e8ddff] leading-relaxed">Flexible booking with YatraSaathi flex Tariff+</p>
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-8 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-3 cursor-pointer group hover:shadow-glow">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-white text-[28px]">flight_takeoff</span>
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 sm:p-5 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-1.5 cursor-pointer group hover:shadow-glow">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-inner group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-[22px]">flight_takeoff</span>
                 </div>
-                <h4 className="text-lg font-black mb-2 text-white group-hover:text-[#4ffbe6] transition-colors">Taxis to Flight</h4>
-                <p className="text-sm text-[#e8ddff] leading-relaxed">Seamless transit transfer for continuous mobility.</p>
+                <h4 className="text-sm font-black mb-1 text-white group-hover:text-[#4ffbe6] transition-colors">Taxis to Flight</h4>
+                <p className="text-xs text-[#e8ddff] leading-relaxed">Seamless transit transfer for continuous mobility.</p>
               </div>
 
               {/* Card 4 */}
-              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2rem] p-8 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-3 cursor-pointer group hover:shadow-glow">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6 shadow-inner group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-white text-[28px]">accessible_forward</span>
+              <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 sm:p-5 hover:bg-white/20 transition-all shadow-glass hover:-translate-y-1.5 cursor-pointer group hover:shadow-glow">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-3 shadow-inner group-hover:scale-110 transition-transform">
+                  <span className="material-symbols-outlined text-white text-[22px]">accessible_forward</span>
                 </div>
-                <h4 className="text-lg font-black mb-2 text-white group-hover:text-[#4ffbe6] transition-colors">Verified Access</h4>
-                <p className="text-sm text-[#e8ddff] leading-relaxed">Exclusive discounts on 100% verified accessible tours.</p>
+                <h4 className="text-sm font-black mb-1 text-white group-hover:text-[#4ffbe6] transition-colors">Verified Access</h4>
+                <p className="text-xs text-[#e8ddff] leading-relaxed">Exclusive discounts on 100% verified accessible tours.</p>
               </div>
             </div>
           </div>

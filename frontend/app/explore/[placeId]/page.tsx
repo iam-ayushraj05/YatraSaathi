@@ -15,19 +15,19 @@ import { api } from '../../../lib/api';
 import { PlaceDetails } from '../../../lib/types';
 
 const PLACE_IMAGES: Record<string, string> = {
-  'Qutub Minar': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
-  'Qutub Minar Complex': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
-  'Red Fort': 'https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=1200&q=80',
-  'India Gate': 'https://images.unsplash.com/photo-1597040663342-45b6ba68fa2b?auto=format&fit=crop&w=1200&q=80',
-  "Humayun's Tomb": 'https://images.unsplash.com/photo-1585135497273-1a86d9d25c2e?auto=format&fit=crop&w=1200&q=80',
-  'Lotus Temple': 'https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?auto=format&fit=crop&w=1200&q=80',
-  'National Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=1200&q=80',
-  'Connaught Place': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
-  'Lodhi Gardens': 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1200&q=80',
-  'Jantar Mantar': 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80',
-  'Akshardham Temple': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80',
+  'Lotus Temple': '/images/places/lotus-temple.jpg',
+  'Qutub Minar': 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=1200&q=80',
+  'Qutub Minar Complex': 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=1200&q=80',
+  'Red Fort': '/images/places/red-fort.jpg',
+  'India Gate': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
+  "Humayun's Tomb": 'https://images.unsplash.com/photo-1598324789736-4861f89564a0?auto=format&fit=crop&w=1200&q=80',
+  'National Museum': '/images/places/national-museum.jpg',
+  'Connaught Place': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=1200&q=80',
+  'Lodhi Gardens': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80',
+  'Akshardham Temple': '/images/places/akshardham.jpg',
+  'Jantar Mantar': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80',
 };
-const DEFAULT_IMG = 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80';
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80';
 
 export default function PlaceDetailsPage() {
   const params = useParams();

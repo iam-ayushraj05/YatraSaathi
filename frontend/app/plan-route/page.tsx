@@ -19,6 +19,8 @@ function PlanRouteContent() {
   const [routeData, setRouteData] = useState<{
     origin: Coordinate;
     destination: Coordinate;
+    startLabel?: string;
+    endLabel?: string;
     routes: any[];
   } | null>(null);
 
@@ -26,56 +28,6 @@ function PlanRouteContent() {
   const activeRoute = routeData ? routeData.routes[selectedRouteIdx] : null;
 
   const toName = searchParams.get('to') || undefined;
-
-  useEffect(() => {
-    const latStr = searchParams.get('lat');
-    const lngStr = searchParams.get('lng');
-
-    const destLat = latStr ? parseFloat(latStr) : 28.5535;
-    const destLng = lngStr ? parseFloat(lngStr) : 77.2588;
-
-    const defaultOrigin: Coordinate = { lat: 28.6129, lng: 77.2295 }; // India Gate
-    const destCoord: Coordinate = { lat: destLat, lng: destLng };
-
-    api.routes.plan({
-      origin: defaultOrigin,
-      destination: destCoord,
-      preferences: {
-        avoid_stairs: true,
-        prefer_step_free: true,
-        prefer_elevators: true
-      }
-    }).then(res => {
-      setRouteData({
-        origin: defaultOrigin,
-        destination: destCoord,
-        routes: res.routes
-      });
-    }).catch(err => {
-      console.warn('Auto route planning fallback:', err);
-      // Fallback demo route so the interactive map and UI remain fully functional
-      setRouteData({
-        origin: defaultOrigin,
-        destination: destCoord,
-        routes: [
-          {
-            id: 'demo-r1',
-            total_distance_meters: 15200,
-            total_duration_seconds: 1080,
-            suitability_score: 85,
-            step_free: true,
-            path: [
-              { lat: 28.6129, lng: 77.2295 },
-              { lat: 28.5835, lng: 77.2400 },
-              { lat: 28.5535, lng: 77.2588 }
-            ],
-            barriers_encountered_count: 0,
-            warnings: []
-          }
-        ]
-      });
-    });
-  }, [searchParams]);
 
   return (
     <div className="flex min-h-screen bg-[#fcfbfc] dark:bg-[#0c0e17] transition-colors">
@@ -104,7 +56,10 @@ function PlanRouteContent() {
             <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
               <RoutePlanner 
                 initialTo={toName}
-                onRoutePlanned={(data) => { setRouteData(data); setSelectedRouteIdx(0); }} 
+                onRoutePlanned={(data) => { 
+                  setRouteData(data); 
+                  setSelectedRouteIdx(0); 
+                }} 
               />
               
               <RecommendedRoutes 
@@ -115,11 +70,15 @@ function PlanRouteContent() {
             </div>
 
             {/* Right Column: Full Interactive Map */}
-            <div className="lg:col-span-7 flex flex-col h-full min-h-[500px]">
+            <div className="lg:col-span-7 flex flex-col h-full min-h-[550px]">
               <InteractiveMap 
-                origin={routeData?.origin}
-                destination={routeData?.destination}
-                routeGeometry={activeRoute?.geometry || null}
+                origin={routeData?.origin || { lat: 28.5535, lng: 77.2588 }}
+                destination={routeData?.destination || { lat: 28.6118, lng: 77.2191 }}
+                startLabel={routeData?.startLabel || 'Lotus Temple'}
+                endLabel={routeData?.endLabel || 'National Museum'}
+                routeGeometry={activeRoute?.geometry || activeRoute?.path || null}
+                showLegend={true}
+                className="w-full h-full flex-1 min-h-[550px]"
               />
             </div>
           </div>

@@ -10,7 +10,7 @@ interface SosHelpModalProps {
 
 interface AssistanceService {
   id: string;
-  category: 'hospital' | 'pharmacy' | 'police' | 'transport' | 'contact';
+  category: 'hospital' | 'pharmacy' | 'police' | 'transport' | 'contact' | 'human_help';
   name: string;
   distance: string;
   time: string;
@@ -24,6 +24,48 @@ interface AssistanceService {
 }
 
 const EMERGENCY_SERVICES: AssistanceService[] = [
+  {
+    id: 'human-1',
+    category: 'human_help',
+    name: 'YatraSaathi 24/7 Live Human Concierge & Dispatcher',
+    distance: 'Instant Connect',
+    time: '< 10s',
+    address: 'Dedicated Accessibility Emergency Helpline',
+    phone: '1800-11-2024',
+    badge: 'Live Human Agent (24x7)',
+    features: ['Instant Voice/Video Support', 'Indian Sign Language (ISL) Agent', 'Real-time GPS Coordinate Relaying', 'On-Ground Volunteer Dispatch'],
+    icon: 'headset_mic',
+    color: 'bg-emerald-600',
+    destCoords: { lat: 28.6129, lng: 77.2295 }
+  },
+  {
+    id: 'human-2',
+    category: 'human_help',
+    name: 'Rohan Verma (Certified Accessibility Volunteer)',
+    distance: '120 m away (Janpath Crossing)',
+    time: '2 mins arrival',
+    address: 'On-Ground Verified Helper • ID #YS-8821',
+    phone: '+91 98112 34567',
+    badge: 'Nearby Volunteer Guide',
+    features: ['Wheelchair Push & Transfer', 'Sight Guide Certified', 'First-Aid Trained', 'English & Hindi Fluent'],
+    icon: 'volunteer_activism',
+    color: 'bg-indigo-600',
+    destCoords: { lat: 28.6135, lng: 77.2280 }
+  },
+  {
+    id: 'human-3',
+    category: 'human_help',
+    name: 'Delhi Metro (DMRC) Human Disability Sarthi',
+    distance: '350 m away',
+    time: '3 mins arrival',
+    address: 'Central Secretariat Metro Station, Gate 3',
+    phone: '155370',
+    badge: 'Station Human Attendant',
+    features: ['Platform to Coach Personal Escort', 'Motorized Wheelchair Sarthi', 'Free DMRC Accessibility Service'],
+    icon: 'accessible_forward',
+    color: 'bg-teal-600',
+    destCoords: { lat: 28.6150, lng: 77.2110 }
+  },
   {
     id: 'hosp-1',
     category: 'hospital',
@@ -207,6 +249,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
         <div className="p-4 sm:px-6 bg-slate-50 dark:bg-[#161826] border-b border-slate-200 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto shrink-0 hide-scrollbar">
           {[
             { id: 'all', label: 'All Services', icon: 'apps' },
+            { id: 'human_help', label: 'Human & Volunteer Help', icon: 'volunteer_activism' },
             { id: 'hospital', label: 'Hospitals', icon: 'local_hospital' },
             { id: 'pharmacy', label: 'Pharmacies', icon: 'local_pharmacy' },
             { id: 'police', label: 'Police Stations', icon: 'local_police' },
@@ -230,9 +273,75 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
 
         {/* Emergency Assistance List */}
         <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
-          <div className="flex justify-between items-center mb-1">
+          
+          {/* Live Human Assistance Emergency Hub Banner */}
+          <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white shadow-lg border border-white/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-60 h-60 bg-white/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 px-3 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-emerald-400/30">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                  Real Human Operator Active
+                </div>
+                <h4 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-2xl text-[#4ffbe6]">volunteer_activism</span>
+                  Need Real Human Assistance?
+                </h4>
+                <p className="text-xs text-violet-100 max-w-xl leading-relaxed">
+                  Speak directly with an accessibility officer, request a live sign language (ISL) video interpreter, or call a verified volunteer to your exact GPS location.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2.5 w-full md:w-auto shrink-0">
+                <button
+                  onClick={() => handleInitiateCall({
+                    id: 'human-dispatcher',
+                    category: 'human_help',
+                    name: 'YatraSaathi 24/7 Human Dispatcher',
+                    distance: 'Instant Connect',
+                    time: '< 10s',
+                    address: 'Toll-Free 24x7 Live Helpline',
+                    phone: '1800-11-2024',
+                    badge: 'Live Human Agent',
+                    features: ['Voice / Video ISL Support'],
+                    icon: 'headset_mic',
+                    color: 'bg-emerald-600',
+                    destCoords: { lat: 28.6129, lng: 77.2295 }
+                  })}
+                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-white hover:bg-violet-50 text-[#4800b2] px-4 py-2.5 rounded-2xl text-xs font-black shadow-md hover:scale-105 transition-all cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base">call</span>
+                  1-Tap Call Human Operator
+                </button>
+
+                <button
+                  onClick={() => handleInitiateCall({
+                    id: 'human-volunteer',
+                    category: 'human_help',
+                    name: 'Rohan Verma (Nearest Volunteer Guide)',
+                    distance: '120m away',
+                    time: '2 mins arrival',
+                    address: 'On-Ground Verified Helper • ID #YS-8821',
+                    phone: '+91 98112 34567',
+                    badge: 'Nearby Volunteer Guide',
+                    features: ['Wheelchair Push & Transfer', 'Sight Guide Certified'],
+                    icon: 'volunteer_activism',
+                    color: 'bg-indigo-600',
+                    destCoords: { lat: 28.6135, lng: 77.2280 }
+                  })}
+                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-xs font-black shadow-md hover:scale-105 transition-all cursor-pointer border border-emerald-400/40"
+                >
+                  <span className="material-symbols-outlined text-base">person_pin_circle</span>
+                  Call Nearby Volunteer
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center mb-1 pt-2">
             <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
-              Nearest Verified Assistance Points ({filteredServices.length})
+              Verified Emergency & Human Support Points ({filteredServices.length})
             </h4>
             <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Step-Free Verified
@@ -382,6 +491,25 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
                 className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black px-2.5 py-1 rounded-lg hover:underline cursor-pointer"
               >
                 Ambulance: 102
+              </button>
+              <button
+                onClick={() => handleInitiateCall({
+                  id: 'helpline-human',
+                  category: 'human_help',
+                  name: 'YatraSaathi Human Concierge (1800-11-2024)',
+                  distance: 'Instant',
+                  time: '24/7',
+                  address: 'Live Accessibility Concierge',
+                  phone: '1800-11-2024',
+                  badge: 'Human Operator',
+                  features: [],
+                  icon: 'headset_mic',
+                  color: 'bg-emerald-600',
+                  destCoords: { lat: 28.6129, lng: 77.2295 }
+                })}
+                className="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black px-2.5 py-1 rounded-lg hover:underline cursor-pointer"
+              >
+                Human Help: 1800-11-2024
               </button>
               <button
                 onClick={() => handleInitiateCall({

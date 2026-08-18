@@ -3,14 +3,21 @@
 import React from 'react';
 import Link from 'next/link';
 
-const DESTINATIONS = [
+interface Destination {
+  country: string;
+  name: string;
+  image: string;
+  gridClass: string;
+  showDesc?: boolean;
+  desc?: string;
+}
+
+const DESTINATIONS: Destination[] = [
   {
-    country: 'PAKISTAN',
-    name: 'Hiran Minar',
-    desc: 'Hiran Minar is a historical monument in Sheikhupura, Punjab, built by Mughal Emperor Jahangir.',
-    image: 'https://images.unsplash.com/photo-1589982424006-258dc788939c?auto=format&fit=crop&w=800&q=80',
-    gridClass: 'md:col-span-1 md:row-span-2 min-h-[340px] md:min-h-[460px]',
-    showDesc: true
+    country: 'UAE',
+    name: 'Burj Khalifa',
+    image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+    gridClass: 'md:col-span-1 md:row-span-2 min-h-[340px] md:min-h-[460px]'
   },
   {
     country: 'INDIA',
@@ -34,12 +41,6 @@ const DESTINATIONS = [
     country: 'FRANCE',
     name: 'Eiffel Tower',
     image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80',
-    gridClass: 'md:col-span-1 min-h-[220px]'
-  },
-  {
-    country: 'CANADA',
-    name: 'Gooderham Building',
-    image: 'https://images.unsplash.com/photo-1517935703635-27c737826572?auto=format&fit=crop&w=800&q=80',
     gridClass: 'md:col-span-1 min-h-[220px]'
   }
 ];

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { 
-  Wheelchair, 
+  Accessibility, 
   Eye, 
   Ear, 
   UserCheck, 
@@ -28,7 +28,7 @@ export default function ProfileWidget() {
   };
 
   const items = [
-    { key: 'wheelchair', label: 'Wheelchair User', icon: Wheelchair },
+    { key: 'wheelchair', label: 'Wheelchair User', icon: Accessibility },
     { key: 'lowVision', label: 'Low Vision', icon: Eye },
     { key: 'hearingImpaired', label: 'Hearing Impaired', icon: Ear },
     { key: 'needAssistant', label: 'Need Assistant', icon: UserCheck },

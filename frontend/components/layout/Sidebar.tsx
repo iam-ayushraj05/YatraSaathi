@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
@@ -15,6 +16,7 @@ import {
   X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import appLogo from '../../public/app-logo.png';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -66,20 +68,26 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       >
         <div className="flex flex-col">
           {/* Logo Header */}
-          <div className="flex items-center justify-between mb-5 pl-1">
+          <div className="flex items-center justify-between mb-5 pl-0">
             <Link 
               href="/dashboard" 
               onClick={() => setIsOpen(false)} 
-              className="flex items-center gap-2.5 group no-underline"
+              className="flex items-center gap-1.5 group no-underline"
             >
-              <div className="w-8 h-8 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-sm shadow-violet-200 group-hover:scale-105 transition-transform shrink-0">
-                <Accessibility className="w-5 h-5 text-white stroke-[2.5]" />
+              <div className="relative w-11 h-11 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.25)]">
+                <Image
+                  src={appLogo}
+                  alt="YatraSaathi Logo"
+                  width={44}
+                  height={44}
+                  className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+                />
               </div>
-              <div className="flex flex-col">
-                <span className="text-[14px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
+              <div className="flex flex-col -ml-1">
+                <span className="text-[15px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
                   YatraSaathi
                 </span>
-                <span className="text-[7.5px] font-black text-violet-600 dark:text-violet-400 tracking-wider uppercase mt-1 leading-none">
+                <span className="text-[8px] font-black text-violet-600 dark:text-violet-400 tracking-wider uppercase mt-1 leading-none">
                   ACCESSIBLE JOURNEYS FOR ALL
                 </span>
               </div>

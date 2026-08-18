@@ -187,7 +187,7 @@ export default function Itineraries() {
             status: 'ACTIVE',
             created_at: '',
             updated_at: '',
-            accessibility_summary: { level: 'HIGH', verified: true, active_barriers_count: 0 }
+            accessibility_summary: { level: 'HIGH' as const, verified: true, active_barriers_count: 0 }
           }
         },
         ...(stopName2.trim() ? [{
@@ -207,7 +207,7 @@ export default function Itineraries() {
             status: 'ACTIVE',
             created_at: '',
             updated_at: '',
-            accessibility_summary: { level: 'HIGH', verified: true, active_barriers_count: 0 }
+            accessibility_summary: { level: 'HIGH' as const, verified: true, active_barriers_count: 0 }
           }
         }] : [])
       ]

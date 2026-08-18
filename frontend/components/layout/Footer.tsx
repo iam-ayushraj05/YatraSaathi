@@ -2,7 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useApp } from '../../context/AppContext';
+import appLogo from '../../public/app-logo.png';
 
 export default function Footer() {
   const { t } = useApp();
@@ -13,15 +15,21 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand Column */}
           <div className="space-y-5">
-            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer group no-underline">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] flex items-center justify-center text-white font-bold shadow-lg transition-transform group-hover:scale-105 group-hover:rotate-3 shrink-0">
-                <span className="material-symbols-outlined fill text-2xl">accessibility_new</span>
+            <Link href="/dashboard" className="flex items-center gap-2.5 cursor-pointer group no-underline">
+              <div className="relative w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 drop-shadow-[0_4px_20px_rgba(72,0,178,0.28)]">
+                <Image
+                  src={appLogo}
+                  alt="YatraSaathi Logo"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+                />
               </div>
-              <div>
-                <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:via-[#b084ff] dark:to-[#4ffbe6] leading-none transition-colors">
+              <div className="-ml-1.5">
+                <h2 className="text-2xl lg:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:via-[#b084ff] dark:to-[#4ffbe6] leading-none transition-colors">
                   YatraSaathi
                 </h2>
-                <p className="text-[9px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-80 leading-none mt-1 tracking-[0.2em] font-bold">
+                <p className="text-[10px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-85 leading-none mt-1.5 tracking-[0.22em] font-bold">
                   ACCESSIBLE JOURNEYS
                 </p>
               </div>
@@ -135,10 +143,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-[#cbc3d9]/30 dark:border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-          <p>© 2026 YatraSaathi. All rights reserved.</p>
-          <p className="flex items-center gap-1.5 font-medium">
-            Made with <span className="material-symbols-outlined text-[15px] text-red-500 fill">favorite</span> for accessible travel.
+        <div className="border-t border-[#cbc3d9]/30 dark:border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-700 dark:text-slate-200 font-bold">
+          <p className="font-bold tracking-wide">© 2026 YatraSaathi. All rights reserved.</p>
+          <p className="flex items-center gap-1.5 font-bold tracking-wide">
+            Made with <span className="material-symbols-outlined text-[16px] text-red-500 fill animate-pulse">favorite</span> for accessible travel.
           </p>
         </div>
       </div>

@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '../../context/AppContext';
 import { api } from '../../lib/api';
 import SosHelpModal from '../sos/SosHelpModal';
+import appLogo from '../../public/app-logo.png';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -42,17 +44,24 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between w-full px-4 lg:px-8 py-3 glass-panel sticky top-0 z-50 shadow-sm transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/90 dark:bg-[#121420]/90 backdrop-blur-xl gap-3">
+      <header className="flex items-center justify-between w-full pl-3 lg:pl-5 pr-4 lg:pr-7 py-2.5 glass-panel sticky top-0 z-50 shadow-sm transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/90 dark:bg-[#121420]/90 backdrop-blur-xl gap-3">
         {/* Left: Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2.5 cursor-pointer group no-underline shrink-0">
-          <div className="w-10 h-10 lg:w-11 lg:h-11 rounded-2xl bg-gradient-to-br from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] flex items-center justify-center text-white shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 shrink-0">
-            <span className="material-symbols-outlined fill text-2xl">accessibility_new</span>
+        <Link href="/dashboard" className="flex items-center gap-1.5 cursor-pointer group no-underline shrink-0 -ml-1">
+          <div className="relative w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_16px_rgba(72,0,178,0.25)]">
+            <Image
+              src={appLogo}
+              alt="YatraSaathi Logo"
+              width={64}
+              height={64}
+              className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+              priority
+            />
           </div>
-          <div className="shrink-0">
+          <div className="shrink-0 -ml-1.5">
             <h1 className="text-xl lg:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:via-[#b084ff] dark:to-[#4ffbe6] leading-none transition-colors duration-300">
               YatraSaathi
             </h1>
-            <p className="text-[9px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-80 leading-none mt-1 tracking-[0.18em] font-bold">
+            <p className="text-[9.5px] lg:text-[10px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-85 leading-none mt-1 tracking-[0.2em] font-bold">
               Accessible Journeys
             </p>
           </div>

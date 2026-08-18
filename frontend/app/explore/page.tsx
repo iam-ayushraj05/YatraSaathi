@@ -9,24 +9,26 @@ import { api } from '../../lib/api';
 import { Place } from '../../lib/types';
 
 const PLACE_IMAGES: Record<string, string> = {
-  'Qutub Minar': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=600&q=80',
-  'Red Fort': 'https://images.unsplash.com/photo-1598091383021-15ddea10925d?auto=format&fit=crop&w=600&q=80',
-  'India Gate': 'https://images.unsplash.com/photo-1597040663342-45b6ba68fa2b?auto=format&fit=crop&w=800&q=80',
-  "Humayun's Tomb": 'https://images.unsplash.com/photo-1585135497273-1a86d9d25c2e?auto=format&fit=crop&w=600&q=80',
-  'Lotus Temple': 'https://images.unsplash.com/photo-1622547748225-3fc4abd2cca0?auto=format&fit=crop&w=600&q=80',
-  'National Museum': 'https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=600&q=80',
-  'Connaught Place': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=600&q=80',
-  'Lodhi Gardens': 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=600&q=80',
+  'Lotus Temple': '/images/places/lotus-temple.jpg',
+  'Akshardham Temple': '/images/places/akshardham.jpg',
+  'Red Fort': '/images/places/red-fort.jpg',
+  'India Gate': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80',
+  "Humayun's Tomb": 'https://images.unsplash.com/photo-1598324789736-4861f89564a0?auto=format&fit=crop&w=800&q=80',
+  'National Museum': '/images/places/national-museum.jpg',
+  'Connaught Place': 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80',
+  'Lodhi Gardens': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80',
+  'Qutub Minar': 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=800&q=80',
+  'Jantar Mantar': 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80',
 };
 
-const DEFAULT_IMG = 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=600&q=80';
+const DEFAULT_IMG = 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80';
 
 const FALLBACK_PLACES: Place[] = [
   { id:'p1', name:'India Gate', category:'Monument', country:'India', city:'New Delhi', location:{lat:28.6129,lng:77.2295}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'HIGH',verified:true,active_barriers_count:0} },
   { id:'p2', name:'Lotus Temple', category:'Monument', country:'India', city:'New Delhi', location:{lat:28.5535,lng:77.2588}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'HIGH',verified:true,active_barriers_count:0} },
   { id:'p3', name:'Red Fort', category:'Monument', country:'India', city:'New Delhi', location:{lat:28.6562,lng:77.2410}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'LOW',verified:false,active_barriers_count:2} },
   { id:'p4', name:'National Museum', category:'Museum', country:'India', city:'New Delhi', location:{lat:28.6118,lng:77.2191}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'HIGH',verified:true,active_barriers_count:0} },
-  { id:'p5', name:'Qutub Minar', category:'Monument', country:'India', city:'New Delhi', location:{lat:28.5244,lng:77.1855}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'MEDIUM',verified:true,active_barriers_count:1} },
+  { id:'p5', name:'Akshardham Temple', category:'Temple', country:'India', city:'New Delhi', location:{lat:28.6127,lng:77.2773}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'HIGH',verified:true,active_barriers_count:0} },
   { id:'p6', name:'Lodhi Gardens', category:'Park', country:'India', city:'New Delhi', location:{lat:28.5931,lng:77.2197}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'HIGH',verified:true,active_barriers_count:0} },
   { id:'p7', name:"Humayun's Tomb", category:'Monument', country:'India', city:'New Delhi', location:{lat:28.5933,lng:77.2507}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'MEDIUM',verified:false,active_barriers_count:1} },
   { id:'p8', name:'Connaught Place', category:'Station', country:'India', city:'New Delhi', location:{lat:28.6304,lng:77.2177}, status:'ACTIVE', created_at:'', updated_at:'', accessibility_summary:{level:'MEDIUM',verified:true,active_barriers_count:0} },
@@ -166,28 +168,55 @@ export default function Explore() {
             {hi ? 'प्रमुख श्रेणियां' : 'Featured Categories'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br from-[#2a0b5c] to-[#4800b2] p-6 flex flex-col justify-end text-white cursor-pointer">
-              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+            {/* Category 1: Accessible Heritage */}
+            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-6 flex flex-col justify-end text-white cursor-pointer border border-white/10">
+              <img 
+                src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=800&q=80" 
+                alt="Accessible Heritage" 
+                className="absolute inset-0 w-full h-full object-cover blur-[1.5px] scale-105 group-hover:scale-110 transition-transform duration-500" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#2a0b5c]/90 via-[#4800b2]/60 to-[#2a0b5c]/40" />
+              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-md group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-2xl fill">account_balance</span>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-violet-200">12 Verified Sites</span>
-              <h3 className="text-xl font-black mt-1">Accessible Heritage</h3>
+              <div className="relative z-10">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-violet-200 drop-shadow-sm">12 Verified Sites</span>
+                <h3 className="text-xl font-black mt-1 drop-shadow-md">Accessible Heritage</h3>
+              </div>
             </div>
 
-            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br from-[#004d34] to-[#00875a] p-6 flex flex-col justify-end text-white cursor-pointer">
-              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+            {/* Category 2: Beach Getaways */}
+            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-6 flex flex-col justify-end text-white cursor-pointer border border-white/10">
+              <img 
+                src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80" 
+                alt="Beach Getaways" 
+                className="absolute inset-0 w-full h-full object-cover blur-[1.5px] scale-105 group-hover:scale-110 transition-transform duration-500" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#003d29]/90 via-[#006e4a]/60 to-[#003d29]/40" />
+              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-md group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-2xl fill">beach_access</span>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-200">Ramped Promenades</span>
-              <h3 className="text-xl font-black mt-1">Beach Getaways</h3>
+              <div className="relative z-10">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-200 drop-shadow-sm">Ramped Promenades</span>
+                <h3 className="text-xl font-black mt-1 drop-shadow-md">Beach Getaways</h3>
+              </div>
             </div>
 
-            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-gradient-to-br from-[#7a1020] to-[#b41521] p-6 flex flex-col justify-end text-white cursor-pointer">
-              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center backdrop-blur-md">
+            {/* Category 3: City Tours */}
+            <div className="group relative h-44 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 p-6 flex flex-col justify-end text-white cursor-pointer border border-white/10">
+              <img 
+                src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80" 
+                alt="City Tours" 
+                className="absolute inset-0 w-full h-full object-cover blur-[1.5px] scale-105 group-hover:scale-110 transition-transform duration-500" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#5a0c17]/90 via-[#8f121d]/60 to-[#5a0c17]/40" />
+              <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-md group-hover:scale-110 transition-transform">
                 <span className="material-symbols-outlined text-2xl fill">location_city</span>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-rose-200">Low Floor Transit</span>
-              <h3 className="text-xl font-black mt-1">City Tours</h3>
+              <div className="relative z-10">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-rose-200 drop-shadow-sm">Low Floor Transit</span>
+                <h3 className="text-xl font-black mt-1 drop-shadow-md">City Tours</h3>
+              </div>
             </div>
           </div>
         </section>
@@ -466,19 +495,19 @@ export default function Explore() {
             </div>
           </div>
 
-          {/* Standard Card 4: Qutub Minar */}
+          {/* Standard Card 4: Akshardham Temple */}
           <div className="col-span-1 md:col-span-3 lg:col-span-4 bg-white dark:bg-[#151824] border border-[#cbc3d9]/40 dark:border-slate-800 rounded-3xl overflow-hidden flex flex-col group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="relative h-48 w-full overflow-hidden">
               <img 
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                alt="Qutub Minar"
-                src={getImg('Qutub Minar')}
+                alt="Akshardham Temple"
+                src={getImg('Akshardham Temple')}
               />
               <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2.5 py-1 rounded-full text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-                MONUMENT
+                TEMPLE
               </div>
-              <div className="absolute top-3 right-3 bg-amber-500 text-white px-2.5 py-1 rounded-full text-[10px] font-black">
-                MEDIUM
+              <div className="absolute top-3 right-3 bg-emerald-500 text-white px-2.5 py-1 rounded-full text-[10px] font-black">
+                HIGH
               </div>
               <div className="absolute bottom-3 right-3 bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
                 <span className="material-symbols-outlined text-xs">verified</span> Verified
@@ -486,17 +515,17 @@ export default function Explore() {
             </div>
             <div className="p-5 flex flex-col flex-grow">
               <h3 className="text-lg font-black text-slate-900 dark:text-white mb-1 group-hover:text-[#4800b2] dark:group-hover:text-[#4ffbe6] transition-colors">
-                Qutub Minar
+                Akshardham Temple
               </h3>
               <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs mb-3">
-                <span className="material-symbols-outlined text-sm text-[#4800b2]">location_on</span> Mehrauli, New Delhi
+                <span className="material-symbols-outlined text-sm text-[#4800b2]">location_on</span> East Delhi, NH 24
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-300 mb-4 line-clamp-3 leading-relaxed">
-                Paved paths around main minar with wooden ramps for wheelchair entry. Some ruins require assistance over uneven stone pavers.
+                Magnificent spiritual campus with expansive ramps, motorized wheelchairs, tactile paths, water show seating, and comprehensive barrier-free navigation throughout.
               </p>
               <div className="mt-auto flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3">
-                <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 text-xs font-bold">
-                  <span className="material-symbols-outlined text-sm">warning</span> 1 minor barrier
+                <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                  <span className="material-symbols-outlined text-sm">check_circle</span> No barriers
                 </div>
                 <Link href="/explore/p5" className="text-[#4800b2] dark:text-[#4ffbe6] text-xs font-bold hover:underline flex items-center gap-0.5">
                   View Details <span className="material-symbols-outlined text-xs">chevron_right</span>

@@ -1,5 +1,8 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { api } from '../lib/api';
+import { getUserLocation, UserLocation } from '../lib/location';
+
+import { Language } from '../context/AppContext';
 
 export type VoiceState = 
   | 'idle'
@@ -11,7 +14,7 @@ export type VoiceState =
   | 'ending';
 
 export interface VoiceHookOptions {
-  language: 'EN' | 'HI';
+  language: Language | string;
   onResponse?: (result: {
     transcript: string;
     response: string;
@@ -323,9 +326,14 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
 
     try {
       const history = getHistory ? getHistory() : [];
+      let userLoc: UserLocation | null = null;
+      try {
+        userLoc = await getUserLocation(false);
+      } catch (_) {}
+
       const res = await api.copilot.processVoice({
         transcript: transcriptText,
-        current_location: { lat: 28.6129, lng: 77.2295 },
+        current_location: userLoc ? { lat: userLoc.lat, lng: userLoc.lng } : undefined,
         voice_gender: 'female',
         conversation_history: history
       });

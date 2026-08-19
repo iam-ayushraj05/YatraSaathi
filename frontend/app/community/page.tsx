@@ -215,10 +215,13 @@ export default function Community() {
             
             <button 
               onClick={() => setShowNewPostModal(true)}
-              className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer shrink-0"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all hover:scale-105 cursor-pointer shrink-0"
             >
               <Plus className="h-4 w-4" />
               <span>{language === 'HI' ? 'नया ब्लॉग लिखें' : 'New Blog Post'}</span>
+              <span className="bg-amber-400 text-slate-950 text-[9.5px] font-black px-1.5 py-0.5 rounded-md ml-1 shadow-xs">
+                +25 Pts ⭐
+              </span>
             </button>
           </div>
 
@@ -376,6 +379,9 @@ export default function Community() {
                   <h4 className="text-base font-bold text-slate-900 dark:text-slate-100">
                     {language === 'HI' ? 'ब्लॉग सफलतापूर्वक प्रकाशित हुआ!' : 'Post Published Successfully!'}
                   </h4>
+                  <div className="inline-flex items-center gap-1.5 bg-amber-100 dark:bg-amber-950/80 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-xs font-black px-3 py-1 rounded-full shadow-xs">
+                    <span>🏆 +25 YatraPoints Credited!</span>
+                  </div>
                   <p className="text-xs text-slate-500">
                     {language === 'HI' ? 'आपका ब्लॉग समुदाय में दिखाई दे रहा है।' : 'Your update is now visible in the community feed.'}
                   </p>

@@ -200,15 +200,19 @@ export interface Itinerary {
 }
 
 export interface WeatherSnapshot {
+  id?: string;
   temp?: number;
   temperature_c?: number;
   humidity?: number;
   condition: string;
   wind_speed?: number;
   wind_speed_kph?: number;
+  rain_probability?: number;
   aqi?: number;
   recorded_at?: string;
   observed_at?: string;
+  expires_at?: string;
+  raw_metadata?: Record<string, any>;
 }
 
 

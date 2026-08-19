@@ -25,17 +25,17 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname();
-  const { language } = useApp();
+  const { language, t } = useApp();
 
   const NAV_ITEMS = [
-    { label: language === 'HI' ? 'डैशबोर्ड' : 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { label: language === 'HI' ? 'स्थान खोजें' : 'Explore Places', href: '/explore', icon: Compass },
-    { label: language === 'HI' ? 'मार्ग योजना' : 'Plan Route', href: '/plan-route', icon: Map },
-    { label: language === 'HI' ? 'यात्रा विवरण' : 'Itineraries', href: '/itineraries', icon: FileText },
-    { label: language === 'HI' ? 'बाधा रिपोर्ट' : 'Report Barrier', href: '/reports', icon: TriangleAlert },
-    { label: language === 'HI' ? 'समुदाय' : 'Community', href: '/community', icon: Users },
-    { label: language === 'HI' ? 'यात्रा मित्र AI' : 'YatraMitra', href: '/copilot', icon: Sparkles, badge: 'NEW' },
-    { label: language === 'HI' ? 'सुलभता प्रोफ़ाइल' : 'Accessibility Profile', href: '/accessibility-profile', icon: Accessibility },
+    { label: t('dashboard') || 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { label: t('explore') || 'Explore Places', href: '/explore', icon: Compass },
+    { label: t('plan_route') || 'Plan Route', href: '/plan-route', icon: Map },
+    { label: t('itineraries') || 'Itineraries', href: '/itineraries', icon: FileText },
+    { label: t('reports') || 'Reports', href: '/reports', icon: TriangleAlert },
+    { label: t('community') || 'Community', href: '/community', icon: Users },
+    { label: t('copilot') || 'YatraMitra AI', href: '/copilot', icon: Sparkles, badge: 'NEW' },
+    { label: t('profile') || 'Accessibility Profile', href: '/accessibility-profile', icon: Accessibility },
   ];
 
   const isActive = (href: string) => {
@@ -84,8 +84,8 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
                 />
               </div>
               <div className="flex flex-col -ml-1">
-                <span className="text-[15px] font-black text-slate-900 dark:text-white tracking-tight leading-none">
-                  YatraSaathi
+                <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-snug pb-1 lowercase bg-clip-text text-transparent bg-gradient-to-r from-[#9d2b6b] via-[#881337] via-[#6b21a8] to-[#581c87] dark:from-pink-400 dark:via-purple-300 dark:to-purple-400 overflow-visible">
+                  yatrasaathi
                 </span>
                 <span className="text-[8px] font-black text-violet-600 dark:text-violet-400 tracking-wider uppercase mt-1 leading-none">
                   ACCESSIBLE JOURNEYS FOR ALL

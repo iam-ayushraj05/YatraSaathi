@@ -26,8 +26,8 @@ export default function Footer() {
                 />
               </div>
               <div className="-ml-1.5">
-                <h2 className="text-2xl lg:text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] dark:from-[#cfbdff] dark:via-[#b084ff] dark:to-[#4ffbe6] leading-none transition-colors">
-                  YatraSaathi
+                <h2 className="text-3xl lg:text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#9d2b6b] via-[#881337] via-[#6b21a8] to-[#581c87] dark:from-pink-400 dark:via-purple-300 dark:to-purple-400 leading-snug pb-1 transition-colors lowercase tracking-tighter overflow-visible">
+                  yatrasaathi
                 </h2>
                 <p className="text-[10px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-85 leading-none mt-1.5 tracking-[0.22em] font-bold">
                   ACCESSIBLE JOURNEYS

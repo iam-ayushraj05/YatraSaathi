@@ -149,7 +149,9 @@ export default function InteractiveMap({
 
     const map = L.map(mapRef.current, {
       zoomControl: false,
-      attributionControl: false
+      attributionControl: false,
+      scrollWheelZoom: false,
+      dragging: true
     }).setView([centerLat, centerLng], 12);
 
     leafletInstanceRef.current = map;

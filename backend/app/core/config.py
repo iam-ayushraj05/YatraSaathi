@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     map_api_key: Optional[str] = None
 
     # ── Weather ───────────────────────────────────────────────────────────
-    weather_provider: str = "demo"      # "openweathermap" | "demo"
+    weather_provider: str = "open-meteo"  # "open-meteo" | "openweathermap" | "demo"
     weather_api_key: Optional[str] = None
 
     # ── Voice / LiveKit / STT / TTS ───────────────────────────────────────

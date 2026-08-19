@@ -1,12 +1,18 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HotDeals from '@/components/dashboard/HotDeals';
 import TopDestinations from '@/components/dashboard/TopDestinations';
+import DatePickerModal from '@/components/common/DatePickerModal';
+import FaqSection from '@/components/common/FaqSection';
+import WhyYatraSaathi from '@/components/dashboard/WhyYatraSaathi';
+import { INDIAN_CITIES, INDIAN_AIRPORTS, INDIAN_TRAIN_STATIONS } from '@/lib/locationData';
+import { useApp } from '@/context/AppContext';
 
 const InteractiveMap = dynamic(() => import('@/components/dashboard/InteractiveMap'), {
   ssr: false,
@@ -224,61 +230,102 @@ export default function Dashboard() {
       searchBtnText: 'Search Flights',
       toastMsg: 'Found 6 Flights with Free Airport Wheelchair Assist'
     },
-    'Hotels': {
+    'Trains': {
+      fromLabel: 'From Station',
+      fromDefault: 'New Delhi (NDLS)',
+      fromPlaceholder: 'Departure Station',
+      toLabel: 'To Station',
+      toDefault: 'Howrah Jn (HWH)',
+      toPlaceholder: 'Arrival Station',
+      departLabel: 'Departure Date',
+      departDefault: 'Wed, 19 Aug',
+      returnLabel: 'Quota',
+      returnDefault: 'General / Tatkal / Divyangjan',
+      travelersLabel: 'Passengers & Class',
+      travelersDefault: '1 Adult • 3A AC / SL Divyangjan Coach',
+      searchBtnText: 'Search Trains',
+      toastMsg: 'Found 5 Trains with Verified Divyangjan Accessibility'
+    },
+    'Stays': {
       fromLabel: 'Destination City',
       fromDefault: 'New Delhi, India',
       fromPlaceholder: 'City or Area',
-      toLabel: 'Hotel Preference',
-      toDefault: 'Taj Palace • Ramps & Lifts',
-      toPlaceholder: 'Hotel Name or Accessibility Type',
+      toLabel: 'Stay Preference',
+      toDefault: 'Accessible Hotels & Homestays',
+      toPlaceholder: 'Stay Name or Accessibility Type',
       departLabel: 'Check-In',
-      departDefault: 'Aug 21, 2024',
+      departDefault: 'Thu, Sep 10',
       returnLabel: 'Check-Out',
-      returnDefault: 'Aug 24, 2024 (3 N)',
+      returnDefault: 'Fri, Sep 11 (1 N)',
       travelersLabel: 'Rooms & Guests',
       travelersDefault: '1 Room, 2 Guests • Roll-in Shower',
-      searchBtnText: 'Find Hotels',
-      toastMsg: 'Found 12 Wheelchair-Friendly Hotels with Roll-in Showers'
+      searchBtnText: 'Find Stays',
+      toastMsg: 'Found 2,315 Accessible Stays in New Delhi'
     },
-    'Tours': {
-      fromLabel: 'Tour Region',
-      fromDefault: 'North India Cultural Circuit',
-      fromPlaceholder: 'Destination or Circuit',
-      toLabel: 'Tour Package',
-      toDefault: 'Golden Triangle Accessible Heritage',
-      toPlaceholder: 'Tour Type / Experience',
-      departLabel: 'Start Date',
-      departDefault: 'Sep 05, 2024',
+    'Holidays': {
+      fromLabel: 'From City',
+      fromDefault: 'New Delhi, India',
+      fromPlaceholder: 'Departure City',
+      toLabel: 'To Destination',
+      toDefault: 'Goa Accessible Beach Resort Package',
+      toPlaceholder: 'Category / Destination',
+      departLabel: 'Departure Date',
+      departDefault: '3 Sept, 2026',
       returnLabel: 'Duration',
       returnDefault: '5 Days / 4 Nights',
-      travelersLabel: 'Travelers & Guide',
-      travelersDefault: '2 Travelers • Audio Guide + Coach Ramp',
-      searchBtnText: 'Explore Tours',
-      toastMsg: 'Found 4 Curated Step-Free Heritage Tours'
-    },
-    'Packages': {
-      fromLabel: 'Departure City',
-      fromDefault: 'New Delhi (DEL)',
-      fromPlaceholder: 'Starting City',
-      toLabel: 'Holiday Package',
-      toDefault: 'Goa Accessible Beach Holiday',
-      toPlaceholder: 'Package Name',
-      departLabel: 'Travel Dates',
-      departDefault: 'Sep 15, 2024',
-      returnLabel: 'Return Date',
-      returnDefault: 'Sep 22, 2024 (7 Days)',
-      travelersLabel: 'Travelers & Gear',
-      travelersDefault: '2 Guests • Beach Wheelchair Included',
-      searchBtnText: 'Search Packages',
-      toastMsg: 'Found 3 All-Inclusive Accessible Holiday Packages'
+      travelersLabel: 'Rooms & Guests',
+      travelersDefault: '2 Adults (1 Room)',
+      searchBtnText: 'Search Holidays',
+      toastMsg: 'Found 120+ Holiday Packages with Step-Free Transfers'
     }
   };
 
-  const [fromCity, setFromCity] = useState('Lotus Temple, Delhi');
-  const [toCity, setToCity] = useState('National Museum, Delhi');
-  const [departDate, setDepartDate] = useState('Today, Aug 17');
-  const [returnDate, setReturnDate] = useState('Aug 24, 2024');
+  // Present / Today Date formatting helper
+  const getTodayFormatted = () => {
+    const d = new Date();
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const getNextWeekFormatted = () => {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  };
+
+  const { userLocation, refreshLocation } = useApp();
+  const [fromCity, setFromCity] = useState(userLocation.displayName);
+  const [toCity, setToCity] = useState('');
+  const [showFromDropdown, setShowFromDropdown] = useState(false);
+  const [showToDropdown, setShowToDropdown] = useState(false);
+
+  useEffect(() => {
+    if (fromCity === 'New Delhi' || fromCity.startsWith('Current Location') || fromCity.endsWith('(Default)')) {
+      setFromCity(userLocation.displayName);
+    }
+  }, [userLocation.displayName]);
+
+  const fromInputContainerRef = useRef<HTMLDivElement>(null);
+  const toInputContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (fromInputContainerRef.current && !fromInputContainerRef.current.contains(event.target as Node)) {
+        setShowFromDropdown(false);
+      }
+      if (toInputContainerRef.current && !toInputContainerRef.current.contains(event.target as Node)) {
+        setShowToDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const [departDate, setDepartDate] = useState(getTodayFormatted());
+  const [returnDate, setReturnDate] = useState('');
+  const [selectedQuota, setSelectedQuota] = useState('GENERAL');
   const [showDatesPicker, setShowDatesPicker] = useState(false);
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [targetDateField, setTargetDateField] = useState<'depart' | 'return'>('depart');
 
   // Travelers & Assistance Count State
   const [wheelchairCount, setWheelchairCount] = useState(1);
@@ -291,7 +338,28 @@ export default function Dashboard() {
   const [searchSuccessToast, setSearchSuccessToast] = useState(false);
   const [toastContent, setToastContent] = useState('');
 
+  // 3 Project Lines Rotating at Equal 3-second Intervals
+  const projectLines = [
+    { icon: '👍', text: 'Hassle-Free Bookings' },
+    { icon: '♿', text: '100% Step-Free Confirmations' },
+    { icon: '⚡', text: 'Instant Assistance Guarantee' }
+  ];
+  const [currentLineIndex, setCurrentLineIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentLineIndex((prev) => (prev + 1) % 3);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const router = useRouter();
+
   const handleTabChange = (tabId: string) => {
+    if (tabId === 'Holidays') {
+      router.push('/holidays');
+      return;
+    }
     setActiveSearchTab(tabId);
     const config = TAB_CONFIG[tabId];
     if (config) {
@@ -304,6 +372,22 @@ export default function Dashboard() {
 
   const handlePerformSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    if (activeSearchTab === 'Stays') {
+      router.push('/stays');
+      return;
+    }
+    if (activeSearchTab === 'Flights') {
+      router.push('/flights');
+      return;
+    }
+    if (activeSearchTab === 'Trains') {
+      router.push('/trains');
+      return;
+    }
+    if (activeSearchTab === 'Holidays') {
+      router.push('/holidays');
+      return;
+    }
     setIsSearching(true);
     const config = TAB_CONFIG[activeSearchTab] || TAB_CONFIG['Accessible Routes'];
     setTimeout(() => {
@@ -405,12 +489,12 @@ export default function Dashboard() {
 
           {/* Left Text Content */}
           <div className="relative z-10 lg:w-5/12 space-y-6 animate-fade-in-up">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-[1.1] tracking-tight text-white drop-shadow-2xl">
-              EXPLORE<br />
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] tracking-tight text-white drop-shadow-2xl uppercase">
+              YOUR DESTINATION,<br />
+              YOUR NEEDS.<br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#b084ff] via-[#d0a7ff] to-[#4ffbe6]">
-                BEAUTIFUL WORLD
-              </span><br />
-              WITH US
+                THE JOURNEY TAILORED FOR YOU
+              </span>
             </h2>
 
             <p className="text-sm sm:text-base text-white/80 max-w-md font-medium leading-relaxed drop-shadow-md">
@@ -475,30 +559,43 @@ export default function Dashboard() {
 
         {/* Search/Filter Banner */}
         <section id="search-section" className="bg-white/95 dark:bg-[#121420]/95 backdrop-blur-2xl rounded-[2rem] shadow-xl border border-white/60 dark:border-slate-800 relative z-20 p-6 lg:p-8 animate-fade-in-up transition-colors">
-          {/* Tabs */}
-          <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-4 hide-scrollbar mb-6 border-b border-[#cbc3d9]/20 dark:border-slate-800">
-            {[
-              { id: 'Accessible Routes', icon: 'route' },
-              { id: 'Flights', icon: 'flight' },
-              { id: 'Hotels', icon: 'hotel' },
-              { id: 'Tours', icon: 'tour' },
-              { id: 'Packages', icon: 'inventory_2' }
-            ].map(tab => {
-              const active = activeSearchTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
-                  className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
-                    active
-                      ? 'bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white shadow-md hover:scale-105'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-transparent'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-lg">{tab.icon}</span> {tab.id}
-                </button>
-              );
-            })}
+          {/* Tabs & Top Right Rotating Project Feature Lines */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-[#cbc3d9]/20 dark:border-slate-800">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto hide-scrollbar">
+              {[
+                { id: 'Accessible Routes', icon: 'route' },
+                { id: 'Flights', icon: 'flight' },
+                { id: 'Trains', icon: 'train' },
+                { id: 'Stays', icon: 'bed' },
+                { id: 'Holidays', icon: 'beach_access' }
+              ].map(tab => {
+                const active = activeSearchTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${
+                      active
+                        ? 'bg-gradient-to-r from-[#2a0b5c] via-[#4800b2] to-[#6d23f9] text-white shadow-md hover:scale-105'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 border border-transparent'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-lg">{tab.icon}</span> {tab.id}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Top Right Project Feature Text Only (Up-to-Down Slide Animation) */}
+            <div className="overflow-hidden h-7 flex items-center justify-end px-2">
+              <div 
+                key={currentLineIndex} 
+                className="flex items-center gap-1.5 text-xs sm:text-sm font-extrabold text-slate-800 dark:text-slate-200 animate-slide-down"
+              >
+                <span className="text-base">{projectLines[currentLineIndex].icon}</span>
+                <span>{projectLines[currentLineIndex].text}</span>
+              </div>
+            </div>
           </div>
 
           {/* Search Fields Row */}
@@ -509,7 +606,7 @@ export default function Dashboard() {
                 {/* From & To with embedded Swap button (Spans 5 cols on xl) */}
                 <div className="xl:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 relative">
                   {/* From Input */}
-                  <div className="relative border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm transition-all group">
+                  <div ref={fromInputContainerRef} className="relative border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm transition-all group">
                     <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1">
                       {currentConfig.fromLabel}
                     </label>
@@ -518,8 +615,142 @@ export default function Dashboard() {
                       placeholder={currentConfig.fromPlaceholder} 
                       type="text" 
                       value={fromCity}
+                      onFocus={(e) => { 
+                        e.target.select(); 
+                        setShowFromDropdown(true); 
+                        setShowToDropdown(false); 
+                      }}
                       onChange={(e) => setFromCity(e.target.value)}
                     />
+
+                    {/* From Searchable Dropdown */}
+                    {showFromDropdown && (() => {
+                      const searchKey = (fromCity === userLocation.displayName || fromCity === 'New Delhi' || fromCity.startsWith('Current Location')) ? '' : fromCity.toLowerCase();
+                      return (
+                        <>
+                          <div className="fixed inset-0 z-40" onClick={() => setShowFromDropdown(false)} />
+                          <div className="absolute left-0 top-full mt-2 w-72 max-h-64 overflow-y-auto bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl border border-[#cbc3d9]/40 dark:border-slate-700 p-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
+                            <div className="p-2 text-[10px] font-black uppercase text-[#4800b2] dark:text-[#4ffbe6] tracking-wider flex items-center gap-1">
+                              <span className="material-symbols-outlined text-sm">my_location</span>
+                              {activeSearchTab === 'Flights' ? 'All Indian Airports' : activeSearchTab === 'Trains' ? 'All Railway Stations' : 'Current & Indian Cities'}
+                            </div>
+                            
+                            {/* Current Location Option */}
+                            <div 
+                              onClick={() => {
+                                setFromCity(
+                                  activeSearchTab === 'Flights' 
+                                    ? `DEL - Indira Gandhi Intl Airport, New Delhi` 
+                                    : activeSearchTab === 'Trains' 
+                                    ? `NDLS - New Delhi Railway Station` 
+                                    : userLocation.displayName
+                                );
+                                setShowFromDropdown(false);
+                              }}
+                              className="p-2.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-xl cursor-pointer flex items-center justify-between transition-colors"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className={`material-symbols-outlined text-emerald-500 text-base ${userLocation.status === 'requesting' || userLocation.status === 'reverse_geocoding' ? 'animate-spin' : ''}`}>
+                                  {userLocation.status === 'requesting' || userLocation.status === 'reverse_geocoding' ? 'sync' : 'near_me'}
+                                </span>
+                                <div>
+                                  <div className="text-xs font-black text-emerald-600 dark:text-emerald-400">
+                                    {userLocation.isFallback ? 'Default Location (New Delhi)' : 'Detected Current Location'}
+                                  </div>
+                                  <div className="text-[10px] text-slate-400 font-bold">
+                                    {userLocation.formattedLocation}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    refreshLocation();
+                                  }}
+                                  title="Update Location"
+                                  className="text-[9px] bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 text-slate-700 dark:text-slate-200 px-1.5 py-0.5 rounded font-bold transition-colors"
+                                >
+                                  🔄 Refresh
+                                </button>
+                                <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-bold">
+                                  {userLocation.status === 'requesting' || userLocation.status === 'reverse_geocoding' ? 'Locating...' : userLocation.isFallback ? 'Fallback' : 'GPS'}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Filtered items based on tab */}
+                            {activeSearchTab === 'Flights' ? (
+                              INDIAN_AIRPORTS.filter(a => 
+                                !searchKey ||
+                                a.city.toLowerCase().includes(searchKey) || 
+                                a.code.toLowerCase().includes(searchKey) ||
+                                a.name.toLowerCase().includes(searchKey)
+                              ).map((ap) => (
+                                <div
+                                  key={ap.code}
+                                  onClick={() => {
+                                    setFromCity(`${ap.code} - ${ap.city} (${ap.name})`);
+                                    setShowFromDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{ap.city} ({ap.code})</div>
+                                    <div className="text-[10px] text-slate-400 truncate max-w-[180px]">{ap.name}</div>
+                                  </div>
+                                  <span className="font-mono text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">{ap.code}</span>
+                                </div>
+                              ))
+                            ) : activeSearchTab === 'Trains' ? (
+                              INDIAN_TRAIN_STATIONS.filter(s => 
+                                !searchKey ||
+                                s.city.toLowerCase().includes(searchKey) || 
+                                s.code.toLowerCase().includes(searchKey) ||
+                                s.name.toLowerCase().includes(searchKey)
+                              ).map((st) => (
+                                <div
+                                  key={st.code}
+                                  onClick={() => {
+                                    setFromCity(`${st.code} - ${st.name}`);
+                                    setShowFromDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{st.city} ({st.code})</div>
+                                    <div className="text-[10px] text-slate-400 truncate max-w-[180px]">{st.name}</div>
+                                  </div>
+                                  <span className="font-mono text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">{st.code}</span>
+                                </div>
+                              ))
+                            ) : (
+                              INDIAN_CITIES.filter(c => 
+                                !searchKey ||
+                                c.name.toLowerCase().includes(searchKey) || 
+                                c.state.toLowerCase().includes(searchKey)
+                              ).map((c) => (
+                                <div
+                                  key={c.name}
+                                  onClick={() => {
+                                    setFromCity(c.name);
+                                    setShowFromDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{c.name}</div>
+                                    <div className="text-[10px] text-slate-400">{c.state}</div>
+                                  </div>
+                                  {c.popular && <span className="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">Popular</span>}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
 
                   {/* Swap Button (Only shown on Routes and Flights) */}
@@ -535,7 +766,7 @@ export default function Dashboard() {
                   )}
 
                   {/* To Input */}
-                  <div className="relative border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm transition-all group">
+                  <div ref={toInputContainerRef} className="relative border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm transition-all group">
                     <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1">
                       {currentConfig.toLabel}
                     </label>
@@ -544,37 +775,158 @@ export default function Dashboard() {
                       placeholder={currentConfig.toPlaceholder} 
                       type="text" 
                       value={toCity}
+                      onFocus={(e) => { 
+                        e.target.select(); 
+                        setShowToDropdown(true); 
+                        setShowFromDropdown(false); 
+                      }}
                       onChange={(e) => setToCity(e.target.value)}
                     />
+
+                    {/* To Searchable Dropdown */}
+                    {showToDropdown && (() => {
+                      const searchKey = toCity.toLowerCase();
+                      return (
+                        <>
+                          <div className="fixed inset-0 z-40" onClick={() => setShowToDropdown(false)} />
+                          <div className="absolute right-0 top-full mt-2 w-72 max-h-64 overflow-y-auto bg-white dark:bg-[#1a1d2e] rounded-2xl shadow-2xl border border-[#cbc3d9]/40 dark:border-slate-700 p-2 z-50 animate-fade-in divide-y divide-slate-100 dark:divide-slate-800">
+                            <div className="p-2 text-[10px] font-black uppercase text-[#4800b2] dark:text-[#4ffbe6] tracking-wider flex items-center gap-1">
+                              <span className="material-symbols-outlined text-sm">location_city</span>
+                              {activeSearchTab === 'Flights' ? 'All Indian Airports' : activeSearchTab === 'Trains' ? 'All Railway Stations' : 'Select Destination'}
+                            </div>
+
+                            {/* Filtered items based on tab */}
+                            {activeSearchTab === 'Flights' ? (
+                              INDIAN_AIRPORTS.filter(a => 
+                                !searchKey ||
+                                a.city.toLowerCase().includes(searchKey) || 
+                                a.code.toLowerCase().includes(searchKey) ||
+                                a.name.toLowerCase().includes(searchKey)
+                              ).map((ap) => (
+                                <div
+                                  key={ap.code}
+                                  onClick={() => {
+                                    setToCity(`${ap.code} - ${ap.city} (${ap.name})`);
+                                    setShowToDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{ap.city} ({ap.code})</div>
+                                    <div className="text-[10px] text-slate-400 truncate max-w-[180px]">{ap.name}</div>
+                                  </div>
+                                  <span className="font-mono text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-bold">{ap.code}</span>
+                                </div>
+                              ))
+                            ) : activeSearchTab === 'Trains' ? (
+                              INDIAN_TRAIN_STATIONS.filter(s => 
+                                !searchKey ||
+                                s.city.toLowerCase().includes(searchKey) || 
+                                s.code.toLowerCase().includes(searchKey) ||
+                                s.name.toLowerCase().includes(searchKey)
+                              ).map((st) => (
+                                <div
+                                  key={st.code}
+                                  onClick={() => {
+                                    setToCity(`${st.code} - ${st.name}`);
+                                    setShowToDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{st.city} ({st.code})</div>
+                                    <div className="text-[10px] text-slate-400 truncate max-w-[180px]">{st.name}</div>
+                                  </div>
+                                  <span className="font-mono text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-bold">{st.code}</span>
+                                </div>
+                              ))
+                            ) : (
+                              INDIAN_CITIES.filter(c => 
+                                !searchKey ||
+                                c.name.toLowerCase().includes(searchKey) || 
+                                c.state.toLowerCase().includes(searchKey)
+                              ).map((c) => (
+                                <div
+                                  key={c.name}
+                                  onClick={() => {
+                                    setToCity(c.name);
+                                    setShowToDropdown(false);
+                                  }}
+                                  className="p-2.5 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl cursor-pointer flex items-center justify-between text-xs transition-colors"
+                                >
+                                  <div>
+                                    <div className="font-black text-slate-900 dark:text-white">{c.name}</div>
+                                    <div className="text-[10px] text-slate-400">{c.state}</div>
+                                  </div>
+                                  {c.popular && <span className="text-[9px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-bold">Popular</span>}
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
 
                 {/* Dates Picker (Spans 3 cols on xl) */}
                 <div className="xl:col-span-3 relative">
                   <div 
-                    onClick={() => {
-                      setShowDatesPicker(!showDatesPicker);
-                      setShowTravelersPicker(false);
-                    }}
-                    className="border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm flex transition-all cursor-pointer group"
-                    title="Click to select Dates"
+                    className="border border-[#cbc3d9]/50 dark:border-slate-700/80 rounded-2xl p-3.5 hover:border-[#4800b2] focus-within:border-[#4800b2] focus-within:ring-2 focus-within:ring-[#4800b2]/20 bg-slate-50/70 dark:bg-[#1a1d2e]/80 shadow-sm flex transition-all group"
                   >
-                    <div className="flex-1 border-r border-[#cbc3d9]/40 dark:border-slate-700 pr-2">
-                      <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1">
+                    <div 
+                      onClick={() => {
+                        setTargetDateField('depart');
+                        setShowCalendarModal(true);
+                        setShowTravelersPicker(false);
+                      }}
+                      className="flex-1 border-r border-[#cbc3d9]/40 dark:border-slate-700 pr-2 cursor-pointer hover:opacity-80 transition-opacity"
+                      title="Click to select Departure Date"
+                    >
+                      <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1 cursor-pointer">
                         {currentConfig.departLabel}
                       </label>
                       <div className="text-[#191c20] dark:text-white font-black text-xs lg:text-sm truncate group-hover:text-[#4800b2] dark:group-hover:text-[#4ffbe6] transition-colors">
                         {departDate}
                       </div>
                     </div>
-                    <div className="flex-1 pl-3">
-                      <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1">
-                        {currentConfig.returnLabel}
-                      </label>
-                      <div className="text-[#191c20] dark:text-white font-black text-xs lg:text-sm truncate group-hover:text-[#4800b2] dark:group-hover:text-[#4ffbe6] transition-colors">
-                        {returnDate}
+                    {activeSearchTab === 'Trains' ? (
+                      <div className="flex-1 pl-3 flex flex-col justify-center">
+                        <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-0.5">
+                          QUOTA
+                        </label>
+                        <select 
+                          value={selectedQuota}
+                          onChange={(e) => setSelectedQuota(e.target.value)}
+                          className="bg-transparent text-[#191c20] dark:text-white font-black text-xs lg:text-sm outline-none cursor-pointer w-full font-mono"
+                        >
+                          <option value="GENERAL" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">GENERAL</option>
+                          <option value="LADIES" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">LADIES</option>
+                          <option value="LOWER BERTH/SR.CITIZEN" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">LOWER BERTH/SR.CITIZEN</option>
+                          <option value="PERSON WITH DISABILITY" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">PERSON WITH DISABILITY</option>
+                          <option value="DUTY PASS" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">DUTY PASS</option>
+                          <option value="TATKAL" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">TATKAL</option>
+                          <option value="PREMIUM TATKAL" className="bg-white dark:bg-[#1a1d2e] text-slate-900 dark:text-white font-bold">PREMIUM TATKAL</option>
+                        </select>
                       </div>
-                    </div>
+                    ) : (
+                      <div 
+                        onClick={() => {
+                          setTargetDateField('return');
+                          setShowCalendarModal(true);
+                          setShowTravelersPicker(false);
+                        }}
+                        className="flex-1 pl-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        title="Click to select Return Date"
+                      >
+                        <label className="block text-[10px] text-[#4800b2] dark:text-[#4ffbe6] font-bold uppercase tracking-wider mb-1 cursor-pointer">
+                          {currentConfig.returnLabel}
+                        </label>
+                        <div className="text-[#191c20] dark:text-white font-black text-xs lg:text-sm truncate group-hover:text-[#4800b2] dark:group-hover:text-[#4ffbe6] transition-colors min-h-[20px]">
+                          {returnDate}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Dates Popover */}
@@ -592,7 +944,7 @@ export default function Dashboard() {
                           </button>
                         </div>
                         <div className="space-y-1.5">
-                          {activeSearchTab === 'Hotels' ? [
+                          {activeSearchTab === 'Stays' ? [
                             { label: 'Weekend Getaway (3 Nights)', dep: 'Aug 21, 2024', ret: 'Aug 24, 2024 (3 N)' },
                             { label: 'Vacation Stay (5 Nights)', dep: 'Aug 25, 2024', ret: 'Aug 30, 2024 (5 N)' },
                             { label: 'Weekly Extended (7 Nights)', dep: 'Sep 01, 2024', ret: 'Sep 08, 2024 (7 N)' },
@@ -836,48 +1188,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Value Props Cards (Benefits) */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-panel rounded-2xl p-5 flex items-start gap-4 shadow-sm transition-all group hover-card animate-fade-in-up">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#fff4e5] to-[#ffecb3] text-[#f57c00] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-              <span className="material-symbols-outlined text-2xl">payments</span>
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#191c20] dark:text-white mb-1 group-hover:text-[#4800b2] transition-colors">Best Price Guarantee</h4>
-              <p className="text-xs text-[#494456] dark:text-slate-400 leading-relaxed">We ensure you get the best deals always.</p>
-            </div>
-          </div>
-
-          <div className="glass-panel rounded-2xl p-5 flex items-start gap-4 shadow-sm transition-all group hover-card animate-fade-in-up">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e3f2fd] to-[#bbdefb] text-[#1976d2] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-              <span className="material-symbols-outlined text-2xl">support_agent</span>
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#191c20] dark:text-white mb-1 group-hover:text-[#4800b2] transition-colors">24/7 Customer Support</h4>
-              <p className="text-xs text-[#494456] dark:text-slate-400 leading-relaxed">We&apos;re here to help you anytime, anywhere.</p>
-            </div>
-          </div>
-
-          <div className="glass-panel rounded-2xl p-5 flex items-start gap-4 shadow-sm transition-all group hover-card animate-fade-in-up">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#e8f5e9] to-[#c8e6c9] text-[#388e3c] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-              <span className="material-symbols-outlined text-2xl">security</span>
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#191c20] dark:text-white mb-1 group-hover:text-[#4800b2] transition-colors">Secure Bookings</h4>
-              <p className="text-xs text-[#494456] dark:text-slate-400 leading-relaxed">Your data and payments are 100% safe.</p>
-            </div>
-          </div>
-
-          <div className="glass-panel rounded-2xl p-5 flex items-start gap-4 shadow-sm transition-all group hover-card animate-fade-in-up">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#f3e5f5] to-[#e1bee7] text-[#7b1fa2] flex items-center justify-center shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-              <span className="material-symbols-outlined text-2xl">diamond</span>
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-[#191c20] dark:text-white mb-1 group-hover:text-[#4800b2] transition-colors">Handpicked Experiences</h4>
-              <p className="text-xs text-[#494456] dark:text-slate-400 leading-relaxed">Curated tours for unforgettable trips.</p>
-            </div>
-          </div>
-        </section>
+        {/* Why YatraSaathi? (4 Best Core USPs Section) */}
+        <WhyYatraSaathi />
 
         {/* Header for Main Content Area (Compact Spacing & Interactive + Sign) */}
         <div id="routes-section" className="flex flex-col md:flex-row justify-between items-center gap-3 pb-3 border-b border-[#cbc3d9]/30 dark:border-slate-800 mt-3 animate-fade-in-up relative z-30 scroll-mt-24">
@@ -1686,7 +1998,19 @@ export default function Dashboard() {
             </div>
           </div>
         </section>
+
+        {/* SIH Architecture & How YatraSaathi Works FAQ Section */}
+        <FaqSection />
       </main>
+
+      {/* Booking.com Calendar Picker Modal */}
+      <DatePickerModal 
+        isOpen={showCalendarModal}
+        onClose={() => setShowCalendarModal(false)}
+        targetField={targetDateField}
+        onSelectDeparture={(dStr) => setDepartDate(dStr)}
+        onSelectReturn={(rStr) => setReturnDate(rStr)}
+      />
 
       {/* Unified Global Footer */}
       <Footer />

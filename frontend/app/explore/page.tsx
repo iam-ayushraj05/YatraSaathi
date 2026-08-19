@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
+import FaqSection from '../../components/common/FaqSection';
 import { useApp } from '../../context/AppContext';
 import { api } from '../../lib/api';
 import { Place } from '../../lib/types';
@@ -534,6 +535,57 @@ export default function Explore() {
             </div>
           </div>
         </div>
+
+        {/* Explore Accessibility FAQ Section */}
+        <FaqSection 
+          title={hi ? 'स्थान खोज व सुगमता रेटिंग FAQ' : 'Accessible Place Discovery & Venue Rating FAQs'}
+          subtitle={hi 
+            ? 'जानिए स्थानों के सुगमता स्तर (High, Medium, Low), रैंप व व्हीलचेयर टॉयलेट वेरिफिकेशन की प्रक्रिया' 
+            : 'Understand venue accessibility tiers, wheelchair washroom availability, and verified barrier-free badges'
+          }
+          customFaqs={[
+            {
+              category: 'Monitoring',
+              badge: 'Accessibility Tiers',
+              question: hi 
+                ? 'स्थानों के लिए High, Medium और Low Accessibility रेटिंग का क्या अर्थ है?' 
+                : 'What do High, Medium, and Low Accessibility ratings indicate?',
+              answer: hi
+                ? 'High का अर्थ है पूर्णतः बाधा-मुक्त (रैंप, लिफ्ट, सुलभ टॉयलेट और स्पर्श पथ उपलब्ध)। Medium में आंशिक रैंप हैं। Low में सीढ़ियाँ या सकड़े द्वार हैं जहां सहायता की आवश्यकता हो सकती है।'
+                : 'High indicates 100% barrier-free facilities (ramps, elevators, accessible toilets, tactile paths). Medium indicates partial ramp access. Low indicates steps or narrow doors requiring assistance.'
+            },
+            {
+              category: 'Trust & Verification',
+              badge: 'Verified Badge',
+              question: hi 
+                ? 'स्थानों पर "Verified" बैज का क्या मतलब है?' 
+                : 'What does the "Verified" badge on a monument or venue signify?',
+              answer: hi
+                ? 'Verified का अर्थ है कि उस स्थान की सुगमता सुविधाओं का भौतिक रूप से ऑडिट किया गया है या समुदाय और आधिकारिक प्रतिनिधियों द्वारा हाल ही में पुष्टि की गई है।'
+                : 'A Verified badge confirms that accessibility facilities (ramp inclines, door widths, elevator dimensions) have been physically audited or validated by trusted reviewers.'
+            },
+            {
+              category: 'Enhancing',
+              badge: 'Amenity Filters',
+              question: hi 
+                ? 'क्या मैं केवल व्हीलचेयर टॉयलेट या रैंप वाले स्थानों को फ़िल्टर कर सकता हूँ?' 
+                : 'Can I filter places by specific amenities like accessible restrooms or tactile paving?',
+              answer: hi
+                ? 'हाँ! आप खोज बार और फ़िल्टर बटन का उपयोग करके केवल वही स्थान देख सकते हैं जिनमें व्हीलचेयर रैंप, सुलभ शौचालय, ऑडियो गाइड या दृष्टि सहायता उपलब्ध हो।'
+                : 'Yes! Use the filter pills at the top to display venues with verified step-free ramps, accessible washrooms, tactile ground indicators, or braille signs.'
+            },
+            {
+              category: 'Enhancing',
+              badge: 'Place Navigation',
+              question: hi 
+                ? 'किसी स्थान को चुनने के बाद मैं वहाँ का सुलभ मार्ग कैसे देख सकता हूँ?' 
+                : 'How can I launch navigation to an explored venue directly?',
+              answer: hi
+                ? 'किसी भी स्थान कार्ड पर "View Details" दबाने से आप उस स्थान के सुगम प्रवेश द्वार, पार्किंग स्थल और लाइव नेविगेशन रूट को तुरंत शुरू कर सकते हैं।'
+                : 'Clicking "View Details" on any place card opens its full accessibility audit breakdown and lets you launch step-free GPS routing with a single click.'
+            }
+          ]}
+        />
       </main>
 
       {/* Footer */}

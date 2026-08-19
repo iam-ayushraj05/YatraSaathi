@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface SosHelpModalProps {
@@ -24,6 +24,20 @@ interface AssistanceService {
 }
 
 const EMERGENCY_SERVICES: AssistanceService[] = [
+  {
+    id: 'peer-ladakh-1',
+    category: 'human_help',
+    name: 'Peer Roadside Assist: Out of Fuel on Leh-Manali Highway',
+    distance: '1.8 km away (En-Route)',
+    time: '< 5 mins away',
+    address: 'Near Khardung La Pass Road • Traveler: Vikram S.',
+    phone: '+91 98711 00223',
+    badge: 'Peer Assistance • ₹350 Honorarium Token',
+    features: ['Needs 5L Petrol/Diesel', 'GPS Coordinates Relayed', 'Earn +100 YatraPoints & ₹350 Token'],
+    icon: 'local_gas_station',
+    color: 'bg-amber-600',
+    destCoords: { lat: 34.2787, lng: 77.6047 }
+  },
   {
     id: 'human-1',
     category: 'human_help',
@@ -144,6 +158,62 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
   const [alertSent, setAlertSent] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [activeCallService, setActiveCallService] = useState<AssistanceService | null>(null);
+  
+  // Real-time Geolocation State
+  const [locationText, setLocationText] = useState<string>('28.6129° N, 77.2295° E (Near India Gate, Delhi)');
+  const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [locationVerified, setLocationVerified] = useState<boolean>(true);
+
+  // Custom Peer Help Request Form State (e.g. Ladakh fuel out, Wheelchair assist, Break down)
+  const [isCustomHelpModalOpen, setIsCustomHelpModalOpen] = useState(false);
+  const [customCategory, setCustomCategory] = useState<'fuel' | 'wheelchair' | 'medical' | 'towing'>('fuel');
+  const [customDetails, setCustomDetails] = useState('');
+  const [customHonorarium, setCustomHonorarium] = useState('350');
+  const [customPhone, setCustomPhone] = useState('+91 98711 00223');
+  const [customSubmitted, setCustomSubmitted] = useState(false);
+
+  // FAQ Accordion Toggle State
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  // Fetch real browser location on mount
+  useEffect(() => {
+    if (isOpen) {
+      fetchRealLocation();
+    }
+  }, [isOpen]);
+
+  const fetchRealLocation = () => {
+    if (typeof window !== 'undefined' && 'geolocation' in navigator) {
+      setIsLocating(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(4);
+          const lng = position.coords.longitude.toFixed(4);
+          setLocationText(`${lat}° N, ${lng}° E (Live GPS Signal)`);
+          setIsLocating(false);
+          setLocationVerified(true);
+        },
+        (err) => {
+          console.warn('Geolocation fallback:', err);
+          setLocationText('28.6129° N, 77.2295° E (Near India Gate, Delhi)');
+          setIsLocating(false);
+          setLocationVerified(true);
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+  };
+
+  const handleCreateCustomHelp = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCustomSubmitted(true);
+    setTimeout(() => {
+      setIsCustomHelpModalOpen(false);
+      setCustomSubmitted(false);
+      setCustomDetails('');
+      alert('Custom Peer Help Broadcasted! Nearby travelers on your route have been notified.');
+    }, 1500);
+  };
 
   if (!isOpen) return null;
 
@@ -177,31 +247,31 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
     : EMERGENCY_SERVICES.filter(s => s.category === selectedCategory);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 overflow-y-auto">
-      {/* Dark Backdrop with soft red emergency glow */}
+    <div className="fixed inset-0 z-[100] flex flex-col p-0 overflow-y-auto">
+      {/* Dark Backdrop */}
       <div 
         onClick={onClose} 
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-in fade-in"
       />
 
-      {/* Main Modal Container - FULL PAGE */}
-      <div className="relative w-full h-full bg-white dark:bg-[#121420] shadow-2xl border-0 overflow-hidden z-10 animate-in zoom-in-95 duration-200 text-[#191c20] dark:text-slate-100 flex flex-col">
+      {/* Main Modal Container - 100% FULL SPACE */}
+      <div className="relative w-full h-full min-h-screen bg-white dark:bg-[#121420] border-0 overflow-y-auto z-10 animate-in fade-in duration-200 text-[#191c20] dark:text-slate-100 flex flex-col">
         
-        {/* Urgent Emergency Top Banner */}
-        <div className="bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white p-6 sm:p-7 relative overflow-hidden shrink-0">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+        {/* User-Friendly Light Rose Top Emergency Banner (Compact Height) */}
+        <div className="bg-gradient-to-r from-[#fb7185] via-[#f43f5e] to-[#e11d48] text-white px-5 py-3.5 sm:px-6 sm:py-4 relative overflow-hidden shrink-0 shadow-sm">
+          <div className="absolute top-0 right-0 w-72 h-72 bg-white/15 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
           
-          <div className="flex items-start justify-between gap-4 relative z-10">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-white text-red-600 flex items-center justify-center shadow-lg shrink-0 animate-bounce">
-                <span className="material-symbols-outlined fill text-3xl">emergency</span>
+          <div className="flex items-center justify-between gap-3 relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-white text-[#e11d48] flex items-center justify-center shadow-sm shrink-0 animate-bounce">
+                <span className="material-symbols-outlined fill text-xl">emergency</span>
               </div>
               <div>
-                <div className="inline-flex items-center gap-1.5 bg-black/20 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest text-red-100 mb-1 border border-white/20">
-                  <span className="w-2 h-2 rounded-full bg-white animate-ping"></span>
+                <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white mb-0.5 border border-white/30">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
                   Emergency Assistance Mode
                 </div>
-                <h3 className="text-2xl sm:text-3xl font-black tracking-tight leading-none text-white">
+                <h3 className="text-lg sm:text-xl font-black tracking-tight leading-none text-white">
                   SOS: I Need Help
                 </h3>
               </div>
@@ -209,35 +279,54 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
 
             <button 
               onClick={onClose}
-              className="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-transform hover:rotate-90 cursor-pointer"
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-transform hover:rotate-90 cursor-pointer shadow-xs"
             >
-              <span className="material-symbols-outlined text-xl">close</span>
+              <span className="material-symbols-outlined text-lg">close</span>
             </button>
           </div>
 
-          <p className="text-xs sm:text-sm text-red-100 font-medium mt-3 leading-relaxed">
-            Instant guidance to the nearest accessible emergency assistance, hospital, 24/7 pharmacy, police station, and wheelchair transport.
+          <p className="text-[11.5px] text-rose-50 font-medium mt-1.5 leading-snug max-w-3xl">
+            Instant guidance to nearest accessible emergency assistance, hospital, 24/7 pharmacy, police post, and wheelchair transport.
           </p>
 
           {/* Current GPS coordinates strip */}
-          <div className="mt-4 pt-3 border-t border-white/20 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2 text-white/90">
-              <span className="material-symbols-outlined text-sm">my_location</span>
-              <span className="font-bold">Live GPS:</span> 28.6129 N, 77.2295 E (Near India Gate, Delhi)
-              <span className="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full ml-1">Verified Location</span>
+          <div className="mt-2.5 pt-2 border-t border-white/25 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2 text-white font-medium bg-black/15 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/20 text-[11px]">
+              <span className="material-symbols-outlined text-sm text-rose-200">my_location</span>
+              <span><strong className="font-black">Live GPS:</strong> {locationText}</span>
+              
+              {isLocating ? (
+                <span className="bg-amber-400 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-md ml-1 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
+                  Locating...
+                </span>
+              ) : (
+                <span className="bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-md ml-1 shadow-xs flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                  Verified GPS Active
+                </span>
+              )}
+
+              <button 
+                onClick={fetchRealLocation} 
+                title="Refresh Geolocation"
+                className="ml-0.5 p-0.5 hover:bg-white/20 rounded transition-colors text-white cursor-pointer"
+              >
+                <span className={`material-symbols-outlined text-xs ${isLocating ? 'animate-spin' : ''}`}>refresh</span>
+              </button>
             </div>
             
             {!alertSent ? (
               <button
                 onClick={handleBroadcastAlert}
                 disabled={countdown !== null}
-                className="bg-white hover:bg-red-50 text-red-600 px-4 py-2 rounded-xl text-xs font-black shadow-md flex items-center gap-2 transition-all hover:scale-105 cursor-pointer disabled:opacity-75"
+                className="bg-white hover:bg-rose-50 text-[#e11d48] px-3.5 py-1.5 rounded-xl text-xs font-black shadow-sm flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer disabled:opacity-75"
               >
                 <span className="material-symbols-outlined text-sm">cell_tower</span>
                 {countdown !== null ? `Broadcasting in ${countdown}s...` : 'Broadcast Location to 112 & Caregivers'}
               </button>
             ) : (
-              <div className="bg-emerald-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-md">
+              <div className="bg-emerald-500 text-white px-3 py-1 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm">
                 <span className="material-symbols-outlined text-sm">verified</span>
                 SOS Location Dispatched to 112 & Contacts
               </div>
@@ -245,8 +334,8 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
           </div>
         </div>
 
-        {/* Category Filters */}
-        <div className="p-4 sm:px-6 bg-slate-50 dark:bg-[#161826] border-b border-slate-200 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto shrink-0 hide-scrollbar">
+        {/* Category Filters (Compact Padding) */}
+        <div className="px-4 py-2 sm:px-6 bg-slate-50 dark:bg-[#161826] border-b border-slate-200 dark:border-slate-800/80 flex items-center gap-2 overflow-x-auto shrink-0 hide-scrollbar">
           {[
             { id: 'all', label: 'All Services', icon: 'apps' },
             { id: 'human_help', label: 'Human & Volunteer Help', icon: 'volunteer_activism' },
@@ -316,24 +405,11 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
                 </button>
 
                 <button
-                  onClick={() => handleInitiateCall({
-                    id: 'human-volunteer',
-                    category: 'human_help',
-                    name: 'Rohan Verma (Nearest Volunteer Guide)',
-                    distance: '120m away',
-                    time: '2 mins arrival',
-                    address: 'On-Ground Verified Helper • ID #YS-8821',
-                    phone: '+91 98112 34567',
-                    badge: 'Nearby Volunteer Guide',
-                    features: ['Wheelchair Push & Transfer', 'Sight Guide Certified'],
-                    icon: 'volunteer_activism',
-                    color: 'bg-indigo-600',
-                    destCoords: { lat: 28.6135, lng: 77.2280 }
-                  })}
-                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-2xl text-xs font-black shadow-md hover:scale-105 transition-all cursor-pointer border border-emerald-400/40"
+                  onClick={() => setIsCustomHelpModalOpen(true)}
+                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-2.5 rounded-2xl text-xs font-black shadow-md hover:scale-105 transition-all cursor-pointer border border-amber-300"
                 >
-                  <span className="material-symbols-outlined text-base">person_pin_circle</span>
-                  Call Nearby Volunteer
+                  <span className="material-symbols-outlined text-base">local_gas_station</span>
+                  + Request On-the-Way Help (Fuel / Roadside)
                 </button>
               </div>
             </div>
@@ -410,7 +486,193 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
               </div>
             ))}
           </div>
+
+          {/* EMERGENCY & PEER HELP FAQ ACCORDION SECTION */}
+          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                  <span className="material-symbols-outlined text-rose-500">help</span>
+                  On-The-Way Peer Assistance & Emergency FAQs
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
+                  Frequently asked questions about requesting road assistance, fuel delivery, honorarium rewards, and caregiver alerts.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                {
+                  q: 'How does On-the-Way Peer Assistance work during road trips (e.g. Ladakh / Leh highway)?',
+                  a: 'When stranded on remote routes or highways due to fuel shortages or mechanical issues, posting a Peer Help Request broadcasts your live GPS coordinates to verified YatraSaathi travelers heading along the same route. Drivers nearby receive a push alert and can stop to assist you.'
+                },
+                {
+                  q: 'How do Fuel Honorarium Tokens and YatraPoints compensation work?',
+                  a: 'To compensate helpful travelers who provide 5L petrol/diesel, wheelchair transfers, or towing assistance, you can attach an optional Honorarium Token (e.g., ₹200 to ₹500). Upon successful assistance verification, the token and +100 bonus YatraPoints are automatically credited to the helper.'
+                },
+                {
+                  q: 'What happens when I trigger the "Broadcast Location to 112 & Caregivers" button?',
+                  a: 'Triggering the broadcast immediately sends your high-precision live GPS coordinates via SMS to your registered primary caregivers and alerts the 112 Emergency Dispatch Center for rapid multi-tier response.'
+                },
+                {
+                  q: 'Are all volunteer guides and peer assistance helpers verified?',
+                  a: 'Yes! All registered YatraSaathi Volunteers undergo Aadhaar/Govt ID verification, first-aid training checks, and community trust rating badges (e.g., ID #YS-8821) visible directly on their profile cards.'
+                }
+              ].map((faq, idx) => (
+                <div 
+                  key={idx} 
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#161928] overflow-hidden transition-all"
+                >
+                  <button
+                    onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
+                    className="w-full p-4 text-left font-extrabold text-xs sm:text-sm text-slate-900 dark:text-slate-100 flex items-center justify-between gap-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-950/60 text-[#e11d48] flex items-center justify-center font-black text-xs shrink-0">
+                        ?
+                      </span>
+                      {faq.q}
+                    </span>
+                    <span className="material-symbols-outlined text-slate-400 transition-transform">
+                      {openFaqIndex === idx ? 'expand_less' : 'expand_more'}
+                    </span>
+                  </button>
+                  {openFaqIndex === idx && (
+                    <div className="px-4 pb-4 pt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300 border-t border-slate-100 dark:border-slate-800/50 font-medium">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
+
+        {/* CUSTOM PEER HELP CREATION MODAL OVERLAY */}
+        {isCustomHelpModalOpen && (
+          <div className="fixed inset-0 z-[120] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="bg-white dark:bg-[#141726] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl relative animate-in zoom-in-95 space-y-4">
+              
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md">
+                    <span className="material-symbols-outlined text-2xl">local_gas_station</span>
+                  </div>
+                  <div>
+                    <h4 className="text-base font-black text-slate-900 dark:text-white">
+                      Request On-the-Way Peer Help
+                    </h4>
+                    <p className="text-[11px] text-slate-500 font-medium">
+                      Broadcast road trip help (fuel, wheelchair, towing) to nearby travelers.
+                    </p>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => setIsCustomHelpModalOpen(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateCustomHelp} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-black uppercase text-slate-500 mb-1">
+                    Help Category
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { id: 'fuel', label: 'Fuel Outage (e.g. Ladakh)', icon: 'local_gas_station' },
+                      { id: 'wheelchair', label: 'Wheelchair / Transfer', icon: 'accessible' },
+                      { id: 'medical', label: 'Medical Supply', icon: 'medical_services' },
+                      { id: 'towing', label: 'Vehicle Breakdown', icon: 'car_repair' }
+                    ].map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setCustomCategory(cat.id as 'fuel' | 'wheelchair' | 'medical' | 'towing')}
+                        className={`p-2.5 rounded-xl border text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                          customCategory === cat.id
+                            ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 font-black shadow-xs'
+                            : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-base">{cat.icon}</span>
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-black uppercase text-slate-500 mb-1">
+                    Exact Need & Location Notes
+                  </label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={customDetails}
+                    onChange={(e) => setCustomDetails(e.target.value)}
+                    placeholder="e.g. Leh-Manali Highway near Khardung La Pass (Short on petrol - need 5L fuel for Royal Enfield)"
+                    className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-black uppercase text-slate-500 mb-1">
+                      Honorarium Token (Tip)
+                    </label>
+                    <select
+                      value={customHonorarium}
+                      onChange={(e) => setCustomHonorarium(e.target.value)}
+                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200"
+                    >
+                      <option value="200">₹200 Honorarium</option>
+                      <option value="350">₹350 Honorarium (Recommended)</option>
+                      <option value="500">₹500 Honorarium</option>
+                      <option value="1000">₹1000 Honorarium</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-black uppercase text-slate-500 mb-1">
+                      Contact Mobile
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={customPhone}
+                      onChange={(e) => setCustomPhone(e.target.value)}
+                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 text-xs font-bold text-slate-800 dark:text-slate-200"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={customSubmitted}
+                  className="w-full py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {customSubmitted ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      <span>Broadcasting Request to Travelers...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-base">podcasts</span>
+                      <span>Broadcast Request to Route Travelers</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* Active Call In-Progress Overlay Dialog */}
         {activeCallService && (

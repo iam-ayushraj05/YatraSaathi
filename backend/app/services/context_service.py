@@ -15,7 +15,7 @@ class ContextService:
     Verifies freshness based on configurable age limits and expiry fields.
     """
 
-    def __init__(self, context_repo: ContextRepository):
+    def __init__(self, context_repo: Optional[ContextRepository] = None):
         self.context_repo = context_repo
 
     async def fetch_live_weather_api(self, lat: float, lng: float) -> Optional[dict]:
@@ -38,50 +38,89 @@ class ContextService:
                 main = data.get("main", {})
                 weather_arr = data.get("weather", [{}])
                 wind = data.get("wind", {})
+                rain = data.get("rain", {})
                 
+                temp = float(main.get("temp", 25.0))
+                feels_like = float(main.get("feels_like", temp))
+                humidity = float(main.get("humidity", 50.0))
+                wind_kph = float(wind.get("speed", 3.0) * 3.6)
+                pop = float(data.get("pop", 0.0))
+                rain_1h = float(rain.get("1h", 0.0))
+                city_name = data.get("name", "")
+
                 return {
                     "location": {"lat": lat, "lng": lng},
+                    "provider": "openweathermap",
                     "condition": weather_arr[0].get("main", "Clear").upper(),
-                    "temperature_c": float(main.get("temp", 25.0)),
-                    "humidity_percent": float(main.get("humidity", 50.0)),
-                    "wind_speed_kmh": float(wind.get("speed", 10.0) * 3.6),
+                    "temperature_c": temp,
+                    "rain_probability": pop if pop > 0 else (0.8 if rain_1h > 0 else 0.0),
+                    "wind_speed_kph": wind_kph,
                     "observed_at": datetime.now(timezone.utc),
-                    "expires_at": datetime.now(timezone.utc) + timedelta(hours=1)
+                    "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
+                    "raw_metadata": {
+                        "feels_like_c": feels_like,
+                        "humidity_percent": humidity,
+                        "precipitation_mm": rain_1h,
+                        "city_name": city_name,
+                        "weather_icon": weather_arr[0].get("icon", ""),
+                        "description": weather_arr[0].get("description", "Clear")
+                    }
                 }
             except Exception:
                 pass
 
         # 2. Fallback to free Open-Meteo API (No key required)
         try:
-            url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current_weather=true"
+            url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m"
             def _call_openmeteo():
                 req = urllib.request.Request(url, headers={"User-Agent": "YatraSaathi/1.0"})
                 with urllib.request.urlopen(req, timeout=5) as resp:
                     return json.loads(resp.read().decode())
 
             data = await asyncio.to_thread(_call_openmeteo)
-            cw = data.get("current_weather", {})
-            wcode = cw.get("weathercode", 0)
-            
-            # Map weather code to condition
+            current = data.get("current", {}) or data.get("current_weather", {})
+            wcode = current.get("weather_code", current.get("weathercode", 0))
+            temp = float(current.get("temperature_2m", current.get("temperature", 25.0)))
+            feels_like = float(current.get("apparent_temperature", temp))
+            humidity = float(current.get("relative_humidity_2m", 50.0))
+            wind_kph = float(current.get("wind_speed_10m", current.get("windspeed", 10.0)))
+            precip = float(current.get("precipitation", 0.0))
+
+            # Map weather code to condition string
             condition = "CLEAR"
+            desc = "Clear sky"
             if wcode in (1, 2, 3):
                 condition = "CLOUDY"
+                desc = "Partly cloudy"
             elif wcode in (45, 48):
                 condition = "FOG"
+                desc = "Foggy"
             elif wcode in (51, 53, 55, 61, 63, 65, 80, 81, 82):
                 condition = "RAIN"
+                desc = "Rainy"
+            elif wcode in (71, 73, 75, 77, 85, 86):
+                condition = "SNOW"
+                desc = "Snowy"
             elif wcode in (95, 96, 99):
                 condition = "STORM"
+                desc = "Thunderstorm"
 
             return {
                 "location": {"lat": lat, "lng": lng},
+                "provider": "open-meteo",
                 "condition": condition,
-                "temperature_c": float(cw.get("temperature", 28.0)),
-                "humidity_percent": 55.0,
-                "wind_speed_kmh": float(cw.get("windspeed", 12.0)),
+                "temperature_c": temp,
+                "rain_probability": 0.8 if precip > 0 or condition == "RAIN" else 0.0,
+                "wind_speed_kph": wind_kph,
                 "observed_at": datetime.now(timezone.utc),
-                "expires_at": datetime.now(timezone.utc) + timedelta(hours=1)
+                "expires_at": datetime.now(timezone.utc) + timedelta(minutes=30),
+                "raw_metadata": {
+                    "feels_like_c": feels_like,
+                    "humidity_percent": humidity,
+                    "precipitation_mm": precip,
+                    "weather_code": wcode,
+                    "description": desc
+                }
             }
         except Exception:
             return None
@@ -97,7 +136,13 @@ class ContextService:
         Retrieves the latest unexpired weather snapshot within range.
         If missing or stale, attempts live fetch from weather API.
         """
-        snapshot = await self.context_repo.get_latest_weather(lat, lng, radius_meters)
+        snapshot = None
+        if self.context_repo:
+            try:
+                snapshot = await self.context_repo.get_latest_weather(lat, lng, radius_meters)
+            except Exception:
+                snapshot = None
+
         now = datetime.now(timezone.utc)
         
         if snapshot:
@@ -118,11 +163,29 @@ class ContextService:
         # Try live weather fetch
         live_data = await self.fetch_live_weather_api(lat, lng)
         if live_data:
-            try:
-                new_snapshot = await self.context_repo.create_weather_snapshot(live_data)
-                return new_snapshot
-            except Exception:
-                pass
+            if self.context_repo:
+                try:
+                    new_snapshot = await self.context_repo.create_weather_snapshot(live_data)
+                    return new_snapshot
+                except Exception:
+                    pass
+
+            # Fallback in-memory object if DB save is unavailable
+            import uuid
+            from geoalchemy2.elements import WKTElement
+            return WeatherSnapshot(
+                id=uuid.uuid4(),
+                provider=live_data.get("provider", "open-meteo"),
+                condition=live_data.get("condition", "CLEAR"),
+                temperature_c=live_data.get("temperature_c", 25.0),
+                rain_probability=live_data.get("rain_probability", 0.0),
+                wind_speed_kph=live_data.get("wind_speed_kph", 10.0),
+                location=WKTElement(f"POINT({lng} {lat})", srid=4326),
+                observed_at=live_data.get("observed_at", now),
+                expires_at=live_data.get("expires_at"),
+                raw_metadata=live_data.get("raw_metadata", {}),
+                created_at=now
+            )
 
         return snapshot
 

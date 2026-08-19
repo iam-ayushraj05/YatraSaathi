@@ -13,7 +13,9 @@ import {
   Info,
   ExternalLink,
   ChevronDown,
-  Route
+  Route,
+  Train,
+  Palmtree
 } from 'lucide-react';
 
 export default function TravelSearch() {
@@ -27,9 +29,9 @@ export default function TravelSearch() {
   const tabs = [
     { id: 'accessible_routes', label: 'Accessible Routes', icon: Route },
     { id: 'flights', label: 'Flights', icon: Plane },
-    { id: 'hotels', label: 'Hotels', icon: Hotel },
-    { id: 'tours', label: 'Tours', icon: Flag },
-    { id: 'packages', label: 'Packages', icon: Package }
+    { id: 'trains', label: 'Trains', icon: Train },
+    { id: 'stays', label: 'Stays', icon: Hotel },
+    { id: 'holidays', label: 'Holidays', icon: Palmtree }
   ];
 
   const handleSwap = () => {

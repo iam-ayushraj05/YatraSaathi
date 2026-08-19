@@ -16,7 +16,7 @@ import { useApp } from '../../context/AppContext';
 
 export default function SummaryCards() {
   const router = useRouter();
-  const { language } = useApp();
+  const { language, userLocation } = useApp();
   const [barriers, setBarriers] = useState<Barrier[]>([]);
   const [places, setPlaces] = useState<Place[]>([]);
   const [sosActive, setSosActive] = useState(false);
@@ -24,7 +24,7 @@ export default function SummaryCards() {
   useEffect(() => {
     async function loadSummaryData() {
       try {
-        const activeBarriers = await api.barriers.getNearby(28.6129, 77.2295, 5000);
+        const activeBarriers = await api.barriers.getNearby(userLocation.lat, userLocation.lng, 5000);
         setBarriers(activeBarriers.slice(0, 2));
         const accessiblePlaces = await api.places.search({ step_free: true });
         setPlaces(accessiblePlaces.slice(0, 2));
@@ -38,7 +38,7 @@ export default function SummaryCards() {
             barrier_type: 'BROKEN_ELEVATOR',
             severity: 'HIGH',
             status: 'ACTIVE',
-            location: { lat: 28.6129, lng: 77.2295 },
+            location: { lat: userLocation.lat, lng: userLocation.lng },
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           },

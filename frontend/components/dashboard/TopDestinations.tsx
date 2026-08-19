@@ -75,7 +75,7 @@ export default function TopDestinations() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
             
             <div className="absolute bottom-5 left-5 right-5 text-white z-10 space-y-1">
-              <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-white">
+              <p className="text-[11px] uppercase tracking-[0.2em] font-extrabold text-[#a855f7]">
                 {dest.country}
               </p>
               <h4 className="text-lg font-black leading-tight text-white">

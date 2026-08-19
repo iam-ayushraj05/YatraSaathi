@@ -43,7 +43,7 @@ export default function ProfileWidget() {
         <h3 className="font-black text-slate-900 dark:text-slate-100 text-xs">
           Your Accessibility Profile
         </h3>
-        <button className="text-[10px] font-black text-purple-700 dark:text-purple-400 hover:underline">
+        <button className="text-[10px] font-black text-[#6b21a8] dark:text-purple-400 hover:underline">
           Edit
         </button>
       </div>
@@ -60,13 +60,13 @@ export default function ProfileWidget() {
               className="flex items-center justify-between py-1 px-1 cursor-pointer group hover:bg-slate-50 dark:hover:bg-slate-900/50 rounded-xl transition-colors"
             >
               <div className="flex items-center gap-2.5">
-                <Icon className="h-4 w-4 text-slate-500 group-hover:text-purple-700 transition-colors shrink-0" />
+                <Icon className="h-4 w-4 text-slate-500 group-hover:text-[#6b21a8] transition-colors shrink-0" />
                 <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                   {item.label}
                 </span>
               </div>
-              <div className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ${isChecked ? 'bg-purple-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-transparent'}`}>
-                <CheckCircle2 className="h-4 w-4 fill-purple-700 text-white" />
+              <div className={`w-4 h-4 rounded-full flex items-center justify-center transition-colors ${isChecked ? 'bg-[#6b21a8] text-white' : 'bg-slate-200 dark:bg-slate-700 text-transparent'}`}>
+                <CheckCircle2 className="h-4 w-4 fill-[#6b21a8] text-white" />
               </div>
             </div>
           );

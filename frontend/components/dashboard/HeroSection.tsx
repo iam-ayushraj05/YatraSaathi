@@ -30,11 +30,12 @@ export default function HeroSection() {
           </div>
 
           {/* Large Bold Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-[68px] font-black tracking-tight leading-[0.98] uppercase text-white font-sans">
-            EXPLORE<br />
-            BEAUTIFUL<br />
-            WORLD<br />
-            WITH US
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-black tracking-tight leading-[1.05] uppercase text-white font-sans">
+            YOUR DESTINATION,<br />
+            YOUR NEEDS.<br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#b084ff] via-[#d0a7ff] to-[#4ffbe6]">
+              THE JOURNEY TAILORED FOR YOU
+            </span>
           </h1>
 
           {/* Subtitle Quote */}

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Sparkles, Send, Mic, MicOff, RotateCcw, Volume2, StopCircle, Navigation, MapPin, Accessibility } from 'lucide-react';
+import { Sparkles, Send, Mic, MicOff, RotateCcw, Volume2, StopCircle, Navigation, MapPin, Accessibility, RefreshCw } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { api } from '../../lib/api';
 import CopilotMessage, { CopilotMessageData } from './CopilotMessage';
 import { VoiceState } from '../../hooks/useVoiceCopilot';
+import { getUserLocation, UserLocation } from '../../lib/location';
 
 interface CopilotWidgetProps {
   onExternalVoiceResponse?: (res: {
@@ -21,6 +22,31 @@ interface CopilotWidgetProps {
 export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: CopilotWidgetProps) {
   const { t, language } = useApp();
   const isHindi = language === 'HI';
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Shared Location Service State
+  const [userLocationState, setUserLocationState] = useState<UserLocation | null>(null);
+  const [isLoadingLoc, setIsLoadingLoc] = useState(true);
+  const [locError, setLocError] = useState<string | null>(null);
+
+  const fetchUserLocation = useCallback(async (forceRefresh = false) => {
+    setIsLoadingLoc(true);
+    setLocError(null);
+    try {
+      const loc = await getUserLocation(forceRefresh);
+      setUserLocationState(loc);
+    } catch (err: any) {
+      setLocError(err?.message || 'Location unavailable');
+      setUserLocationState(null);
+    } finally {
+      setIsLoadingLoc(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserLocation(false);
+  }, [fetchUserLocation]);
 
   const getInitialGreeting = useCallback(() => {
     return isHindi
@@ -98,13 +124,16 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
     window.speechSynthesis.speak(utterance);
   };
 
-
   const stopSpeaking = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     setIsSpeaking(false);
   };
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, isTyping]);
 
   const resetChat = () => {
     stopSpeaking();
@@ -135,7 +164,6 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
     setIsTyping(true);
 
     try {
-      // Build conversation history payload
       const history = messages
         .filter((m) => m.id !== 'm1')
         .slice(-8)
@@ -146,7 +174,12 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
 
       const response = await api.copilot.chat({
         message: cleanText,
-        current_location: { lat: 28.6129, lng: 77.2295 },
+        current_location: userLocationState
+          ? {
+              lat: userLocationState.lat,
+              lng: userLocationState.lng,
+            }
+          : undefined,
         conversation_history: history
       });
 
@@ -249,7 +282,7 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
   ];
 
   return (
-    <div className="flex h-[660px] min-h-0 flex-col overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d0c12] shadow-sm">
+    <div className="flex h-[540px] min-h-0 flex-col overflow-hidden rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0d0c12] shadow-sm">
       {/* Header */}
       <div className="flex shrink-0 items-center justify-between border-b border-slate-100 dark:border-slate-800 px-5 py-4">
         <div className="flex items-center gap-3">
@@ -259,13 +292,34 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
           </div>
 
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-sm font-black text-slate-900 dark:text-white">
                 YatraMitra
               </h2>
               <span className="rounded-full bg-purple-100 dark:bg-purple-950/50 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-purple-700 dark:text-purple-300">
                 YatraMitra AI
               </span>
+
+              {/* Location Indicator & Refresh Button */}
+              <div className="flex items-center gap-1 rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] text-slate-600 dark:text-slate-300 font-semibold">
+                <MapPin className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                <span>
+                  {isLoadingLoc
+                    ? 'Getting your location...'
+                    : userLocationState?.displayName
+                    ? userLocationState.displayName
+                    : 'Location unavailable'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => fetchUserLocation(true)}
+                  disabled={isLoadingLoc}
+                  title="Refresh location"
+                  className="ml-1 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition"
+                >
+                  <RefreshCw className={`h-2.5 w-2.5 ${isLoadingLoc ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
 
             <p className="mt-0.5 text-[10px] text-slate-400 font-medium">
@@ -328,7 +382,7 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
             </div>
           )}
 
-          <div ref={chatEndRef} />
+          <div ref={messagesEndRef} />
         </div>
       </div>
 
@@ -394,7 +448,7 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
           <button
             type="submit"
             disabled={!inputText.trim() || isTyping}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 transition hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#581c87] to-[#6b21a8] text-white shadow-lg shadow-purple-900/20 transition hover:scale-105 disabled:opacity-40 disabled:hover:scale-100"
           >
             <Send className="h-4 w-4" />
           </button>

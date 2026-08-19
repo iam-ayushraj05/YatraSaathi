@@ -55,7 +55,7 @@ const ACCESSIBLE_PLACES = [
 ];
 
 export default function RoutePlanner({ onRoutePlanned, initialFrom, initialTo }: RoutePlannerProps) {
-  const { language } = useApp();
+  const { language, userLocation, refreshLocation } = useApp();
   const [fromLoc, setFromLoc] = useState(initialFrom || 'Lotus Temple');
   const [toLoc, setToLoc] = useState(initialTo || 'National Museum');
   const [showFromDropdown, setShowFromDropdown] = useState(false);
@@ -67,11 +67,10 @@ export default function RoutePlanner({ onRoutePlanned, initialFrom, initialTo }:
   const [preferStepFree, setPreferStepFree] = useState(true);
   const [preferElevators, setPreferElevators] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userLiveLocation, setUserLiveLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const getCoords = (name: string): { lat: number; lng: number } => {
-    if (name.includes('Live Location') || name.includes('Real-Time')) {
-      return userLiveLocation || { lat: 28.6139, lng: 77.2090 };
+    if (name.includes('Live Location') || name.includes('Real-Time') || name.includes('Current Location')) {
+      return { lat: userLocation.lat, lng: userLocation.lng };
     }
     const cleanName = name.split(',')[0].trim();
     if (DELHI_LOCATIONS[cleanName]) return DELHI_LOCATIONS[cleanName];
@@ -172,25 +171,11 @@ export default function RoutePlanner({ onRoutePlanned, initialFrom, initialTo }:
   };
 
   const handleLiveLocation = () => {
-    if (typeof window !== 'undefined' && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          setUserLiveLocation(coords);
-          setFromLoc('My Real-Time Location');
-          setShowFromDropdown(false);
-          computeAndNotifyRoute('My Real-Time Location', toLoc);
-        },
-        () => {
-          const simulated = { lat: 28.6139, lng: 77.2090 };
-          setUserLiveLocation(simulated);
-          setFromLoc('My Real-Time Location');
-          setShowFromDropdown(false);
-          computeAndNotifyRoute('My Real-Time Location', toLoc);
-        },
-        { enableHighAccuracy: true, timeout: 6000 }
-      );
-    }
+    refreshLocation();
+    const name = userLocation.displayName;
+    setFromLoc(name);
+    setShowFromDropdown(false);
+    computeAndNotifyRoute(name, toLoc);
   };
 
   const filteredFromPlaces = ACCESSIBLE_PLACES.filter(p => 

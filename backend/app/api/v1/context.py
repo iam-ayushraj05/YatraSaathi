@@ -16,7 +16,7 @@ router = APIRouter(prefix="/context", tags=["Context"])
 async def get_weather(
     lat: float,
     lng: float,
-    db: AsyncSession = Depends(get_db)
+    db: Optional[AsyncSession] = Depends(get_db)
 ):
     # Validate coordinates
     if not (-90.0 <= lat <= 90.0) or not (-180.0 <= lng <= 180.0):
@@ -25,14 +25,14 @@ async def get_weather(
             detail="Invalid coordinates. Latitude must be between -90 and 90, and longitude between -180 and 180."
         )
 
-    context_repo = ContextRepository(db)
+    context_repo = ContextRepository(db) if db else None
     context_svc = ContextService(context_repo)
 
     snapshot = await context_svc.get_latest_weather(lat, lng)
     if not snapshot:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No fresh weather snapshot found for this location."
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Weather service unavailable for this location."
         )
 
     return ResponseWrapper(data=WeatherSnapshotResponse.model_validate(snapshot))

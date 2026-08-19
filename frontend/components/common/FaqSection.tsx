@@ -18,7 +18,7 @@ import { useApp } from '../../context/AppContext';
 export interface FaqItem {
   question: string;
   answer: string;
-  category?: 'Monitoring' | 'Enhancing' | 'Trust & Verification' | 'General';
+  category?: string;
   badge?: string;
 }
 

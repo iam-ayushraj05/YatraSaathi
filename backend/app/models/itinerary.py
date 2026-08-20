@@ -1,5 +1,5 @@
 """
-YatraSaathi — Itinerary and ItineraryStop models.
+yatrasaathi — Itinerary and ItineraryStop models.
 """
 import uuid
 from datetime import datetime

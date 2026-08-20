@@ -1,5 +1,5 @@
 """
-YatraSaathi — Route, RouteSegment, RouteConstraint, and RouteRequest models.
+yatrasaathi — Route, RouteSegment, RouteConstraint, and RouteRequest models.
 """
 import uuid
 from datetime import datetime

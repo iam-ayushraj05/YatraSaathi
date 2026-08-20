@@ -1,5 +1,5 @@
 """
-YatraSaathi — Route, RouteSegment, RouteConstraint, and RouteRequest schemas.
+yatrasaathi — Route, RouteSegment, RouteConstraint, and RouteRequest schemas.
 """
 from typing import Any, Optional
 from uuid import UUID

@@ -1,5 +1,5 @@
 """
-YatraSaathi — CrowdObservation model.
+yatrasaathi — CrowdObservation model.
 """
 import uuid
 from datetime import datetime

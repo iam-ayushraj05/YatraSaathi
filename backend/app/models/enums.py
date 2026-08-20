@@ -1,5 +1,5 @@
 """
-YatraSaathi — Enum definitions.
+yatrasaathi — Enum definitions.
 
 All enums mirror the DATA_MODEL.md specification.
 Python-native enums are used so SQLAlchemy can create

@@ -7,7 +7,7 @@ import ScrollToTop from '../components/ScrollToTop';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export const metadata: Metadata = {
-  title: 'YatraSaathi — Your Personal Accessibility Companion',
+  title: 'yatrasaathi — Your Personal Accessibility Companion',
   description: 'Plan accessible journeys with confidence. Real-time barrier intelligence, step-free routes, and live assistance mapping.',
 };
 

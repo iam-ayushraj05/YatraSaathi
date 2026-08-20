@@ -1,5 +1,5 @@
 """
-YatraSaathi — User and Accessibility Profile schemas.
+yatrasaathi — User and Accessibility Profile schemas.
 """
 from typing import Optional
 from uuid import UUID

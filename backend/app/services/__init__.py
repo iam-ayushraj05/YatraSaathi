@@ -1,5 +1,5 @@
 """
-YatraSaathi — Core Service and Intelligence Layer.
+yatrasaathi — Core Service and Intelligence Layer.
 """
 from app.services.exceptions import (  # noqa: F401
     ServiceError,

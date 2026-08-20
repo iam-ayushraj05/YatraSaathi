@@ -1,5 +1,5 @@
 """
-YatraSaathi — Place, Facility, AssistancePoint, and AccessibilityRecord schemas.
+yatrasaathi — Place, Facility, AssistancePoint, and AccessibilityRecord schemas.
 """
 from typing import Any, Optional
 from uuid import UUID

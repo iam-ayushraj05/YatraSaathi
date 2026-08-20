@@ -30,7 +30,7 @@ class ContextService:
             try:
                 url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={settings.weather_api_key}&units=metric"
                 def _call_owm():
-                    req = urllib.request.Request(url, headers={"User-Agent": "YatraSaathi/1.0"})
+                    req = urllib.request.Request(url, headers={"User-Agent": "yatrasaathi/1.0"})
                     with urllib.request.urlopen(req, timeout=5) as resp:
                         return json.loads(resp.read().decode())
                 
@@ -73,7 +73,7 @@ class ContextService:
         try:
             url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m"
             def _call_openmeteo():
-                req = urllib.request.Request(url, headers={"User-Agent": "YatraSaathi/1.0"})
+                req = urllib.request.Request(url, headers={"User-Agent": "yatrasaathi/1.0"})
                 with urllib.request.urlopen(req, timeout=5) as resp:
                     return json.loads(resp.read().decode())
 

@@ -1,5 +1,5 @@
 """
-YatraSaathi — Weather and Crowd/Context schemas.
+yatrasaathi — Weather and Crowd/Context schemas.
 """
 from typing import Optional
 from uuid import UUID

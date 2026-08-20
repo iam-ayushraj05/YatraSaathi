@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useApp } from '../../context/AppContext';
 import appLogo from '../../public/app-logo.png';
+import brandText from '../../public/brand-text.png';
 
 export default function Footer() {
   const { t } = useApp();
@@ -15,22 +16,23 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand Column */}
           <div className="space-y-5">
-            <Link href="/dashboard" className="flex items-center gap-2.5 cursor-pointer group no-underline">
-              <div className="relative w-16 h-16 lg:w-20 lg:h-20 flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 drop-shadow-[0_4px_20px_rgba(72,0,178,0.28)]">
+            <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer group no-underline">
+              <div className="relative w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 drop-shadow-[0_4px_20px_rgba(72,0,178,0.28)]">
                 <Image
                   src={appLogo}
-                  alt="YatraSaathi Logo"
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+                  alt="yatrasaathi Logo"
+                  width={64}
+                  height={64}
+                  className="w-full h-full object-cover rounded-2xl shadow-sm"
                 />
               </div>
-              <div className="-ml-1.5">
-                <h2 className="text-3xl lg:text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#9d2b6b] via-[#881337] via-[#6b21a8] to-[#581c87] dark:from-pink-400 dark:via-purple-300 dark:to-purple-400 leading-snug pb-1 transition-colors lowercase tracking-tighter overflow-visible">
-                  yatrasaathi
-                </h2>
-                <p className="text-[10px] text-[#4800b2] dark:text-[#4ffbe6] uppercase opacity-85 leading-none mt-1.5 tracking-[0.22em] font-bold">
-                  ACCESSIBLE JOURNEYS
+              <div className="flex flex-col -ml-1 select-none">
+                <div className="text-2xl lg:text-3xl font-black tracking-tight leading-none">
+                  <span className="text-slate-900 dark:text-white transition-colors">yatra</span>
+                  <span className="bg-gradient-to-r from-[#8b5cf6] via-[#3b82f6] to-[#06b6d4] bg-clip-text text-transparent">saathi</span>
+                </div>
+                <p className="text-[8.5px] lg:text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400 mt-1.5 leading-none">
+                  YOUR DESTINATION. YOUR NEEDS. YOUR JOURNEY.
                 </p>
               </div>
             </Link>
@@ -122,7 +124,7 @@ export default function Footer() {
             <form 
               onSubmit={(e) => {
                 e.preventDefault();
-                alert("Thank you for subscribing to YatraSaathi accessibility updates!");
+                alert("Thank you for subscribing to yatrasaathi accessibility updates!");
               }}
               className="flex flex-col sm:flex-row gap-2.5"
             >
@@ -144,7 +146,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-[#cbc3d9]/30 dark:border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-700 dark:text-slate-200 font-bold">
-          <p className="font-bold tracking-wide">© 2026 YatraSaathi. All rights reserved.</p>
+          <p className="font-bold tracking-wide">© 2026 yatrasaathi. All rights reserved.</p>
           <p className="flex items-center gap-1.5 font-bold tracking-wide">
             Made with <span className="material-symbols-outlined text-[16px] text-red-500 fill animate-pulse">favorite</span> for accessible travel.
           </p>

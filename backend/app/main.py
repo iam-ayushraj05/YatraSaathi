@@ -21,7 +21,7 @@ from app.api.v1.internal import router as internal_router
 from app.api.v1.copilot import router as copilot_router
 
 app = FastAPI(
-    title="YatraSaathi API",
+    title="yatrasaathi API",
     description="AI-powered accessible travel companion",
     version="1.0.0",
 )

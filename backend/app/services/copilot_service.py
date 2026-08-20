@@ -17,7 +17,7 @@ from app.schemas.place import parse_postgis_location
 
 logger = logging.getLogger(__name__)
 
-COPILOT_SYSTEM_PROMPT = """You are YatraSaathi Travel Copilot, an AI assistant dedicated to accessible travel planning, wheelchair and mobility assistance, step-free route guidance, accessibility facilities, accessible toilets, assistance points, active barriers, weather awareness, verified place information, and accessible route recommendations.
+COPILOT_SYSTEM_PROMPT = """You are yatrasaathi Travel Copilot, an AI assistant dedicated to accessible travel planning, wheelchair and mobility assistance, step-free route guidance, accessibility facilities, accessible toilets, assistance points, active barriers, weather awareness, verified place information, and accessible route recommendations.
 
 Your responsibilities:
 1. Provide accurate, clear, and empathetic travel assistance for people with disabilities, wheelchair users, elderly travelers, and accessibility needs.
@@ -118,7 +118,7 @@ class CopilotService:
         if is_greeting:
             logger.info("[VOICE TIMING] Fast-path greeting response selected")
             return {
-                "response": "Hi! I'm YatraSaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?",
+                "response": "Hi! I'm yatrasaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?",
                 "relevant_places": [],
                 "relevant_accessibility": {"barriers_count": 0, "profile_used": context_data["profile"]},
                 "warnings": [],
@@ -129,7 +129,7 @@ class CopilotService:
         if is_capability:
             logger.info("[VOICE TIMING] Fast-path capability response selected")
             return {
-                "response": "I am your YatraSaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts.",
+                "response": "I am your yatrasaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts.",
                 "relevant_places": [],
                 "relevant_accessibility": {"barriers_count": 0, "profile_used": context_data["profile"]},
                 "warnings": [],
@@ -305,7 +305,7 @@ class CopilotService:
         # Fast path for simple greetings and capability questions
         if is_greeting:
             return {
-                "response": "Hi! I'm YatraSaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?",
+                "response": "Hi! I'm yatrasaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?",
                 "relevant_places": [],
                 "relevant_accessibility": {"barriers_count": 0, "profile_used": context_data["profile"]},
                 "warnings": [],
@@ -315,7 +315,7 @@ class CopilotService:
 
         if is_capability:
             return {
-                "response": "I am your YatraSaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts.",
+                "response": "I am your yatrasaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts.",
                 "relevant_places": [],
                 "relevant_accessibility": {"barriers_count": 0, "profile_used": context_data["profile"]},
                 "warnings": [],
@@ -325,7 +325,7 @@ class CopilotService:
 
         # 6. Generate response using LLM or smart fallback
         if is_end_call_intent:
-            ai_response = "Sure. Goodbye! Have a safe and accessible journey with YatraSaathi."
+            ai_response = "Sure. Goodbye! Have a safe and accessible journey with yatrasaathi."
         else:
             t_llm_start = time.perf_counter()
             logger.info("[VOICE TIMING] LLM start")
@@ -437,7 +437,7 @@ User Query: "{message}"
 
         # 1. Standalone Greetings
         if any(w in words for w in ["hello", "hi", "hey", "namaste", "greetings"]) and len(words) <= 3 and not any(w in msg_lower for w in ["delhi", "noida", "place", "route", "barrier", "toilet", "restroom", "weather", "india gate", "trip", "plan"]):
-            return "Hi! I'm YatraSaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?"
+            return "Hi! I'm yatrasaathi. I can help you find accessible places, plan step-free routes, check barrier alerts, and more. How can I help you today?"
 
         # 2. Vague Trip Planning Query (e.g. "Help me plan an accessible trip")
         if any(phrase in msg_lower for phrase in ["plan an accessible trip", "plan a trip", "help me plan", "plan trip", "accessible trip"]) and not any(w in msg_lower for w in ["noida", "delhi", "india gate", "lotus temple", "red fort"]):
@@ -458,11 +458,11 @@ User Query: "{message}"
         if any(phrase in msg_lower for phrase in ["accessible facilities", "wheelchair accessible", "facilities there", "is it accessible", "accessible there"]):
             if "india gate" in combined_text:
                 return "Yes! India Gate features 100% step-free paved pathways around the main plaza, tactile paving, accessible restrooms, and dedicated wheelchair parking."
-            return "Yes, YatraSaathi verifies step-free entrances, tactile paving, accessible restrooms, and ramp access at destination locations."
+            return "Yes, yatrasaathi verifies step-free entrances, tactile paving, accessible restrooms, and ramp access at destination locations."
 
         # 6. Capability Question
         if any(phrase in msg_lower for phrase in ["what can you do", "who are you", "help me", "capabilities", "features"]) and not context_data.get("places") and not context_data.get("route_info"):
-            return "I am your YatraSaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts."
+            return "I am your yatrasaathi AI Travel Copilot. I can help you find wheelchair-accessible places, plan step-free routes, check live barriers, locate assistance points, and check weather alerts."
 
         parts = []
 
@@ -482,7 +482,7 @@ User Query: "{message}"
                 acc = f"{p['accessibility_level']} accessibility (Score: {p['accessibility_score']}/100)"
                 reasons = f" ({', '.join(p.get('reasons', [])[:2])})" if p.get("reasons") else ""
                 places_summary.append(f"• **{p['name']}** ({p['category']}): {acc}{reasons}")
-            parts.append("Here is the verified place information from YatraSaathi:")
+            parts.append("Here is the verified place information from yatrasaathi:")
             parts.append("\n".join(places_summary))
 
         # 9. Barrier Info
@@ -498,7 +498,7 @@ User Query: "{message}"
         if parts:
             return "\n\n".join(parts)
 
-        return f"I have processed your query regarding '{message}'. Tell me your starting location and destination, and YatraSaathi will calculate step-free accessible routes."
+        return f"I have processed your query regarding '{message}'. Tell me your starting location and destination, and yatrasaathi will calculate step-free accessible routes."
 
 
 

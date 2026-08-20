@@ -1,5 +1,5 @@
 """
-YatraSaathi — AuditLog model.
+yatrasaathi — AuditLog model.
 Immutable record of every significant application action.
 """
 import uuid

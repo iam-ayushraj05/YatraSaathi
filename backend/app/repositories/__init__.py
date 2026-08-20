@@ -1,5 +1,5 @@
 """
-YatraSaathi — Database Repositories.
+yatrasaathi — Database Repositories.
 """
 from app.repositories.base import BaseRepository  # noqa: F401
 from app.repositories.user import UserRepository  # noqa: F401

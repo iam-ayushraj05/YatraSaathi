@@ -1,5 +1,5 @@
 """
-YatraSaathi — API schemas.
+yatrasaathi — API schemas.
 """
 from app.schemas.base import (  # noqa: F401
     MetaInfo,

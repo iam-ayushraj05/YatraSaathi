@@ -8,6 +8,7 @@ import { useApp } from '../../context/AppContext';
 import { api } from '../../lib/api';
 import SosHelpModal from '../sos/SosHelpModal';
 import appLogo from '../../public/app-logo.png';
+import brandText from '../../public/brand-text.png';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -110,38 +111,39 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
   return (
     <>
-      <header className="flex items-center justify-between w-full pl-3 lg:pl-5 pr-4 lg:pr-7 py-2.5 glass-panel sticky top-0 z-50 shadow-sm transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/90 dark:bg-[#121420]/90 backdrop-blur-xl gap-3">
+      <header className="flex items-center justify-between w-full px-3 md:px-5 lg:px-6 py-2 glass-panel sticky top-0 z-50 shadow-xs transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/95 dark:bg-[#121420]/95 backdrop-blur-xl gap-2 xl:gap-3">
         {/* Left: Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-1.5 cursor-pointer group no-underline shrink-0 -ml-1">
-          <div className="relative w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_16px_rgba(107,33,168,0.25)]">
+        <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer group no-underline shrink-0">
+          <div className="relative w-10 h-10 lg:w-11 lg:h-11 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_12px_rgba(107,33,168,0.2)]">
             <Image
               src={appLogo}
-              alt="YatraSaathi Logo"
-              width={64}
-              height={64}
-              className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+              alt="yatrasaathi Logo"
+              width={48}
+              height={48}
+              className="w-full h-full object-cover rounded-xl shadow-xs"
               priority
             />
           </div>
-          <div className="shrink-0 -ml-1.5">
-            <h1 className="text-2xl lg:text-3xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#9d2b6b] via-[#881337] via-[#6b21a8] to-[#581c87] dark:from-pink-400 dark:via-purple-300 dark:to-purple-400 leading-snug pb-1 transition-colors duration-300 lowercase font-sans overflow-visible">
-              yatrasaathi
-            </h1>
-            <p className="text-[9px] lg:text-[9.5px] text-[#6b21a8] dark:text-purple-400 uppercase opacity-85 leading-none mt-1 tracking-[0.22em] font-bold">
-              Accessible Journeys
+          <div className="flex flex-col -ml-0.5 select-none">
+            <div className="text-xl lg:text-2xl font-black tracking-tight leading-none">
+              <span className="text-slate-900 dark:text-white transition-colors">yatra</span>
+              <span className="bg-gradient-to-r from-[#8b5cf6] via-[#3b82f6] to-[#06b6d4] bg-clip-text text-transparent">saathi</span>
+            </div>
+            <p className="text-[7.5px] lg:text-[8px] font-extrabold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400 mt-1 leading-none">
+              YOUR DESTINATION. YOUR NEEDS. YOUR JOURNEY.
             </p>
           </div>
         </Link>
 
         {/* Center: Pill Navigation */}
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-6 bg-white/70 dark:bg-black/40 px-5 xl:px-6 py-2 rounded-full border border-white/50 dark:border-white/10 shadow-sm backdrop-blur-xl shrink-0">
+        <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 bg-white/70 dark:bg-black/40 px-4 xl:px-5 py-1.5 rounded-full border border-white/50 dark:border-white/10 shadow-xs backdrop-blur-xl shrink-0">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || (link.href !== '/dashboard' && pathname.startsWith(link.href));
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-xs xl:text-sm font-bold transition-all relative whitespace-nowrap px-1 ${
+                className={`text-xs xl:text-[13px] font-bold transition-all relative whitespace-nowrap px-0.5 ${
                   isActive
                     ? 'text-[#6b21a8] dark:text-purple-400 after:content-[\'\'] after:absolute after:-bottom-1.5 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:bg-[#6b21a8] dark:after:bg-purple-400 after:rounded-full'
                     : 'text-slate-600 dark:text-slate-300 hover:text-[#6b21a8] dark:hover:text-purple-400 nav-link'
@@ -149,7 +151,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
               >
                 {/* Floating "Earn Points ⭐" badge on top of Reports link */}
                 {link.key === 'reports' && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-xs flex items-center gap-0.5 whitespace-nowrap border border-white/60 animate-pulse">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-slate-950 text-[7.5px] font-black px-1.5 py-0.2 rounded-full shadow-xs flex items-center gap-0.5 whitespace-nowrap border border-white/60 animate-pulse">
                     Earn Points ⭐
                   </span>
                 )}
@@ -160,13 +162,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </nav>
 
         {/* Right Controls */}
-        <div className="flex items-center gap-2 lg:gap-3 shrink-0">
-          {/* YatraMitra AI Button (Exact Match to Reference Pill Image) */}
+        <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-2.5 shrink-0 pr-1">
+          {/* YatraMitra AI Button */}
           <Link
             href="/copilot"
-            className="flex items-center gap-2 bg-gradient-to-r from-[#6b21a8] via-[#7e22ce] to-[#6b21a8] hover:brightness-110 text-white px-4 py-2 rounded-full text-xs font-black shadow-md hover:scale-105 transition-all shrink-0 cursor-pointer whitespace-nowrap border border-white/20"
+            className="flex items-center gap-1.5 bg-gradient-to-r from-[#6b21a8] via-[#7e22ce] to-[#6b21a8] hover:brightness-110 text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-sm hover:scale-103 transition-all shrink-0 cursor-pointer whitespace-nowrap border border-white/20"
           >
-            <svg viewBox="0 0 32 32" className="w-5 h-5 text-white shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="0 0 32 32" className="w-4 h-4 text-white shrink-0" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="11" y="2" width="10" height="5" rx="2" stroke="currentColor" strokeWidth="2.5" fill="none" />
               <rect x="3" y="6" width="26" height="23" rx="5" fill="currentColor" />
               <circle cx="11.5" cy="15" r="2.2" fill="#6b21a8" />
@@ -175,15 +177,15 @@ export default function Header({ onMenuClick }: HeaderProps) {
               <circle cx="19.8" cy="14.2" r="0.8" fill="white" />
               <path d="M12 20.5C13.5 22.8 18.5 22.8 20 20.5" stroke="#6b21a8" strokeWidth="2.2" strokeLinecap="round" />
             </svg>
-            <span className="text-sm font-extrabold tracking-tight">YatraMitra AI</span>
+            <span className="text-xs font-bold tracking-tight">YatraMitra AI</span>
           </Link>
 
-          {/* SOS Help Button (Strictly Rose #EF4444) */}
+          {/* SOS Help Button */}
           <button 
             onClick={() => setSosOpen(true)}
-            className="flex items-center gap-1.5 bg-[#ef4444] hover:bg-rose-600 text-white px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg sos-pulse transition-all hover:scale-105 shrink-0 cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-1 bg-[#ef4444] hover:bg-rose-600 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-sm sos-pulse transition-all hover:scale-103 shrink-0 cursor-pointer whitespace-nowrap"
           >
-            <span className="material-symbols-outlined fill text-base">emergency</span>
+            <span className="material-symbols-outlined fill text-sm">emergency</span>
             <span className="hidden sm:inline">SOS Help</span>
           </button>
 
@@ -191,12 +193,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div ref={notifContainerRef} className="relative shrink-0">
             <button 
               onClick={() => setNotifOpen(!notifOpen)}
-              className="w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 transition-colors bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700 hidden sm:flex hover:scale-105 cursor-pointer relative shrink-0"
+              className="w-8.5 h-8.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 transition-colors bg-white dark:bg-slate-900 shadow-xs border border-slate-200 dark:border-slate-700 hidden sm:flex hover:scale-105 cursor-pointer relative shrink-0"
               title="Notifications"
             >
-              <span className="material-symbols-outlined text-lg">notifications</span>
+              <span className="material-symbols-outlined text-base">notifications</span>
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#ef4444] text-white text-[9px] font-black rounded-full flex items-center justify-center animate-pulse shadow-sm">
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#ef4444] text-white text-[8.5px] font-black rounded-full flex items-center justify-center animate-pulse shadow-xs">
                   {unreadCount}
                 </span>
               )}
@@ -263,7 +265,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div ref={langContainerRef} className="relative hidden md:block shrink-0">
             <button 
               onClick={() => setLangOpen(!langOpen)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-200 transition-colors bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700 hover:scale-105 cursor-pointer text-xs font-bold"
+              className="flex items-center gap-1 px-2.5 py-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-200 transition-colors bg-white dark:bg-slate-900 shadow-xs border border-slate-200 dark:border-slate-700 hover:scale-105 cursor-pointer text-xs font-bold"
             >
               <span>{language}</span>
               <span className="material-symbols-outlined text-sm">expand_more</span>
@@ -308,16 +310,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <div ref={profileContainerRef} className="relative shrink-0">
             <button 
               onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-700 cursor-pointer group"
+              className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200 dark:border-slate-700 cursor-pointer group"
             >
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#581c87] to-[#6b21a8] text-white flex items-center justify-center font-bold text-xs shadow-md ring-2 ring-white dark:ring-slate-800 transition-transform duration-300 group-hover:scale-110 shrink-0">
+              <div className="w-8.5 h-8.5 rounded-full bg-gradient-to-br from-[#581c87] to-[#6b21a8] text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-white dark:ring-slate-800 transition-transform duration-300 group-hover:scale-105 shrink-0">
                 A
               </div>
               <div className="text-left hidden sm:flex flex-col leading-none select-none">
-                <span className="text-[11px] font-black text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
+                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
                   Aarav
                 </span>
-                <span className="text-[11px] font-black text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
+                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
                   Sharma
                 </span>
               </div>
@@ -334,7 +336,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
                   
                   {/* Loyalty Rewards Centre Banner / Link */}
                   <Link
-                    href="/accessibility-profile"
+                    href="/rewards"
                     onClick={() => setProfileOpen(false)}
                     className="mt-2 flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 hover:scale-102 transition-transform cursor-pointer shadow-xs"
                   >
@@ -350,6 +352,14 @@ export default function Header({ onMenuClick }: HeaderProps) {
                     </span>
                   </Link>
                 </div>
+                <Link 
+                  href="/rewards"
+                  onClick={() => setProfileOpen(false)}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-base text-amber-500">card_giftcard</span>
+                  Loyalty Rewards
+                </Link>
                 <Link 
                   href="/reports"
                   onClick={() => setProfileOpen(false)}
@@ -377,13 +387,13 @@ export default function Header({ onMenuClick }: HeaderProps) {
             )}
           </div>
 
-          {/* Dark Mode Toggle Button (Beside Aarav Sharma Profile) */}
+          {/* Dark Mode Toggle Button */}
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            className="w-9 h-9 rounded-full hover:bg-[#e7e8ee] dark:hover:bg-slate-800 flex items-center justify-center text-[#4800b2] dark:text-[#4ffbe6] transition-all bg-white dark:bg-slate-900 shadow-sm border border-[#cbc3d9]/40 dark:border-slate-700 hover:scale-110 cursor-pointer shrink-0 ml-0.5"
+            className="w-8.5 h-8.5 rounded-full hover:bg-[#e7e8ee] dark:hover:bg-slate-800 flex items-center justify-center text-[#4800b2] dark:text-[#4ffbe6] transition-all bg-white dark:bg-slate-900 shadow-xs border border-[#cbc3d9]/40 dark:border-slate-700 hover:scale-105 cursor-pointer shrink-0"
           >
-            <span className="material-symbols-outlined text-lg">
+            <span className="material-symbols-outlined text-base">
               {theme === 'dark' ? 'light_mode' : 'dark_mode'}
             </span>
           </button>

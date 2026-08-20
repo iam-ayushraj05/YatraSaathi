@@ -1,5 +1,5 @@
 """
-YatraSaathi — Report model.
+yatrasaathi — Report model.
 """
 import uuid
 from typing import Optional, TYPE_CHECKING

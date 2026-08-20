@@ -1,5 +1,5 @@
 """
-YatraSaathi — Common schemas used across multiple domains.
+yatrasaathi — Common schemas used across multiple domains.
 """
 from pydantic import BaseModel, Field
 

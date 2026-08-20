@@ -13,10 +13,12 @@ import {
   Users, 
   Sparkles, 
   Accessibility, 
+  Award,
   X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import appLogo from '../../public/app-logo.png';
+import brandText from '../../public/brand-text.png';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -34,6 +36,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { label: t('itineraries') || 'Itineraries', href: '/itineraries', icon: FileText },
     { label: t('reports') || 'Reports', href: '/reports', icon: TriangleAlert },
     { label: t('community') || 'Community', href: '/community', icon: Users },
+    { label: language === 'HI' ? 'लॉयल्टी रिवार्ड्स' : 'Loyalty Rewards', href: '/rewards', icon: Award, badge: '350 pts' },
     { label: t('copilot') || 'YatraMitra AI', href: '/copilot', icon: Sparkles, badge: 'NEW' },
     { label: t('profile') || 'Accessibility Profile', href: '/accessibility-profile', icon: Accessibility },
   ];
@@ -72,24 +75,25 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             <Link 
               href="/dashboard" 
               onClick={() => setIsOpen(false)} 
-              className="flex items-center gap-1.5 group no-underline"
+              className="flex items-center gap-2 group no-underline"
             >
-              <div className="relative w-11 h-11 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.25)]">
+              <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.25)]">
                 <Image
                   src={appLogo}
-                  alt="YatraSaathi Logo"
-                  width={44}
-                  height={44}
-                  className="w-full h-full object-contain filter saturate-[1.08] contrast-[1.05]"
+                  alt="yatrasaathi Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-cover rounded-xl shadow-xs"
                 />
               </div>
-              <div className="flex flex-col -ml-1">
-                <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-snug pb-1 lowercase bg-clip-text text-transparent bg-gradient-to-r from-[#9d2b6b] via-[#881337] via-[#6b21a8] to-[#581c87] dark:from-pink-400 dark:via-purple-300 dark:to-purple-400 overflow-visible">
-                  yatrasaathi
-                </span>
-                <span className="text-[8px] font-black text-violet-600 dark:text-violet-400 tracking-wider uppercase mt-1 leading-none">
-                  ACCESSIBLE JOURNEYS FOR ALL
-                </span>
+              <div className="flex flex-col -ml-0.5 select-none">
+                <div className="text-lg font-black tracking-tight leading-none">
+                  <span className="text-slate-900 dark:text-white transition-colors">yatra</span>
+                  <span className="bg-gradient-to-r from-[#8b5cf6] via-[#3b82f6] to-[#06b6d4] bg-clip-text text-transparent">saathi</span>
+                </div>
+                <p className="text-[6.5px] font-extrabold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400 mt-1 leading-none">
+                  YOUR DESTINATION. YOUR NEEDS. YOUR JOURNEY.
+                </p>
               </div>
             </Link>
             

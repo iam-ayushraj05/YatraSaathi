@@ -1,5 +1,5 @@
 """
-YatraSaathi — AccessibilityRecord model.
+yatrasaathi — AccessibilityRecord model.
 
 Stores structured accessibility claims for a place.
 UNKNOWN != AVAILABLE — never collapse to boolean.

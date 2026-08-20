@@ -91,7 +91,7 @@ export async function reverseGeocode(
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
       {
-        headers: { 'User-Agent': 'YatraSaathi-AccessibleTravel/1.0' },
+        headers: { 'User-Agent': 'yatrasaathi-AccessibleTravel/1.0' },
         signal: AbortSignal.timeout(4000),
       }
     );

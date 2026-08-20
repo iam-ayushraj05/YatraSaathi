@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     database_url: str
 
     # ── App ───────────────────────────────────────────────────────────────
-    app_name: str = "YatraSaathi API"
+    app_name: str = "yatrasaathi API"
     app_version: str = "1.0.0"
     environment: str = "development"
     debug: bool = True

@@ -1938,6 +1938,9 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Why YatraSaathi USPs Section */}
+        <WhyYatraSaathi />
+
         {/* Hot Deals Section */}
         <HotDeals />
 

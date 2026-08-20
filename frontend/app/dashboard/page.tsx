@@ -10,7 +10,7 @@ import HotDeals from '@/components/dashboard/HotDeals';
 import TopDestinations from '@/components/dashboard/TopDestinations';
 import DatePickerModal from '@/components/common/DatePickerModal';
 import FaqSection from '@/components/common/FaqSection';
-import Whyyatrasaathi from '@/components/dashboard/Whyyatrasaathi';
+import WhyYatraSaathiSection from '@/components/dashboard/WhyYatraSaathiSection';
 import { INDIAN_CITIES, INDIAN_AIRPORTS, INDIAN_TRAIN_STATIONS } from '@/lib/locationData';
 import { useApp } from '@/context/AppContext';
 
@@ -1188,8 +1188,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Why yatrasaathi? (4 Best Core USPs Section) */}
-        <Whyyatrasaathi />
+        {/* Why YatraSaathi USPs Section */}
+        <WhyYatraSaathiSection />
 
         {/* Header for Main Content Area (Compact Spacing & Interactive + Sign) */}
         <div id="routes-section" className="flex flex-col md:flex-row justify-between items-center gap-3 pb-3 border-b border-[#cbc3d9]/30 dark:border-slate-800 mt-3 animate-fade-in-up relative z-30 scroll-mt-24">
@@ -1937,9 +1937,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-
-        {/* Why YatraSaathi USPs Section */}
-        <WhyYatraSaathi />
 
         {/* Hot Deals Section */}
         <HotDeals />

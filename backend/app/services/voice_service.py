@@ -41,7 +41,7 @@ def detect_input_language(text: str) -> str:
 class VoiceService:
     """
     Voice Travel Copilot Pipeline Service:
-    Audio Input / LiveKit -> Deepgram STT -> YatraSaathi Travel Copilot (Gemini + Backend Services) -> Murf TTS -> LiveKit / Audio Output.
+    Audio Input / LiveKit -> Deepgram STT -> yatrasaathi Travel Copilot (Gemini + Backend Services) -> Murf TTS -> LiveKit / Audio Output.
     """
 
     def __init__(self, copilot_service: CopilotService):

@@ -10,7 +10,7 @@ import HotDeals from '@/components/dashboard/HotDeals';
 import TopDestinations from '@/components/dashboard/TopDestinations';
 import DatePickerModal from '@/components/common/DatePickerModal';
 import FaqSection from '@/components/common/FaqSection';
-import WhyYatraSaathi from '@/components/dashboard/WhyYatraSaathi';
+import Whyyatrasaathi from '@/components/dashboard/Whyyatrasaathi';
 import { INDIAN_CITIES, INDIAN_AIRPORTS, INDIAN_TRAIN_STATIONS } from '@/lib/locationData';
 import { useApp } from '@/context/AppContext';
 
@@ -1188,8 +1188,8 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Why YatraSaathi? (4 Best Core USPs Section) */}
-        <WhyYatraSaathi />
+        {/* Why yatrasaathi? (4 Best Core USPs Section) */}
+        <Whyyatrasaathi />
 
         {/* Header for Main Content Area (Compact Spacing & Interactive + Sign) */}
         <div id="routes-section" className="flex flex-col md:flex-row justify-between items-center gap-3 pb-3 border-b border-[#cbc3d9]/30 dark:border-slate-800 mt-3 animate-fade-in-up relative z-30 scroll-mt-24">
@@ -1978,7 +1978,7 @@ export default function Dashboard() {
                   <span className="material-symbols-outlined text-white text-[22px]">credit_card_off</span>
                 </div>
                 <h4 className="text-sm font-black mb-1 text-white group-hover:text-[#4ffbe6] transition-colors">Cancel Free</h4>
-                <p className="text-xs text-[#e8ddff] leading-relaxed">Flexible booking with YatraSaathi flex Tariff+</p>
+                <p className="text-xs text-[#e8ddff] leading-relaxed">Flexible booking with yatrasaathi flex Tariff+</p>
               </div>
 
               {/* Card 3 */}
@@ -2002,7 +2002,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* SIH Architecture & How YatraSaathi Works FAQ Section */}
+        {/* SIH Architecture & How yatrasaathi Works FAQ Section */}
         <FaqSection />
       </main>
 

@@ -117,7 +117,7 @@ async def process_voice_copilot(
 ):
     """
     Executes Voice Travel Copilot Pipeline:
-    Deepgram STT -> YatraSaathi Travel Copilot (Gemini + Places/Routes/Barriers/Weather) -> Murf TTS.
+    Deepgram STT -> yatrasaathi Travel Copilot (Gemini + Places/Routes/Barriers/Weather) -> Murf TTS.
     """
     place_repo = PlaceRepository(db) if db else None
     barrier_repo = BarrierRepository(db) if db else None

@@ -41,7 +41,7 @@ const EMERGENCY_SERVICES: AssistanceService[] = [
   {
     id: 'human-1',
     category: 'human_help',
-    name: 'YatraSaathi 24/7 Live Human Concierge & Dispatcher',
+    name: 'yatrasaathi 24/7 Live Human Concierge & Dispatcher',
     distance: 'Instant Connect',
     time: '< 10s',
     address: 'Dedicated Accessibility Emergency Helpline',
@@ -387,7 +387,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
                   onClick={() => handleInitiateCall({
                     id: 'human-dispatcher',
                     category: 'human_help',
-                    name: 'YatraSaathi 24/7 Human Dispatcher',
+                    name: 'yatrasaathi 24/7 Human Dispatcher',
                     distance: 'Instant Connect',
                     time: '< 10s',
                     address: 'Toll-Free 24x7 Live Helpline',
@@ -505,7 +505,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
               {[
                 {
                   q: 'How does On-the-Way Peer Assistance work during road trips (e.g. Ladakh / Leh highway)?',
-                  a: 'When stranded on remote routes or highways due to fuel shortages or mechanical issues, posting a Peer Help Request broadcasts your live GPS coordinates to verified YatraSaathi travelers heading along the same route. Drivers nearby receive a push alert and can stop to assist you.'
+                  a: 'When stranded on remote routes or highways due to fuel shortages or mechanical issues, posting a Peer Help Request broadcasts your live GPS coordinates to verified yatrasaathi travelers heading along the same route. Drivers nearby receive a push alert and can stop to assist you.'
                 },
                 {
                   q: 'How do Fuel Honorarium Tokens and YatraPoints compensation work?',
@@ -517,7 +517,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
                 },
                 {
                   q: 'Are all volunteer guides and peer assistance helpers verified?',
-                  a: 'Yes! All registered YatraSaathi Volunteers undergo Aadhaar/Govt ID verification, first-aid training checks, and community trust rating badges (e.g., ID #YS-8821) visible directly on their profile cards.'
+                  a: 'Yes! All registered yatrasaathi Volunteers undergo Aadhaar/Govt ID verification, first-aid training checks, and community trust rating badges (e.g., ID #YS-8821) visible directly on their profile cards.'
                 }
               ].map((faq, idx) => (
                 <div 
@@ -758,7 +758,7 @@ export default function SosHelpModal({ isOpen, onClose }: SosHelpModalProps) {
                 onClick={() => handleInitiateCall({
                   id: 'helpline-human',
                   category: 'human_help',
-                  name: 'YatraSaathi Human Concierge (1800-11-2024)',
+                  name: 'yatrasaathi Human Concierge (1800-11-2024)',
                   distance: 'Instant',
                   time: '24/7',
                   address: 'Live Accessibility Concierge',

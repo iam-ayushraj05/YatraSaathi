@@ -1,5 +1,5 @@
 """
-YatraSaathi — Report, Barrier, Evidence, EvidenceObservation, and Verification schemas.
+yatrasaathi — Report, Barrier, Evidence, EvidenceObservation, and Verification schemas.
 """
 from typing import Optional, Any
 from uuid import UUID

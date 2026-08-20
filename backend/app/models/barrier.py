@@ -1,5 +1,5 @@
 """
-YatraSaathi — Barrier, Evidence, EvidenceObservation, and Verification models.
+yatrasaathi — Barrier, Evidence, EvidenceObservation, and Verification models.
 """
 import uuid
 from datetime import datetime

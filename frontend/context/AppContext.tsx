@@ -96,10 +96,10 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     always_available: 'Always Available',
     always_available_desc: 'For your assistance and safety needs.',
     free_cancel: 'Cancel Free of Charge',
-    free_cancel_desc: 'Flexible booking with YatraSaathi Flex Tarif*.',
+    free_cancel_desc: 'Flexible booking with yatrasaathi Flex Tarif*.',
     train_flight: 'Train to Flight',
     train_flight_desc: 'Seamless transit transfer tickets*.',
-    offers: 'YatraSaathi Angebote',
+    offers: 'yatrasaathi Angebote',
     offers_desc: 'Exclusive discounts on verified accessible tours.',
 
     hot_deals: 'Hot Deals',

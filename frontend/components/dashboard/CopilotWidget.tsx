@@ -213,7 +213,7 @@ export default function CopilotWidget({ onExternalVoiceResponse, voiceState }: C
         sender: 'copilot',
         text: isHindi
           ? 'माफ़ कीजिए, सर्वर से संपर्क नहीं हो पाया। कृपया पुनः प्रयास करें।'
-          : 'Sorry, I could not connect to the YatraSaathi server. Please try again.',
+          : 'Sorry, I could not connect to the yatrasaathi server. Please try again.',
         timestamp: new Date()
       };
       setMessages((prev) => [...prev, errorMessage]);

@@ -1,5 +1,5 @@
 """
-YatraSaathi — Alembic environment configuration.
+yatrasaathi — Alembic environment configuration.
 
 - Uses async SQLAlchemy engine (asyncpg).
 - Loads DATABASE_URL from .env via pydantic-settings.

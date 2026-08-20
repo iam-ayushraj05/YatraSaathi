@@ -1,5 +1,5 @@
 """
-YatraSaathi — WeatherSnapshot model.
+yatrasaathi — WeatherSnapshot model.
 """
 import uuid
 from datetime import datetime

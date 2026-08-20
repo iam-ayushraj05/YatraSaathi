@@ -1,5 +1,5 @@
 """
-YatraSaathi — Central model registry.
+yatrasaathi — Central model registry.
 
 Import order matters for SQLAlchemy relationship resolution.
 All models must be imported here so that Alembic can detect them.

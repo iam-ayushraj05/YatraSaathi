@@ -97,8 +97,8 @@ function PlanRouteContent() {
                   category: 'Monitoring',
                   badge: 'Step-Free Routing',
                   question: language === 'HI' 
-                    ? 'YatraSaathi सुलभ मार्गों की गणना कैसे करता है?' 
-                    : 'How does YatraSaathi calculate step-free vs standard routes?',
+                    ? 'yatrasaathi सुलभ मार्गों की गणना कैसे करता है?' 
+                    : 'How does yatrasaathi calculate step-free vs standard routes?',
                   answer: language === 'HI'
                     ? 'रूटर इंजन मानचित्र के प्रत्येक सेगमेंट का विश्लेषण करता है। यह केवल उन्हीं मार्गों को चुनता है जिनमें 0 सीढ़ियाँ, चालू लिफ्ट और 1:12 ग्रेड से कम ढलान वाले रैंप उपलब्ध हों।'
                     : 'The routing engine analyzes every segment of the transport graph, strictly prioritizing paths with zero steps, verified elevator access, and ramp inclines below 1:12 grade.'
@@ -110,8 +110,8 @@ function PlanRouteContent() {
                     ? 'यदि मेरे चुनिंदा मार्ग में अचानक कोई बाधा रिपोर्ट होती है तो क्या होता है?' 
                     : 'What happens if a new barrier is reported on my active route?',
                   answer: language === 'HI'
-                    ? 'जैसे ही किसी लिफ्ट के बंद होने या बाधा की रिपोर्ट दर्ज होती है, YatraSaathi आपकी नेविगेशन स्क्रीन पर अलर्ट भेजता है और स्वचालित रूप से एक नया सुरक्षित मार्ग देता है।'
-                    : 'When a broken lift or construction barrier is reported, YatraSaathi automatically flags the affected path and computes an instant detour.'
+                    ? 'जैसे ही किसी लिफ्ट के बंद होने या बाधा की रिपोर्ट दर्ज होती है, yatrasaathi आपकी नेविगेशन स्क्रीन पर अलर्ट भेजता है और स्वचालित रूप से एक नया सुरक्षित मार्ग देता है।'
+                    : 'When a broken lift or construction barrier is reported, yatrasaathi automatically flags the affected path and computes an instant detour.'
                 },
                 {
                   category: 'Enhancing',
@@ -130,7 +130,7 @@ function PlanRouteContent() {
                     ? 'क्या मेट्रो और ट्रेन स्टेशनों के बीच इंटरचेंज सुलभ हैं?' 
                     : 'Are multi-modal transit interchanges verified for wheelchair access?',
                   answer: language === 'HI'
-                    ? 'हाँ! YatraSaathi मेट्रो, बस और रेलवे स्टेशनों के लिफ्ट स्थानों और लेवल-बोर्डिंग दरवाजों की मैपिंग को शामिल करता है ताकि निर्बाध बदलाव हो सके।'
+                    ? 'हाँ! yatrasaathi मेट्रो, बस और रेलवे स्टेशनों के लिफ्ट स्थानों और लेवल-बोर्डिंग दरवाजों की मैपिंग को शामिल करता है ताकि निर्बाध बदलाव हो सके।'
                     : 'Yes! Metro and railway station transfers include precise elevator door coordinates and level-boarding carriage locations to guarantee step-free transit transfers.'
                 }
               ]}

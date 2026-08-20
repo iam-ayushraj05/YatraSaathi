@@ -1,5 +1,5 @@
 """
-YatraSaathi — User and accessibility profile models.
+yatrasaathi — User and accessibility profile models.
 """
 import uuid
 from typing import Optional, TYPE_CHECKING

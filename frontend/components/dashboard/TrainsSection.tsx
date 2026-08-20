@@ -580,7 +580,7 @@ export default function TrainsSection() {
                 </div>
               </div>
 
-              {/* YatraSaathi Accessibility Amenities */}
+              {/* yatrasaathi Accessibility Amenities */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-1.5">
                   {train.accessibilityFeatures.map((feat, fidx) => (

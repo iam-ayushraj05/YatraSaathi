@@ -1,5 +1,5 @@
 """
-YatraSaathi — Itinerary and ItineraryStop schemas.
+yatrasaathi — Itinerary and ItineraryStop schemas.
 """
 from typing import Optional
 from uuid import UUID

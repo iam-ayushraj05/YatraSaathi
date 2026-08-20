@@ -55,7 +55,7 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
         setStatusText(isHindi ? 'मदद के लिए तैयार' : 'Ready to help');
         break;
       case 'connecting':
-        setStatusText(isHindi ? 'YatraSaathi से कनेक्ट हो रहा है...' : 'Connecting to YatraSaathi...');
+        setStatusText(isHindi ? 'yatrasaathi से कनेक्ट हो रहा है...' : 'Connecting to yatrasaathi...');
         break;
       case 'listening':
         setStatusText(isHindi ? 'सुन रहा हूँ — बोलिए' : 'Listening — speak naturally');
@@ -64,7 +64,7 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
         setStatusText(isHindi ? 'सोच रहा हूँ...' : 'Thinking...');
         break;
       case 'speaking':
-        setStatusText(isHindi ? 'YatraSaathi बोल रहा है...' : 'YatraSaathi is speaking...');
+        setStatusText(isHindi ? 'yatrasaathi बोल रहा है...' : 'yatrasaathi is speaking...');
         break;
       case 'error':
         setStatusText(isHindi ? 'कुछ समस्या हुई। टैप करके पुनः प्रयास करें।' : 'Something went wrong. Tap to retry.');

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
-export default function WhyYatraSaathi() {
+export default function Whyyatrasaathi() {
   const { language } = useApp();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -28,14 +28,14 @@ export default function WhyYatraSaathi() {
 
   const getHeading = () => {
     switch (language) {
-      case 'HI': return 'YatraSaathi क्यों चुनें?';
-      case 'BN': return 'কেন YatraSaathi বেছে নেবেন?';
-      case 'OR': return 'YatraSaathi କାହିଁକି ବାଛିବେ?';
-      case 'TA': return 'ஏன் YatraSaathi ஐ தேர்ந்தெடுக்க வேண்டும்?';
-      case 'TE': return 'ఎందుకు YatraSaathi ఎంచుకోవాలి?';
-      case 'MR': return 'YatraSaathi का निवडावे?';
-      case 'GU': return 'શા માટે YatraSaathi પસંદ કરશો?';
-      default: return 'Why YatraSaathi?';
+      case 'HI': return 'yatrasaathi क्यों चुनें?';
+      case 'BN': return 'কেন yatrasaathi বেছে নেবেন?';
+      case 'OR': return 'yatrasaathi କାହିଁକି ବାଛିବେ?';
+      case 'TA': return 'ஏன் yatrasaathi ஐ தேர்ந்தெடுக்க வேண்டும்?';
+      case 'TE': return 'ఎందుకు yatrasaathi ఎంచుకోవాలి?';
+      case 'MR': return 'yatrasaathi का निवडावे?';
+      case 'GU': return 'શા માટે yatrasaathi પસંદ કરશો?';
+      default: return 'Why yatrasaathi?';
     }
   };
 
@@ -255,7 +255,7 @@ export default function WhyYatraSaathi() {
           <div>
             <div className="mb-1 inline-flex items-center gap-1.5 rounded-full border border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950/40 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#6b21a8] dark:text-purple-300">
               <Sparkles className="h-3.5 w-3.5 text-[#6b21a8] dark:text-purple-400" />
-              YatraSaathi USPs
+              yatrasaathi USPs
             </div>
 
             <h2 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">

@@ -1,5 +1,5 @@
 """
-YatraSaathi — SQLAlchemy declarative base.
+yatrasaathi — SQLAlchemy declarative base.
 """
 import uuid
 from datetime import datetime, timezone

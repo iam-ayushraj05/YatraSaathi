@@ -1,5 +1,5 @@
 """
-YatraSaathi — Base API schemas and generic response wrappers.
+yatrasaathi — Base API schemas and generic response wrappers.
 """
 from typing import Any, Generic, Optional, TypeVar
 from pydantic import BaseModel, Field

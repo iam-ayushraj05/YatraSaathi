@@ -6,7 +6,7 @@ from app.services.exceptions import ValidationError
 
 
 class ScoringConfig(BaseModel):
-    """Configurable weights for the YatraSaathi scoring engine."""
+    """Configurable weights for the yatrasaathi scoring engine."""
     barrier_critical_penalty: float = 80.0
     barrier_high_penalty: float = 40.0
     barrier_medium_penalty: float = 20.0

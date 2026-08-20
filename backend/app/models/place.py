@@ -1,5 +1,5 @@
 """
-YatraSaathi — Place, Facility, and AssistancePoint models.
+yatrasaathi — Place, Facility, and AssistancePoint models.
 """
 import uuid
 from datetime import datetime

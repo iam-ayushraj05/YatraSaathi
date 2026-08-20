@@ -1,5 +1,5 @@
 """
-YatraSaathi — Deterministic demo/development database seeder.
+yatrasaathi — Deterministic demo/development database seeder.
 
 This script populates the database with realistic demonstration data for India
 (centered around Delhi heritage tourist spots) including spatial data, accessibility
@@ -679,7 +679,7 @@ async def seed_data():
             obs = EvidenceObservation(
                 id=uuid.uuid4(),
                 evidence_id=evidence.id,
-                model_name="YatraSaathi-VLM-v1",
+                model_name="yatrasaathi-VLM-v1",
                 observation_type="PATH_BLOCKAGE",
                 observation=f"Confirmed high probability of pathway blockage due to {rd['title']}",
                 confidence=Decimal("0.9400"),

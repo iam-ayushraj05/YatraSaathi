@@ -182,7 +182,7 @@ export default function StaysSection() {
             </p>
           </div>
           <span className="text-xs bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-black px-3.5 py-1.5 rounded-full border border-blue-200 dark:border-blue-800 shadow-sm">
-            YatraSaathi Verified Stays
+            yatrasaathi Verified Stays
           </span>
         </div>
 

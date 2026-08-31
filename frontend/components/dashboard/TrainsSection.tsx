@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import DatePickerModal from '../common/DatePickerModal';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 export interface SeatClassOption {
   className: string;
@@ -173,8 +174,20 @@ export default function TrainsSection() {
     });
   }, [bestAvailableOnly, tatkalOnly, acOnly, divyangjanOnly]);
 
+  const { isAuthenticated, openAuthModal } = useAuth();
+
   const handleConfirmTrainBooking = () => {
     if (!bookingTrain || !bookingClass) return;
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      openAuthModal('login', 'booking', {
+        type: 'complete_booking',
+        data: { train: bookingTrain, bookingClass, passengerName, divyangjanId, requestEscort }
+      });
+      return;
+    }
+
     const pnr = 'IRCTC-' + Math.floor(1000000000 + Math.random() * 9000000000);
     setBookingSuccessMsg(`IRCTC Divyangjan Ticket Confirmed! PNR: ${pnr} for ${passengerName} (${bookingClass.className} - ₹${bookingClass.price})`);
     setBookingTrain(null);

@@ -2,7 +2,12 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '../context/AppContext';
+import { AuthProvider } from '../context/AuthContext';
 import ScrollToTop from '../components/ScrollToTop';
+import AuthModal from '../components/auth/AuthModal';
+import LogoutModal from '../components/auth/LogoutModal';
+import SessionExpiredModal from '../components/auth/SessionExpiredModal';
+import VoiceUsageToast from '../components/auth/VoiceUsageToast';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
@@ -22,8 +27,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-full flex flex-col antialiased font-['Plus_Jakarta_Sans',sans-serif]">
         <AppProvider>
-          <ScrollToTop />
-          {children}
+          <AuthProvider>
+            <ScrollToTop />
+            {children}
+            <AuthModal />
+            <LogoutModal />
+            <SessionExpiredModal />
+            <VoiceUsageToast />
+          </AuthProvider>
         </AppProvider>
       </body>
     </html>

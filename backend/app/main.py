@@ -9,6 +9,7 @@ from app.services.exceptions import NotFoundException, ValidationError, RoutingE
 
 # Import routers
 from app.api.v1.auth import router as auth_router
+from app.api.v1.guest import router as guest_router
 from app.api.v1.profiles import router as profiles_router
 from app.api.v1.places import router as places_router
 from app.api.v1.routes import router as routes_router
@@ -158,6 +159,7 @@ async def database_health():
 # Register routers under prefix /api/v1
 api_v1_prefix = "/api/v1"
 app.include_router(auth_router, prefix=api_v1_prefix)
+app.include_router(guest_router, prefix=api_v1_prefix)
 app.include_router(profiles_router, prefix=api_v1_prefix)
 app.include_router(places_router, prefix=api_v1_prefix)
 app.include_router(routes_router, prefix=api_v1_prefix)

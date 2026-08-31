@@ -22,8 +22,21 @@ if TYPE_CHECKING:
 class User(UUIDMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
     display_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    first_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    last_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(String(20), unique=True, nullable=True, index=True)
+    password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    auth_provider: Mapped[str] = mapped_column(String(50), nullable=False, default="EMAIL")  # EMAIL, GOOGLE, PHONE
+    avatar_url: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
+    is_phone_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    is_email_verified: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    onboarding_completed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    travel_style: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # SOLO, FAMILY, FRIENDS, BUSINESS, ASSISTED
+    points: Mapped[int] = mapped_column(Integer, nullable=False, default=350)
+    saved_places: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True, default=list)
+    saved_journeys: Mapped[Optional[list]] = mapped_column(JSONB, nullable=True, default=list)
     role: Mapped[str] = mapped_column(
         String(50), nullable=False, default=UserRole.TRAVELLER.value
     )
@@ -53,6 +66,9 @@ class User(UUIDMixin, TimestampMixin, Base):
     )
     audit_logs: Mapped[list["AuditLog"]] = relationship(
         "AuditLog", back_populates="actor"
+    )
+    voice_usages: Mapped[list["VoiceUsage"]] = relationship(
+        "VoiceUsage", back_populates="user"
     )
 
 

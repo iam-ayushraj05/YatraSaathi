@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import DatePickerModal from '../common/DatePickerModal';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 export interface FlightOption {
   id: string;
@@ -212,8 +213,20 @@ export default function FlightsSection() {
   const currentFromCode = useMemo(() => getAirportCode(fromAirport, 'PAT'), [fromAirport]);
   const currentToCode = useMemo(() => getAirportCode(toAirport, 'DEL'), [toAirport]);
 
+  const { isAuthenticated, openAuthModal } = useAuth();
+
   const handleConfirmBooking = () => {
     if (!selectedBookingFlight) return;
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      openAuthModal('login', 'booking', {
+        type: 'complete_booking',
+        data: { flight: selectedBookingFlight, passengerName, requestWheelchair, requestPriorityBoarding }
+      });
+      return;
+    }
+
     const pnr = 'YS-FL' + Math.floor(100000 + Math.random() * 900000);
     setBookingSuccess(`Flight Ticket Confirmed! PNR: ${pnr} for ${passengerName}. Access assistance requested.`);
     setSelectedBookingFlight(null);

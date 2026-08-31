@@ -13,7 +13,7 @@ import {
 } from './types';
 
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1';
+  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8001/api/v1';
 
 // Safe localStorage access
 const getAuthToken = (): string | null => {
@@ -23,13 +23,22 @@ const getAuthToken = (): string | null => {
   return null;
 };
 
-// Fetch wrapper with auth header
+const getGuestToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('yatrasaathi_guest_token');
+  }
+  return null;
+};
+
+// Fetch wrapper with auth header & guest token
 async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getAuthToken();
-  const headers = {
+  const guestToken = getGuestToken();
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-    ...options.headers,
+    ...(guestToken ? { 'X-Guest-Session-Token': guestToken } : {}),
+    ...(options.headers as Record<string, string> || {}),
   };
 
   try {
@@ -56,17 +65,98 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
   }
 }
 
+export interface GuestSessionData {
+  session_token: string;
+  voice_chat_count: number;
+  max_free_chats: number;
+  expires_at: string;
+  is_authenticated: boolean;
+  temporary_conversation_id?: string;
+  temporary_journey_data?: any;
+}
+
+export interface VoiceAccessData {
+  allowed: boolean;
+  is_authenticated: boolean;
+  voice_chat_count: number;
+  max_free_chats: number;
+  requires_auth?: boolean;
+  message: string;
+}
+
 export const api = {
-  // Authentication
+  // Guest Session & Voice Access Control
+  guest: {
+    async getSession(): Promise<GuestSessionData> {
+      const data = await apiFetch<GuestSessionData>('/guest/session', {
+        method: 'POST',
+        body: JSON.stringify({ session_token: getGuestToken() }),
+      });
+      if (typeof window !== 'undefined' && data?.session_token) {
+        localStorage.setItem('yatrasaathi_guest_token', data.session_token);
+      }
+      return data;
+    },
+
+    async checkVoiceAccess(): Promise<VoiceAccessData> {
+      return apiFetch<VoiceAccessData>('/guest/voice-access');
+    },
+
+    async startVoiceSession(): Promise<any> {
+      return apiFetch<any>('/guest/voice/start', {
+        method: 'POST',
+      });
+    },
+
+    async completeVoiceSession(params: {
+      conversation_id: string;
+      turns_count?: number;
+      duration_seconds?: number;
+      journey_data?: any;
+    }): Promise<{
+      voice_chat_count: number;
+      max_free_chats: number;
+      is_authenticated: boolean;
+      remaining_free: number;
+      toast_message?: string;
+    }> {
+      return apiFetch<any>('/guest/voice/complete', {
+        method: 'POST',
+        body: JSON.stringify({
+          session_token: getGuestToken(),
+          conversation_id: params.conversation_id,
+          turns_count: params.turns_count || 1,
+          duration_seconds: params.duration_seconds || 0,
+          journey_data: params.journey_data,
+        }),
+      });
+    },
+
+    async convertSession(): Promise<any> {
+      const gToken = getGuestToken();
+      if (!gToken) return null;
+      return apiFetch<any>('/guest/convert', {
+        method: 'POST',
+        body: JSON.stringify({ session_token: gToken }),
+      });
+    }
+  },
+
+  // Production Authentication
   auth: {
-    async login(email: string, password: string): Promise<{ access_token: string; token_type: string }> {
+    async login(email: string, password: string): Promise<{ access_token: string; token_type: string; user: any }> {
       const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       if (!response.ok) {
-        throw new Error('Incorrect email or password');
+        let errMsg = 'Incorrect email or password';
+        try {
+          const err = await response.json();
+          errMsg = err.detail || errMsg;
+        } catch (_) {}
+        throw new Error(errMsg);
       }
       const data = await response.json();
       if (typeof window !== 'undefined' && data.access_token) {
@@ -75,19 +165,134 @@ export const api = {
       return data;
     },
 
-    async register(email: string, password: string, displayName: string): Promise<any> {
-      const wrapper = await apiFetch<any>('/auth/register', {
+    async register(data: {
+      email: string;
+      password: string;
+      display_name: string;
+      first_name?: string;
+      last_name?: string;
+      phone?: string;
+    }): Promise<any> {
+      const result = await apiFetch<any>('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password, display_name: displayName }),
+        body: JSON.stringify(data),
       });
-      return wrapper;
+      if (typeof window !== 'undefined' && result?.access_token) {
+        localStorage.setItem('yatrasaathi_token', result.access_token);
+      }
+      return result;
     },
 
-    async getMe(): Promise<User> {
-      return apiFetch<User>('/auth/me');
+    async loginWithGoogle(data: {
+      credential?: string;
+      email?: string;
+      name?: string;
+      avatar_url?: string;
+      google_id?: string;
+    }): Promise<any> {
+      const result = await apiFetch<any>('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      if (typeof window !== 'undefined' && result?.access_token) {
+        localStorage.setItem('yatrasaathi_token', result.access_token);
+      }
+      return result;
     },
 
-    logout() {
+    async sendPhoneOtp(phone: string): Promise<{
+      status: string;
+      phone: string;
+      expires_in_seconds: number;
+      resend_in_seconds: number;
+      demo_otp_hint?: string;
+      message: string;
+    }> {
+      return apiFetch<any>('/auth/phone/send-otp', {
+        method: 'POST',
+        body: JSON.stringify({ phone }),
+      });
+    },
+
+    async verifyPhoneOtp(data: { phone: string; otp: string; name?: string }): Promise<any> {
+      const result = await apiFetch<any>('/auth/phone/verify-otp', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      if (typeof window !== 'undefined' && result?.access_token) {
+        localStorage.setItem('yatrasaathi_token', result.access_token);
+      }
+      return result;
+    },
+
+    async forgotPassword(email: string): Promise<any> {
+      return apiFetch<any>('/auth/password/forgot', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+    },
+
+    async resetPassword(data: { token: string; new_password: string }): Promise<any> {
+      return apiFetch<any>('/auth/password/reset', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    async saveOnboarding(data: {
+      travel_style?: string;
+      accessibility_features?: string[];
+      walking_limit_meters?: number;
+    }): Promise<any> {
+      return apiFetch<any>('/auth/onboarding', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+    },
+
+    async getSavedJourneys(): Promise<any[]> {
+      return apiFetch<any[]>('/auth/saved-journeys');
+    },
+
+    async saveJourney(journey: {
+      journey_id?: string;
+      title: string;
+      origin: string;
+      destination: string;
+      accessibility_score?: number;
+      route_details?: any;
+    }): Promise<any> {
+      return apiFetch<any>('/auth/saved-journeys', {
+        method: 'POST',
+        body: JSON.stringify(journey),
+      });
+    },
+
+    async getSavedPlaces(): Promise<any[]> {
+      return apiFetch<any[]>('/auth/saved-places');
+    },
+
+    async savePlace(place: {
+      place_id: string;
+      name: string;
+      category?: string;
+      city?: string;
+      notes?: string;
+    }): Promise<any> {
+      return apiFetch<any>('/auth/saved-places', {
+        method: 'POST',
+        body: JSON.stringify(place),
+      });
+    },
+
+    async getMe(): Promise<any> {
+      return apiFetch<any>('/auth/me');
+    },
+
+    async logout(): Promise<void> {
+      try {
+        await apiFetch<any>('/auth/logout', { method: 'POST' });
+      } catch (_) {}
       if (typeof window !== 'undefined') {
         localStorage.removeItem('yatrasaathi_token');
       }

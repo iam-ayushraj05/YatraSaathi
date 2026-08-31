@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, MapPin, Calendar, Users, Filter, ChevronRight, Sparkles, ShieldCheck, Heart, ArrowLeft, Check, SlidersHorizontal } from 'lucide-react';
 import DatePickerModal from '../common/DatePickerModal';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 
 export interface HolidayPackage {
   id: string;
@@ -123,6 +124,7 @@ export const SAMPLE_HOLIDAYS: HolidayPackage[] = [
 
 export default function HolidaysSection() {
   const { userLocation } = useApp();
+  const { isAuthenticated, openAuthModal } = useAuth();
   const getTodayFormatted = () => {
     return new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
   };
@@ -933,12 +935,19 @@ export default function HolidaysSection() {
               </button>
               <button 
                 onClick={() => {
+                  if (!isAuthenticated) {
+                    openAuthModal('login', 'booking', {
+                      type: 'complete_booking',
+                      data: { package: selectedPackage, fromCity, toDestination, departDate }
+                    });
+                    return;
+                  }
                   const bId = 'YS-PKG' + Math.floor(100000 + Math.random() * 900000);
                   setBookingSuccessMsg(`Holiday Package Confirmed! Booking ID: ${bId}. Access team dispatched.`);
                   setSelectedPackage(null);
                   setTimeout(() => setBookingSuccessMsg(null), 8000);
                 }}
-                className="px-6 py-2.5 rounded-xl bg-[#0071c2] hover:bg-[#005999] text-white text-xs font-black shadow-lg"
+                className="px-6 py-2.5 rounded-xl bg-[#0071c2] hover:bg-[#005999] text-white text-xs font-black shadow-lg cursor-pointer transition-all hover:scale-105 active:scale-95"
               >
                 Confirm Holiday Booking
               </button>

@@ -77,13 +77,13 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               onClick={() => setIsOpen(false)} 
               className="flex items-center gap-2 group no-underline"
             >
-              <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.25)]">
+              <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.2)]">
                 <Image
                   src={appLogo}
                   alt="yatrasaathi Logo"
                   width={40}
                   height={40}
-                  className="w-full h-full object-cover rounded-xl shadow-xs"
+                  className="w-full h-full object-contain"
                 />
               </div>
               <div className="flex flex-col -ml-0.5 select-none">

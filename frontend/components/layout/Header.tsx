@@ -108,15 +108,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
     <>
       <header className="flex items-center justify-between w-full px-3 md:px-5 lg:px-6 py-2 glass-panel sticky top-0 z-50 shadow-xs transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/95 dark:bg-[#121420]/95 backdrop-blur-xl gap-2 xl:gap-3">
         {/* Left: Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer group no-underline shrink-0">
-          <div className="relative w-10 h-10 lg:w-11 lg:h-11 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_12px_rgba(107,33,168,0.15)]">
+        <Link href="/dashboard" className="flex items-center gap-2.5 cursor-pointer group no-underline shrink-0">
+          <div className="relative w-11 h-11 lg:w-12 lg:h-12 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_12px_rgba(107,33,168,0.18)]">
             <Image
-              src={appLogo}
+              src="/app-logo.png"
               alt="yatrasaathi Logo"
-              width={48}
-              height={48}
+              width={52}
+              height={52}
               className="w-full h-full object-contain"
               priority
+              unoptimized
             />
           </div>
           <div className="flex flex-col -ml-0.5 select-none">

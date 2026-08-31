@@ -100,11 +100,12 @@ export default function AuthModal() {
           <div className="flex items-center gap-3 pb-2 border-b border-slate-100 dark:border-slate-800/80">
             <div className="relative w-9 h-9 shrink-0">
               <Image
-                src={appLogo}
+                src="/app-logo.png"
                 alt="yatrasaathi Logo"
                 width={36}
                 height={36}
-                className="w-full h-full object-cover rounded-xl shadow-xs"
+                className="w-full h-full object-contain"
+                unoptimized
               />
             </div>
             <div>

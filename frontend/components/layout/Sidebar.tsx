@@ -79,11 +79,12 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             >
               <div className="relative w-10 h-10 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0 drop-shadow-[0_2px_12px_rgba(72,0,178,0.2)]">
                 <Image
-                  src={appLogo}
+                  src="/app-logo.png"
                   alt="yatrasaathi Logo"
-                  width={40}
-                  height={40}
+                  width={44}
+                  height={44}
                   className="w-full h-full object-contain"
+                  unoptimized
                 />
               </div>
               <div className="flex flex-col -ml-0.5 select-none">

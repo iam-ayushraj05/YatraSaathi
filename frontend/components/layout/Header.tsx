@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import { api } from '../../lib/api';
 import SosHelpModal from '../sos/SosHelpModal';
 import appLogo from '../../public/app-logo.png';
@@ -18,11 +19,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, setTheme, language, setLanguage, t } = useApp();
+  const { user, isAuthenticated, openAuthModal, openLogoutModal } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [sosOpen, setSosOpen] = useState(false);
-  const [user, setUser] = useState<{ display_name: string; email: string } | null>(null);
 
   const langContainerRef = useRef<HTMLDivElement>(null);
   const profileContainerRef = useRef<HTMLDivElement>(null);
@@ -74,12 +75,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
   };
 
   useEffect(() => {
-    api.auth.getMe()
-      .then(d => setUser({ display_name: d.display_name, email: d.email }))
-      .catch(() => setUser({ display_name: 'Aarav Sharma', email: 'aarav@yatrasaathi.in' }));
-  }, []);
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (langContainerRef.current && !langContainerRef.current.contains(event.target as Node)) {
         setLangOpen(false);
@@ -113,15 +108,16 @@ export default function Header({ onMenuClick }: HeaderProps) {
     <>
       <header className="flex items-center justify-between w-full px-3 md:px-5 lg:px-6 py-2 glass-panel sticky top-0 z-50 shadow-xs transition-all duration-300 border-b border-[#cbc3d9]/20 bg-white/95 dark:bg-[#121420]/95 backdrop-blur-xl gap-2 xl:gap-3">
         {/* Left: Brand Logo */}
-        <Link href="/dashboard" className="flex items-center gap-2 cursor-pointer group no-underline shrink-0">
-          <div className="relative w-10 h-10 lg:w-11 lg:h-11 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_12px_rgba(107,33,168,0.2)]">
+        <Link href="/dashboard" className="flex items-center gap-2.5 cursor-pointer group no-underline shrink-0">
+          <div className="relative w-11 h-11 lg:w-12 lg:h-12 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 shrink-0 drop-shadow-[0_4px_12px_rgba(107,33,168,0.18)]">
             <Image
-              src={appLogo}
+              src="/app-logo.png"
               alt="yatrasaathi Logo"
-              width={48}
-              height={48}
-              className="w-full h-full object-cover rounded-xl shadow-xs"
+              width={52}
+              height={52}
+              className="w-full h-full object-contain"
               priority
+              unoptimized
             />
           </div>
           <div className="flex flex-col -ml-0.5 select-none">
@@ -307,85 +303,115 @@ export default function Header({ onMenuClick }: HeaderProps) {
           </div>
 
           {/* User Profile */}
-          <div ref={profileContainerRef} className="relative shrink-0">
+          {/* User Profile / Sign In */}
+          {!isAuthenticated ? (
             <button 
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200 dark:border-slate-700 cursor-pointer group"
+              onClick={() => openAuthModal('login', 'header_button')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#6b21a8] to-[#581c87] hover:opacity-95 text-white font-bold text-xs shadow-xs hover:shadow-md transition-all duration-200 active:scale-95 cursor-pointer shrink-0"
             >
-              <div className="w-8.5 h-8.5 rounded-full bg-gradient-to-br from-[#581c87] to-[#6b21a8] text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-white dark:ring-slate-800 transition-transform duration-300 group-hover:scale-105 shrink-0">
-                A
-              </div>
-              <div className="text-left hidden sm:flex flex-col leading-none select-none">
-                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
-                  Aarav
-                </span>
-                <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
-                  Sharma
-                </span>
-              </div>
-              <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 hidden sm:block group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors text-sm">
-                expand_more
-              </span>
+              <span className="material-symbols-outlined text-sm">person</span>
+              <span>Sign In</span>
             </button>
+          ) : (
+            <div ref={profileContainerRef} className="relative shrink-0">
+              <button 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200 dark:border-slate-700 cursor-pointer group"
+              >
+                <div className="w-8.5 h-8.5 rounded-full bg-gradient-to-br from-[#581c87] to-[#6b21a8] text-white flex items-center justify-center font-bold text-xs shadow-xs ring-2 ring-white dark:ring-slate-800 transition-transform duration-300 group-hover:scale-105 shrink-0">
+                  {user?.display_name ? user.display_name.charAt(0).toUpperCase() : 'Y'}
+                </div>
+                <div className="text-left hidden sm:flex flex-col leading-none select-none">
+                  <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
+                    {user?.first_name || user?.display_name?.split(' ')[0] || 'Aarav'}
+                  </span>
+                  <span className="text-[11px] font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors leading-tight">
+                    {user?.last_name || user?.display_name?.split(' ')[1] || 'Sharma'}
+                  </span>
+                </div>
+                <span className="material-symbols-outlined text-slate-400 dark:text-slate-400 hidden sm:block group-hover:text-[#6b21a8] dark:group-hover:text-purple-400 transition-colors text-sm">
+                  expand_more
+                </span>
+              </button>
 
-            {profileOpen && (
-              <div className="absolute right-0 top-12 w-52 bg-white dark:bg-[#151824] border border-[#cbc3d9]/40 dark:border-slate-800 rounded-2xl p-2 shadow-xl z-50">
-                <div className="px-3 py-2 border-b border-[#cbc3d9]/30 dark:border-slate-800 mb-1">
-                  <p className="text-xs font-bold text-[#191c20] dark:text-slate-100">Aarav Sharma</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.email || 'aarav@yatrasaathi.in'}</p>
-                  
-                  {/* Loyalty Rewards Centre Banner / Link */}
-                  <Link
+              {profileOpen && (
+                <div className="absolute right-0 top-12 w-56 bg-white dark:bg-[#151824] border border-[#cbc3d9]/40 dark:border-slate-800 rounded-2xl p-2 shadow-xl z-50 animate-scaleUp">
+                  <div className="px-3 py-2 border-b border-[#cbc3d9]/30 dark:border-slate-800 mb-1">
+                    <p className="text-xs font-bold text-[#191c20] dark:text-slate-100 truncate">{user?.display_name || 'Aarav Sharma'}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{user?.email || 'aarav@yatrasaathi.in'}</p>
+                    
+                    {/* Loyalty Rewards Centre Banner / Link */}
+                    <Link
+                      href="/rewards"
+                      onClick={() => setProfileOpen(false)}
+                      className="mt-2 flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 hover:scale-102 transition-transform cursor-pointer shadow-xs"
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-base text-amber-500 fill">workspace_premium</span>
+                        <div>
+                          <p className="text-[10.5px] font-black leading-none">Loyalty Rewards</p>
+                          <p className="text-[9px] text-amber-600 dark:text-amber-400 font-bold mt-0.5">{user?.points || 350} YatraPoints</p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 shrink-0">
+                        Lvl 2 ⭐
+                      </span>
+                    </Link>
+                  </div>
+                  <Link 
+                    href="/dashboard"
+                    onClick={() => setProfileOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base text-purple-600">dashboard</span>
+                    Dashboard
+                  </Link>
+                  <Link 
+                    href="/itineraries"
+                    onClick={() => setProfileOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base text-blue-500">route</span>
+                    My Journeys
+                  </Link>
+                  <Link 
                     href="/rewards"
                     onClick={() => setProfileOpen(false)}
-                    className="mt-2 flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200/80 dark:border-amber-900/60 text-amber-800 dark:text-amber-300 hover:scale-102 transition-transform cursor-pointer shadow-xs"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                   >
-                    <div className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-base text-amber-500 fill">workspace_premium</span>
-                      <div>
-                        <p className="text-[10.5px] font-black leading-none">Loyalty Rewards Centre</p>
-                        <p className="text-[9px] text-amber-600 dark:text-amber-400 font-bold mt-0.5">350 YatraPoints</p>
-                      </div>
-                    </div>
-                    <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 shrink-0">
-                      Lvl 2 ⭐
-                    </span>
+                    <span className="material-symbols-outlined text-base text-amber-500">card_giftcard</span>
+                    Loyalty Rewards
                   </Link>
+                  <Link 
+                    href="/reports"
+                    onClick={() => setProfileOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base text-rose-500">report_problem</span>
+                    Report Barrier
+                  </Link>
+                  <Link 
+                    href="/accessibility-profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base text-purple-600">person</span>
+                    Accessibility Profile
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setProfileOpen(false);
+                      openLogoutModal();
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base">logout</span>
+                    Sign out
+                  </button>
                 </div>
-                <Link 
-                  href="/rewards"
-                  onClick={() => setProfileOpen(false)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-base text-amber-500">card_giftcard</span>
-                  Loyalty Rewards
-                </Link>
-                <Link 
-                  href="/reports"
-                  onClick={() => setProfileOpen(false)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-base text-rose-500">report_problem</span>
-                  Report Barrier
-                </Link>
-                <Link 
-                  href="/accessibility-profile"
-                  onClick={() => setProfileOpen(false)}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-base text-purple-600">person</span>
-                  Accessibility Profile
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-base">logout</span>
-                  Sign out
-                </button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Dark Mode Toggle Button */}
           <button

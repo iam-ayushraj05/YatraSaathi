@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { api } from '../lib/api';
 import { getUserLocation, UserLocation } from '../lib/location';
+import { useAuth } from '../context/AuthContext';
 
 import { Language } from '../context/AppContext';
 
@@ -26,6 +27,7 @@ export interface VoiceHookOptions {
 }
 
 export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookOptions) {
+  const { checkVoiceAccess, reportVoiceCompleted, openAuthModal, setOnVoiceAutoResume, isAuthenticated } = useAuth();
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
   const [statusText, setStatusText] = useState<string>('Ready to help');
   const [liveTranscript, setLiveTranscript] = useState<string>('');
@@ -42,6 +44,8 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastTranscriptRef = useRef<string>('');
   const lastTranscriptTimeRef = useRef<number>(0);
+  const turnsCountRef = useRef<number>(0);
+  const sessionStartTimeRef = useRef<number>(0);
 
   // Update status text whenever state or language changes
   const updateStatusText = useCallback((state: VoiceState, customText?: string) => {
@@ -108,11 +112,20 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
 
   // Centralized method to end call cleanly
   const endCall = useCallback(() => {
-    console.log(`[VOICE] SESSION_END session_id=${sessionIdRef.current}`);
+    console.log(`[VOICE] SESSION_END session_id=${sessionIdRef.current} turns=${turnsCountRef.current}`);
+    
+    // Only report when at least 1 meaningful turn took place
+    if (turnsCountRef.current >= 1 && sessionIdRef.current) {
+      const dur = sessionStartTimeRef.current ? Math.max(1, Math.round((Date.now() - sessionStartTimeRef.current) / 1000)) : 10;
+      void reportVoiceCompleted(sessionIdRef.current, turnsCountRef.current, dur);
+    }
+
     activeSessionRef.current = false;
     sessionIdRef.current = '';
     isProcessingRef.current = false;
     isSpeakingRef.current = false;
+    turnsCountRef.current = 0;
+    sessionStartTimeRef.current = 0;
 
     stopAudio();
     stopRecognition();
@@ -121,7 +134,7 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
     setLiveTranscript('');
     setErrorMessage(null);
     updateStatusText('idle');
-  }, [stopAudio, stopRecognition, updateStatusText]);
+  }, [stopAudio, stopRecognition, updateStatusText, reportVoiceCompleted]);
 
   // Dedicated single point to start speech recognition
   const startListening = useCallback((currentSessionId: string) => {
@@ -338,7 +351,10 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
         conversation_history: history
       });
 
-      console.log(`[VOICE] RESPONSE_RECEIVED session_id=${currentSessionId}`);
+      // Count this successful turn
+      turnsCountRef.current += 1;
+
+      console.log(`[VOICE] RESPONSE_RECEIVED session_id=${currentSessionId} turn=${turnsCountRef.current}`);
 
       if (!activeSessionRef.current || sessionIdRef.current !== currentSessionId) return;
 
@@ -398,6 +414,23 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
       return;
     }
 
+    // 1. Pre-flight check: Verify if voice conversation is permitted
+    try {
+      const access = await checkVoiceAccess();
+      if (!access.allowed || access.requires_auth) {
+        console.log('[VOICE] Access limit reached. Opening Auth Wall.');
+        // Set auto-resume callback so that once user logs in, voice session starts seamlessly!
+        setOnVoiceAutoResume(() => {
+          console.log('[VOICE] Auto-resuming voice session after successful authentication.');
+          void startSession();
+        });
+        openAuthModal('voice_wall', 'voice_limit', { type: 'start_voice' });
+        return;
+      }
+    } catch (err) {
+      console.warn('[VOICE] Access check warning:', err);
+    }
+
     const newSessionId = `vsession-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
     console.log(`[VOICE] SESSION_START session_id=${newSessionId}`);
     
@@ -406,6 +439,8 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
     isProcessingRef.current = false;
     isSpeakingRef.current = false;
     lastTranscriptRef.current = '';
+    turnsCountRef.current = 0;
+    sessionStartTimeRef.current = Date.now();
 
     setVoiceState('connecting');
     updateStatusText('connecting');
@@ -424,7 +459,7 @@ export function useVoiceCopilot({ language, onResponse, getHistory }: VoiceHookO
       startListening(newSessionId);
     }
 
-  }, [endCall, updateStatusText, startListening, isHindi]);
+  }, [endCall, updateStatusText, startListening, isHindi, checkVoiceAccess, openAuthModal, setOnVoiceAutoResume]);
 
   // Clean up on unmount
   useEffect(() => {

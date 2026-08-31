@@ -37,6 +37,7 @@ from app.models.enums import (  # noqa: F401
 
 # Core user models (no FK deps on other domain models except self-refs)
 from app.models.user import User, AccessibilityProfile  # noqa: F401
+from app.models.guest import GuestSession, VoiceUsage  # noqa: F401
 
 # Place and spatial models
 from app.models.place import Place, Facility, AssistancePoint  # noqa: F401
@@ -105,6 +106,8 @@ __all__ = [
     # Models
     "User",
     "AccessibilityProfile",
+    "GuestSession",
+    "VoiceUsage",
     "Place",
     "Facility",
     "AssistancePoint",

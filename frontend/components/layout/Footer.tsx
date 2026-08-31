@@ -17,13 +17,14 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="space-y-5">
             <Link href="/dashboard" className="flex items-center gap-3 cursor-pointer group no-underline">
-              <div className="relative w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 drop-shadow-[0_4px_20px_rgba(72,0,178,0.28)]">
+              <div className="relative w-14 h-14 lg:w-16 lg:h-16 flex items-center justify-center transition-transform group-hover:scale-105 shrink-0 drop-shadow-[0_4px_20px_rgba(72,0,178,0.2)]">
                 <Image
-                  src={appLogo}
+                  src="/app-logo.png"
                   alt="yatrasaathi Logo"
                   width={64}
                   height={64}
-                  className="w-full h-full object-cover rounded-2xl shadow-sm"
+                  className="w-full h-full object-contain"
+                  unoptimized
                 />
               </div>
               <div className="flex flex-col -ml-1 select-none">

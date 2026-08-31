@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import InteractiveMap from './InteractiveMap';
 import DatePickerModal from '../common/DatePickerModal';
+import { useAuth } from '../../context/AuthContext';
 
 export interface StayProperty {
   id: string;
@@ -116,6 +117,7 @@ export default function StaysSection() {
   };
 
   const [destination, setDestination] = useState('New Delhi, India');
+  const { isAuthenticated, openAuthModal } = useAuth();
   const [datesStr, setDatesStr] = useState(getTodayFormatted());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [occupancyStr, setOccupancyStr] = useState('2 adults · 0 children · 1 room');
@@ -126,9 +128,31 @@ export default function StaysSection() {
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [selectedStayId, setSelectedStayId] = useState<string>('stay-elysian');
   const [isMapExpanded, setIsMapExpanded] = useState(false);
+  const [bookingStay, setBookingStay] = useState<StayProperty | null>(null);
+  const [guestName, setGuestName] = useState('Aarav Sharma');
+  const [requestAccessibleRoom, setRequestAccessibleRoom] = useState(true);
+  const [bookingSuccessMsg, setBookingSuccessMsg] = useState<string | null>(null);
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const handleConfirmStayBooking = () => {
+    if (!bookingStay) return;
+
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      openAuthModal('login', 'booking', { 
+        type: 'complete_booking', 
+        data: { stay: bookingStay, guestName, dates: datesStr } 
+      });
+      return;
+    }
+
+    const bookingId = 'YS-HTL' + Math.floor(100000 + Math.random() * 900000);
+    setBookingSuccessMsg(`Hotel Booking Confirmed! ID: ${bookingId} for ${guestName} at ${bookingStay.name}. Step-free room assigned.`);
+    setBookingStay(null);
+    setTimeout(() => setBookingSuccessMsg(null), 8000);
   };
 
   const selectedStay = ONLY_THREE_STAYS.find(s => s.id === selectedStayId) || ONLY_THREE_STAYS[0];
@@ -559,7 +583,7 @@ export default function StaysSection() {
                         <button 
                           onClick={(e) => {
                             e.stopPropagation();
-                            alert(`Redirecting to availability & room selection for ${stay.name}...`);
+                            setBookingStay(stay);
                           }}
                           className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2.5 px-5 rounded-xl shadow transition-all hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1"
                         >
@@ -579,6 +603,85 @@ export default function StaysSection() {
         </div>
 
       </div>
+
+      {/* Stay Booking Modal with Login Guard */}
+      {bookingStay && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#151824] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-5 animate-scale-up">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span className="material-symbols-outlined text-blue-600">hotel</span>
+                Reserve Accessible Room
+              </h3>
+              <button 
+                onClick={() => setBookingStay(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="bg-slate-50 dark:bg-[#1a1d2e] p-4 rounded-2xl space-y-2 text-xs">
+              <div className="font-black text-sm text-blue-600">{bookingStay.name}</div>
+              <div className="flex justify-between font-bold text-slate-700 dark:text-slate-300">
+                <span>Room: {bookingStay.roomType}</span>
+                <span>Price: ₹{bookingStay.currentPrice.toLocaleString()} /night</span>
+              </div>
+              <div className="text-slate-400">Dates: {datesStr} • {occupancyStr}</div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Primary Guest Full Name
+                </label>
+                <input 
+                  type="text" 
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  className="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-xs font-bold text-slate-900 dark:text-white outline-none"
+                />
+              </div>
+
+              <div className="space-y-2 pt-1 text-xs">
+                <div className="font-bold text-purple-700 dark:text-purple-400">♿ Accessibility &amp; Special Assistance:</div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={requestAccessibleRoom}
+                    onChange={(e) => setRequestAccessibleRoom(e.target.checked)}
+                    className="accent-blue-600"
+                  />
+                  <span>Guaranteed Ground Floor / Elevator Step-Free Room</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button 
+                onClick={() => setBookingStay(null)}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-600 hover:bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmStayBooking}
+                className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black shadow-lg cursor-pointer transition-all hover:scale-105 active:scale-95"
+              >
+                Confirm Stay Booking
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {bookingSuccessMsg && (
+        <div className="fixed top-20 right-5 z-50 bg-emerald-600 text-white font-black text-xs px-5 py-3.5 rounded-2xl shadow-2xl border border-emerald-400 flex items-center gap-3 animate-bounce">
+          <span className="material-symbols-outlined text-xl">check_circle</span>
+          <span>{bookingSuccessMsg}</span>
+        </div>
+      )}
 
       {/* Expanded Map Modal */}
       {isMapExpanded && (

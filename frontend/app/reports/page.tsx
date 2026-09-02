@@ -708,34 +708,6 @@ export default function Reports() {
                       </span>
                     )}
                   </div>
-
-                  {/* Quick Preset Location Chips */}
-                  <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1">
-                    <span className="text-[10px] font-extrabold uppercase text-slate-400 shrink-0">Quick presets:</span>
-                    {[
-                      '📍 Live GPS Location',
-                      '🏛️ Rajiv Chowk Metro',
-                      '🌳 India Gate Lawns',
-                      '🕌 Qutub Minar Courtyard',
-                      '🛕 Lotus Temple',
-                      '🏰 Red Fort Entrance'
-                    ].map((loc) => (
-                      <button
-                        key={loc}
-                        type="button"
-                        onClick={() => {
-                          if (loc === '📍 Live GPS Location') {
-                            handleDetectLiveLocation();
-                          } else {
-                            setPlaceName(loc.replace(/^[^\s]+\s/, ''));
-                          }
-                        }}
-                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-purple-100 dark:hover:bg-purple-950/60 hover:text-purple-700 dark:hover:text-purple-300 text-[10.5px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer shrink-0 border border-slate-200/60 dark:border-slate-800"
-                      >
-                        {loc}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 {/* 5. Description */}

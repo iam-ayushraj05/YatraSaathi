@@ -55,6 +55,7 @@ from app.models.barrier import (  # noqa: F401
     EvidenceObservation,
     Verification,
 )
+from app.models.barrier_vote import BarrierVote  # noqa: F401
 
 # Routes
 from app.models.route import (  # noqa: F401
@@ -117,6 +118,7 @@ __all__ = [
     "Evidence",
     "EvidenceObservation",
     "Verification",
+    "BarrierVote",
     "RouteRequest",
     "Route",
     "RouteSegment",

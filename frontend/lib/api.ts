@@ -356,14 +356,56 @@ export const api = {
     }
   },
 
-  // Barriers
+  // Barriers & Live Intelligence
   barriers: {
-    async getNearby(lat: number, lng: number, radiusMeters: number = 5000): Promise<Barrier[]> {
-      return apiFetch<Barrier[]>(`/barriers/nearby?lat=${lat}&lng=${lng}&radius=${radiusMeters}`);
+    async createReport(formData: FormData): Promise<any> {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const response = await fetch(`${API_BASE}/barriers`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ detail: 'Failed to create report' }));
+        throw new Error(err.detail || 'Failed to submit barrier report');
+      }
+      const data = await response.json();
+      return data.data;
     },
 
-    async getDetails(barrierId: string): Promise<Barrier> {
-      return apiFetch<Barrier>(`/barriers/${barrierId}`);
+    async getNearby(lat: number, lng: number, radiusMeters: number = 5000): Promise<any[]> {
+      const res = await apiFetch<any>(`/barriers/nearby?lat=${lat}&lng=${lng}&radius=${radiusMeters}`);
+      return res.data || [];
+    },
+
+    async vote(barrierId: string, confirmed: boolean, userLat?: number, userLng?: number): Promise<any> {
+      const formData = new FormData();
+      formData.append('confirmed', String(confirmed));
+      if (userLat) formData.append('user_lat', String(userLat));
+      if (userLng) formData.append('user_lng', String(userLng));
+
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const response = await fetch(`${API_BASE}/barriers/${barrierId}/verify`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ detail: 'Failed to vote on barrier' }));
+        throw new Error(err.detail || 'Failed to record vote');
+      }
+      const data = await response.json();
+      return data.data;
+    },
+
+    async getUserReputation(): Promise<any> {
+      const res = await apiFetch<any>('/barriers/user/reputation');
+      return res.data;
+    },
+
+    async getDetails(barrierId: string): Promise<any> {
+      const res = await apiFetch<any>(`/barriers/${barrierId}`);
+      return res.data;
     }
   },
 

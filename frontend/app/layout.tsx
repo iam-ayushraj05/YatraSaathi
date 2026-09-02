@@ -16,6 +16,12 @@ export const metadata: Metadata = {
   description: 'Plan accessible journeys with confidence. Real-time barrier intelligence, step-free routes, and live assistance mapping.',
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} h-full`}>

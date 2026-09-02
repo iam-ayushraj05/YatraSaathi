@@ -51,12 +51,14 @@ export default function Reports() {
   const [reportType, setReportType] = useState('BLOCKED_RAMP');
   const [severity, setSeverity] = useState('HIGH');
   const [accessibilityImpact, setAccessibilityImpact] = useState('BLOCKED');
-  const [placeName, setPlaceName] = useState('Qutub Minar Courtyard');
+  const [placeName, setPlaceName] = useState('Detecting live location...');
   
-  // Real Geolocation + Timestamp
+  // Real Geolocation + Timestamp + Reverse Geocoding
   const [userLat, setUserLat] = useState<number>(28.6139);
   const [userLng, setUserLng] = useState<number>(77.2090);
   const [gpsCaptured, setGpsCaptured] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [reverseAddress, setReverseAddress] = useState<string | null>(null);
   const [captureTimestamp, setCaptureTimestamp] = useState<string | null>(null);
 
   // Compulsory Live Camera State
@@ -246,21 +248,59 @@ export default function Reports() {
     }
   };
 
-  // Capture real GPS on mount
-  useEffect(() => {
+  // Reverse Geocoding via OpenStreetMap Nominatim
+  const fetchLiveAddress = async (lat: number, lng: number) => {
+    setIsGeocoding(true);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+        headers: { 'Accept-Language': 'en-US,en;q=0.9' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const addressObj = data.address || {};
+        const landmark = addressObj.amenity || addressObj.building || addressObj.leisure || addressObj.suburb || addressObj.neighbourhood || addressObj.road || addressObj.city_district || addressObj.city || 'Current GPS Position';
+        const cityStr = addressObj.city || addressObj.state_district || addressObj.state || '';
+        const fullPlace = cityStr ? `${landmark}, ${cityStr}` : landmark;
+        setPlaceName(fullPlace);
+        setReverseAddress(data.display_name || fullPlace);
+      } else {
+        setPlaceName(`Live Location (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`);
+      }
+    } catch (err) {
+      setPlaceName(`Live Location (${lat.toFixed(4)}°, ${lng.toFixed(4)}°)`);
+    } finally {
+      setIsGeocoding(false);
+    }
+  };
+
+  // Trigger live location request + reverse geocode
+  const handleDetectLiveLocation = () => {
+    setIsGeocoding(true);
     if (typeof window !== 'undefined' && 'geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          setUserLat(pos.coords.latitude);
-          setUserLng(pos.coords.longitude);
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          setUserLat(lat);
+          setUserLng(lng);
           setGpsCaptured(true);
+          fetchLiveAddress(lat, lng);
         },
         (err) => {
           console.warn('GPS location request error:', err.message);
+          setIsGeocoding(false);
+          fetchLiveAddress(userLat, userLng);
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
+    } else {
+      fetchLiveAddress(userLat, userLng);
     }
+  };
+
+  // Capture real GPS on mount
+  useEffect(() => {
+    handleDetectLiveLocation();
   }, []);
 
   // Stop camera stream utility function
@@ -625,23 +665,76 @@ export default function Reports() {
                   />
                 </div>
 
-                {/* 4. Location */}
+                {/* 4. Location / Landmark */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">
-                    Location / Landmark
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Location / Landmark
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleDetectLiveLocation}
+                      disabled={isGeocoding}
+                      className="text-[11px] font-bold text-[#6b21a8] dark:text-purple-400 hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                    >
+                      <MapPin className={`w-3.5 h-3.5 ${isGeocoding ? 'animate-bounce text-purple-600' : ''}`} />
+                      <span>{isGeocoding ? 'Detecting GPS...' : '📍 Use Live GPS'}</span>
+                    </button>
+                  </div>
+
                   <div className="relative">
-                    <select
+                    <input
+                      type="text"
+                      placeholder="e.g. Connaught Place, Exit Gate 2 or search location..."
                       value={placeName}
                       onChange={(e) => setPlaceName(e.target.value)}
-                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 py-3 pl-10 pr-4 text-xs font-medium text-slate-700 dark:text-slate-350 focus:border-purple-600 focus:outline-none appearance-none cursor-pointer"
-                    >
-                      <option value="Qutub Minar Courtyard">Qutub Minar Courtyard</option>
-                      <option value="India Gate Central Park">India Gate Central Park</option>
-                      <option value="Lotus Temple Lawns">Lotus Temple Lawns</option>
-                      <option value="Rajiv Chowk Metro Station">Rajiv Chowk Metro Station</option>
-                    </select>
-                    <MapPin className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                      required
+                      className="w-full rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 py-3 pl-10 pr-20 text-xs font-bold text-slate-800 dark:text-slate-100 focus:border-purple-600 focus:outline-none"
+                    />
+                    <MapPin className="absolute left-3.5 top-3.5 h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    {gpsCaptured && (
+                      <span className="absolute right-3 top-3 px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[9.5px] font-black" title={`GPS: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`}>
+                        LIVE GPS
+                      </span>
+                    )}
+                  </div>
+
+                  {/* GPS Coordinates Subtitle */}
+                  <div className="mt-1.5 flex items-center justify-between text-[10.5px] font-bold text-slate-400">
+                    <span>GPS Coordinates: <strong className="text-slate-700 dark:text-slate-300">{userLat.toFixed(5)}° N, {userLng.toFixed(5)}° E</strong></span>
+                    {reverseAddress && (
+                      <span className="truncate max-w-[220px] text-right font-medium text-emerald-600 dark:text-emerald-400" title={reverseAddress}>
+                        ✓ Geocoded
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Quick Preset Location Chips */}
+                  <div className="mt-2.5 flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1">
+                    <span className="text-[10px] font-extrabold uppercase text-slate-400 shrink-0">Quick presets:</span>
+                    {[
+                      '📍 Live GPS Location',
+                      '🏛️ Rajiv Chowk Metro',
+                      '🌳 India Gate Lawns',
+                      '🕌 Qutub Minar Courtyard',
+                      '🛕 Lotus Temple',
+                      '🏰 Red Fort Entrance'
+                    ].map((loc) => (
+                      <button
+                        key={loc}
+                        type="button"
+                        onClick={() => {
+                          if (loc === '📍 Live GPS Location') {
+                            handleDetectLiveLocation();
+                          } else {
+                            setPlaceName(loc.replace(/^[^\s]+\s/, ''));
+                          }
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800/80 hover:bg-purple-100 dark:hover:bg-purple-950/60 hover:text-purple-700 dark:hover:text-purple-300 text-[10.5px] font-bold text-slate-600 dark:text-slate-300 transition-all cursor-pointer shrink-0 border border-slate-200/60 dark:border-slate-800"
+                      >
+                        {loc}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
